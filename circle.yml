@@ -1,0 +1,17 @@
+machine:
+    services:
+        - docker
+dependencies:
+    override:
+        - docker info
+        - docker build --rm=false -t ci-test .
+test:
+    override:
+        - docker run -w /tmp/app ci-test:latest dotnet test
+deployment:
+    production:
+        branch: master
+        commands:
+            - docker login --email=${DOCKER_EMAIL} --username=${DOCKER_EMAIL} --password=${HEROKU_API_KEY} registry.heroku.com
+            - docker tag ci-test registry.heroku.com/twitter-wall-ncl/web
+            - docker push registry.heroku.com/twitter-wall-ncl/web

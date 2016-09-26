@@ -1,9 +1,12 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tweetinvi;
+using TwitterWall.Controllers;
+using TwitterWall.Hubs;
 using TwitterWall.Repository;
 using TwitterWall.Utility;
 
@@ -13,10 +16,10 @@ namespace TwitterWall
     {
         private static TwitterStream _instance;
         public TweetRepository _tweetRepo = new TweetRepository();
-        const string CONSUMER_KEY = "CONSUMER_KEY";
-        const string CONSUMER_SECRET = "CONSUMER_SECRET";
-        const string ACCESS_TOKEN = "ACCESS_TOKEN";
-        const string ACCESS_TOKEN_SECRET = "ACCESS_TOKEN_SECRET";
+        private const string CONSUMER_KEY = "CONSUMER_KEY";
+        private const string CONSUMER_SECRET = "CONSUMER_SECRET";
+        private const string ACCESS_TOKEN = "ACCESS_TOKEN";
+        private const string ACCESS_TOKEN_SECRET = "ACCESS_TOKEN_SECRET";
 
 
         Tweetinvi.Streaming.IFilteredStream stream;
@@ -33,7 +36,9 @@ namespace TwitterWall
             stream.MatchingTweetReceived += (sender, args) =>
             {
                 System.Diagnostics.Debug.WriteLine(args.Tweet);
-                _tweetRepo.Add(new Models.Tweet(args.Tweet.CreatedBy.Id, args.Tweet.Text, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt.Date));                
+                _tweetRepo.Add(new Models.Tweet(args.Tweet.CreatedBy.Id, args.Tweet.Text, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt.Date));
+
+                ValuesController._connectionManager.GetHubContext<TwitterHub>().Clients.All.receiveTweet(new Models.Tweet(args.Tweet.CreatedBy.Id, args.Tweet.Text, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt.Date));
             };
             // END OF STREAM CONFIGURATION
         }

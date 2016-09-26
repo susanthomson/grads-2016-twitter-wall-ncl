@@ -4,12 +4,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TwitterWall.Models;
+using TwitterWall.Repository;
+using Microsoft.AspNetCore.SignalR.Infrastructure;
 
 namespace TwitterWall.Controllers
 {
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+        public static IConnectionManager _connectionManager { get; set; }
+
+        public ValuesController(IConnectionManager connectionManager)
+        {
+            _connectionManager = connectionManager;
+        }
+
         // GET api/values
         [HttpGet]
         public IEnumerable<Tweet> Get()

@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using TwitterWall.Repository;
+using TwitterWall.Models;
+using Microsoft.AspNetCore.SignalR.Infrastructure;
 
 namespace TwitterWall
 {
@@ -34,6 +37,12 @@ namespace TwitterWall
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add SignalR
+            services.AddSignalR(options =>
+            {
+                options.Hubs.EnableDetailedErrors = true;
+            });
+
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
 
@@ -51,6 +60,10 @@ namespace TwitterWall
             app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseMvc();
+
+            app.UseStaticFiles();
+            app.UseWebSockets();
+            app.UseSignalR();
         }
     }
 }

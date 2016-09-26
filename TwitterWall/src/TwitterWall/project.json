@@ -22,7 +22,8 @@
     "Microsoft.AspNetCore.StaticFiles": "1.0.0 ",
     "Npm": "3.5.2",
     "Node.js": "5.3.0",
-    "Npm.js": "2.13.1"
+    "Npm.js": "2.13.1",
+    "jasmine": "2.4.1"
   },
 
   "tools": {

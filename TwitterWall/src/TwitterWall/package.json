@@ -31,6 +31,7 @@
     "zone.js": "^0.6.23"
   },
   "devDependencies": {
+    "@types/jasmine": "^2.2.34",
     "concurrently": "^2.2.0",
     "gulp": "^3.9.1",
     "istanbul": "^0.4.5",

@@ -12,7 +12,7 @@ var builtPath = '/base/app/';
 __karma__.loaded = function () { };
 
 function isJsFile(path) {
-    return path.slice(-3) == '.js';
+    return path.slice(-3) === '.js';
 }
 
 function isSpecFile(path) {
@@ -20,7 +20,7 @@ function isSpecFile(path) {
 }
 
 function isBuiltFile(path) {
-    return isJsFile(path) && (path.substr(0, builtPath.length) == builtPath);
+    return isJsFile(path) && (path.substr(0, builtPath.length) === builtPath);
 }
 
 var allSpecFiles = Object.keys(window.__karma__.files)
@@ -51,7 +51,7 @@ System.import('systemjs.config.js')
   .then(initTestBed)
   .then(initTesting);
 
-/** Optional SystemJS configuration extras. Keep going w/o it */
+/* Optional SystemJS configuration extras. Keep going w/o it */
 function importSystemJsExtras() {
     return System.import('systemjs.config.extras.js')
     .catch(function (reason) {

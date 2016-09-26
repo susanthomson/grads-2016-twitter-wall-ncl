@@ -266,3 +266,5 @@ __pycache__/
 
 # Authentication credentials
 StreamConfig.json
+
+TwitterWall/src/TwitterWall/wwwroot/lib

@@ -1,13 +1,29 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Awesome Chat Application</title>
-    <meta charset="utf-8" />
+    <title>dotnetpro eCollector</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- 1. Load libraries -->
+    <!-- Polyfill(s) for older browsers -->
+    <script src="libs/core-js/client/shim.js"></script>
+    <script src="libs/zone.js/dist/zone.js"></script>
+    <script src="libs/reflect-metadata/reflect.js"></script>
+    <script src="libs/systemjs/dist/system.src.js"></script>
+    <!-- 2. Configure SystemJS -->
+    <script src="systemjs.config.js"></script>
+    <script>
+        System.import('app')
+            .catch(function (err) { console.error(err); });
+    </script>
 </head>
+<!-- 3. Display the application -->
 <body>
+    <my-app>Loading...</my-app>
     <div id="loading">
         <h2>Connecting to the hub...</h2>
-    </div>    
+    </div>
     <div id="content" style="display:none">
         <h2>Tweets</h2>
         <ul id="tweets"></ul>

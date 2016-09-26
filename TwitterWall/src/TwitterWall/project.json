@@ -19,7 +19,11 @@
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "xunit": "2.2.0-beta2-build3300",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
-    "Npm.js": "2.13.1"
+    "Microsoft.AspNetCore.StaticFiles": "1.0.0 ",
+    "Npm": "3.5.2",
+    "Node.js": "5.3.0",
+    "Npm.js": "2.13.1",
+    "jasmine": "2.4.1"
   },
 
   "tools": {

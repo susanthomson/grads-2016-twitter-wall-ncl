@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using TwitterWall.Models;
 
 namespace TwitterWall.Controllers
 {
@@ -11,9 +12,9 @@ namespace TwitterWall.Controllers
     {
         // GET api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<Tweet> Get()
         {
-            return new string[] { "value1", "value2" };
+            return TwitterStream.Instance()._tweetRepo.GetAll();
         }
 
         // GET api/values/5

@@ -19,7 +19,8 @@
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "xunit": "2.2.0-beta2-build3300",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
-    "Npm.js": "2.13.1"
+    "Npm.js": "2.13.1",
+    "TweetinviAPI": "1.1.0"
   },
 
   "tools": {

@@ -8,6 +8,8 @@ dependencies:
 test:
     override:
         - docker run -w /tmp/app ci-test:latest dotnet test
+        - docker run -w /tmp/app ci-test:latest npm install
+        - docker run -w /tmp/app ci-test:latest npm test
 deployment:
     production:
         branch: master

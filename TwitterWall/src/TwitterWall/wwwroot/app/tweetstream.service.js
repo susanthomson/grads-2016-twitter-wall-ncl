@@ -9,17 +9,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var AppComponent = (function () {
-    function AppComponent() {
+var TweetStream = (function () {
+    function TweetStream() {
+        var _this = this;
+        this.connection = $.connection.twitterHub;
+        this.connection.hub.start().done(function () {
+            _this.streamTweets();
+        });
     }
-    AppComponent = __decorate([
-        core_1.Component({
-            selector: "my-app",
-            template: "<h1>My second Angular App in Visual Studio</h1>\n    <twitter-card></twitter-card>\n    "
-        }), 
+    TweetStream.prototype.getTweets = function () {
+        return this.tweets;
+    };
+    TweetStream.prototype.streamTweets = function () {
+        var _this = this;
+        this.connection.client.receiveTweet = function (tweet) {
+            _this.tweets.push(tweet);
+        };
+    };
+    TweetStream = __decorate([
+        core_1.Injectable(), 
         __metadata('design:paramtypes', [])
-    ], AppComponent);
-    return AppComponent;
+    ], TweetStream);
+    return TweetStream;
 }());
-exports.AppComponent = AppComponent;
-//# sourceMappingURL=app.component.js.map
+exports.TweetStream = TweetStream;
+//# sourceMappingURL=tweetstream.service.js.map

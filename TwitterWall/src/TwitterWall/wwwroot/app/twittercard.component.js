@@ -9,17 +9,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var AppComponent = (function () {
-    function AppComponent() {
+var TwitterCard = (function () {
+    function TwitterCard() {
     }
-    AppComponent = __decorate([
+    TwitterCard = __decorate([
         core_1.Component({
-            selector: "my-app",
-            template: "<h1>My second Angular App in Visual Studio</h1>\n    <twitter-card></twitter-card>\n    "
+            selector: "twitter-card",
+            template: "<h1>A twitter card.....</h1>"
         }), 
         __metadata('design:paramtypes', [])
-    ], AppComponent);
-    return AppComponent;
+    ], TwitterCard);
+    return TwitterCard;
 }());
-exports.AppComponent = AppComponent;
-//# sourceMappingURL=app.component.js.map
+exports.TwitterCard = TwitterCard;
+//# sourceMappingURL=twittercard.component.js.map

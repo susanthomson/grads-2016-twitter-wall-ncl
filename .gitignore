@@ -264,7 +264,11 @@ paket-files/
 __pycache__/
 *.pyc
 
+<<<<<<< HEAD
 # Authentication credentials
 StreamConfig.json
 
 TwitterWall/src/TwitterWall/wwwroot/lib
+=======
+TwitterWall/src/TwitterWall/wwwroot/libs/
+>>>>>>> 6e31944ad2014afee6fb53428d0a9ec96ddcb2ae

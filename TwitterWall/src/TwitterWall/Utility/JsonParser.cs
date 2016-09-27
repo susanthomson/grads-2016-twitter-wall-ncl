@@ -10,7 +10,7 @@ namespace TwitterWall.Utility
 {
     public static class JsonParser
     {
-        public static JObject ReadJsonFile(string path)
+        public static JObject ParseFromFile(string path)
         {
             JObject o1 = JObject.Parse(File.ReadAllText(path));
 

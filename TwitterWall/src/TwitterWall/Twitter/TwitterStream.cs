@@ -28,19 +28,36 @@ namespace TwitterWall
         {
             SetCredentials();       
             stream = Stream.CreateFilteredStream();
-            // STREAM CONFIGURATION
+            ConfigureStream();
+        }
 
-            //stream.AddTrack("Justas");
-            stream.AddFollow(776716619720585216);
-
+        private void ConfigureStream()
+        {
+            // While the application is being developed, this contains test user ID, can be replaced to Bristech account.
+            // @bristech ID : 1600909274
+            stream.AddFollow(1600909274);
             stream.MatchingTweetReceived += (sender, args) =>
             {
-                System.Diagnostics.Debug.WriteLine(args.Tweet);
-                _tweetRepo.Add(new Models.Tweet(args.Tweet.CreatedBy.Id, args.Tweet.Text, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt.Date));
-
-                ValuesController._connectionManager.GetHubContext<TwitterHub>().Clients.All.receiveTweet(new Models.Tweet(args.Tweet.CreatedBy.Id, args.Tweet.Text, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt.Date));
+                Models.Tweet newTweet = new Models.Tweet(args.Tweet.CreatedBy.Id, args.Tweet.Text, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt, args.Tweet.CreatedBy.Name, args.Tweet.CreatedBy.ProfileImageUrl);
+                if (args.Tweet.Media.Count > 0)
+                {
+                    List<string> imageList = new List<string>();
+                    foreach (Tweetinvi.Logic.TwitterEntities.MediaEntity e in args.Tweet.Media)
+                    {
+                        if (e.MediaType.Equals("photo"))
+                        {
+                            imageList.Add(e.MediaURL);
+                        }
+                    }
+                    if (imageList.Count > 0)
+                    {
+                        newTweet.AttachedImages = imageList;
+                    }
+                }
+                _tweetRepo.Add(newTweet);
+                // Inform all connected clients about tweet
+                TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.All.receiveTweet(newTweet);
             };
-            // END OF STREAM CONFIGURATION
         }
 
         private void SetCredentials()
@@ -53,12 +70,7 @@ namespace TwitterWall
             if (String.IsNullOrEmpty(consumer_key) || String.IsNullOrEmpty(consumer_secret) || String.IsNullOrEmpty(access_token) || String.IsNullOrEmpty(access_token_secret))
             {
                 // Read from JSON config
-                JObject result = JsonParser.ReadJsonFile(@".\Twitter\StreamConfig.json");
-                System.Diagnostics.Debug.WriteLine(result[CONSUMER_KEY].ToString());
-                System.Diagnostics.Debug.WriteLine(result[CONSUMER_SECRET].ToString());
-                System.Diagnostics.Debug.WriteLine(result[ACCESS_TOKEN].ToString());
-                System.Diagnostics.Debug.WriteLine(result[ACCESS_TOKEN_SECRET].ToString());
-
+                JObject result = JsonParser.ParseFromFile(@".\Twitter\StreamConfig.json");
                 Auth.SetUserCredentials(result[CONSUMER_KEY].ToString(), result[CONSUMER_SECRET].ToString(), result[ACCESS_TOKEN].ToString(), result[ACCESS_TOKEN_SECRET].ToString());
             }
             else
@@ -76,6 +88,16 @@ namespace TwitterWall
         public void Stop()
         {
             stream.StopStream();
+        }
+
+        public Tweetinvi.Models.StreamState StreamStatus()
+        {
+            return stream.StreamState;
+        }
+
+        public Tweetinvi.Streaming.IFilteredStream GetStream()
+        {
+            return stream;
         }
 
         public static TwitterStream Instance()

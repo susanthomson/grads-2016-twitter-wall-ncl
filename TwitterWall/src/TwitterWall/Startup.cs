@@ -58,8 +58,6 @@ namespace TwitterWall
 
             app.UseApplicationInsightsRequestTelemetry();
 
-            app.UseApplicationInsightsExceptionTelemetry();
-
             // Angular 2 routing handler:
             app.Use(async (context, next) =>
             {

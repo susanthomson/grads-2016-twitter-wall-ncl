@@ -7,10 +7,10 @@ namespace TwitterWall.Repository
 {
     public interface IRepository<T>
     {
-        T Get(int id);
+        T Get(long id);
         IEnumerable<T> GetAll();
         IEnumerable<T> Find(Func<T, bool> exp);
         void Add(T entity);
-        void Remove(int id);
+        void Remove(long id);
     }
 }

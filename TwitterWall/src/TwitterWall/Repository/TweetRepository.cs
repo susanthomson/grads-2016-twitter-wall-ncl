@@ -10,7 +10,7 @@ namespace TwitterWall.Repository
     {
         private List<Tweet> _tweetRepository = new List<Tweet>();
 
-        public Tweet Get(int id)
+        public Tweet Get(long id)
         {
             return _tweetRepository.Find(t => t.Id == id);
         }
@@ -30,7 +30,7 @@ namespace TwitterWall.Repository
             _tweetRepository.Add(entity);
         }
 
-        public void Remove(int id)
+        public void Remove(long id)
         {
             _tweetRepository.Remove(_tweetRepository.Find(t => t.Id == id));
         }

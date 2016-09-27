@@ -3,13 +3,10 @@ var tweets = [];
 twitter.client.receiveTweet = function (tweet) {
     console.log(tweet);
     tweets.push(tweet);
-    $("#tweets").append('<li><strong>@' + tweet.Sender + '</strong>: ' + tweet.Body + " at "+tweet.Date);
+    $("#tweets").append('<li><strong>@' + tweet.Handle + '</strong>: ' + tweet.Body + " at "+tweet.Date);
 };
 
-// chat.server.send(userName, $("#messageBox").val());
-
-
-$.get("http://localhost:5000/api/values", function (data) {
+$.get(window.location.href + "api/tweets", function (data) {
     if (data) {
         console.log("Tweets: " + data);
         tweets = data;

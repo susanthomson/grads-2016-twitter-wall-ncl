@@ -1,4 +1,5 @@
-﻿<html>
+<!DOCTYPE html>
+<html>
 <head>
     <title>dotnetpro eCollector</title>
     <meta charset="UTF-8">
@@ -20,5 +21,17 @@
 <!-- 3. Display the application -->
 <body>
     <my-app>Loading...</my-app>
+    <div id="loading">
+        <h2>Connecting to the hub...</h2>
+    </div>
+    <div id="content" style="display:none">
+        <h2>Tweets</h2>
+        <ul id="tweets"></ul>
+    </div>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.0.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.1.min.js"></script>
+    <script src="signalr/hubs"></script>
+    <script src="js/twitter.js"></script>
 </body>
 </html>

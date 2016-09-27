@@ -7,7 +7,7 @@ dependencies:
         - docker build --rm=false -t ci-test .
 test:
     override:
-        - docker run -w /tmp/app ci-test:latest dotnet test
+        - docker run -w /tmp/app -e CONSUMER_KEY=${CONSUMER_KEY} -e CONSUMER_SECRET=${CONSUMER_SECRET} -e ACCESS_TOKEN=${ACCESS_TOKEN} -e ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET} ci-test:latest dotnet test
         - docker run -w /tmp/app ci-test:latest npm install
         - docker run -w /tmp/app ci-test:latest npm test
 deployment:

@@ -264,4 +264,4 @@ paket-files/
 __pycache__/
 *.pyc
 
-TwitterWall/src/TwitterWall/wwwroot/lib
+TwitterWall/src/TwitterWall/wwwroot/libs/

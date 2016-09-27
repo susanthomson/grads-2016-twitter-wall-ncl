@@ -12,9 +12,6 @@ namespace TwitterWall.Utility
     {
         public static JObject ParseFromFile(string path)
         {
-            JObject o1 = JObject.Parse(File.ReadAllText(path));
-
-            // read JSON directly from a file
             using (StreamReader file = File.OpenText(path))
             using (JsonTextReader reader = new JsonTextReader(file))
             {

@@ -9,7 +9,6 @@ namespace TwitterWall.Hubs
 {
     public class TwitterHub : Hub
     {
-        // SignalR hub
-        // In this class define functions which clients can call
+        // SignalR Hub class, in this class define functions which clients can call
     }
 }

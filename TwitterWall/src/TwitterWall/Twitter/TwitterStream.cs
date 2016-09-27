@@ -33,7 +33,6 @@ namespace TwitterWall
 
         private void ConfigureStream()
         {
-            // While the application is being developed, this contains test user ID, can be replaced to Bristech account.
             // @bristech ID : 1600909274
             stream.AddFollow(1600909274);
             stream.MatchingTweetReceived += (sender, args) =>
@@ -55,7 +54,7 @@ namespace TwitterWall
                     }
                 }
                 _tweetRepo.Add(newTweet);
-                // Inform all connected clients about tweet
+                // Invoke receiveTweet method on client side
                 TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.All.receiveTweet(newTweet);
             };
         }
@@ -69,15 +68,14 @@ namespace TwitterWall
 
             if (String.IsNullOrEmpty(consumer_key) || String.IsNullOrEmpty(consumer_secret) || String.IsNullOrEmpty(access_token) || String.IsNullOrEmpty(access_token_secret))
             {
-                // Read from JSON config
                 JObject result = JsonParser.ParseFromFile(@".\Twitter\StreamConfig.json");
-                Auth.SetUserCredentials(result[CONSUMER_KEY].ToString(), result[CONSUMER_SECRET].ToString(), result[ACCESS_TOKEN].ToString(), result[ACCESS_TOKEN_SECRET].ToString());
+                consumer_key = result[CONSUMER_KEY].ToString();
+                consumer_secret = result[CONSUMER_SECRET].ToString();
+                access_token = result[ACCESS_TOKEN].ToString();
+                access_token_secret = result[ACCESS_TOKEN_SECRET].ToString();
             }
-            else
-            {
-                Auth.SetUserCredentials(consumer_key, consumer_secret, access_token, access_token_secret);
-            }
-            
+
+            Auth.SetUserCredentials(consumer_key, consumer_secret, access_token, access_token_secret);
         }
 
         public void Start()

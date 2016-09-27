@@ -23,7 +23,6 @@ namespace TwitterWall.Test
         [Fact]
         public void StreamStart()
         {
-            TwitterStream stream = TwitterStream.Instance();
             stream.Start();
             System.Threading.Thread.Sleep(2000);
             Assert.True(stream.StreamStatus() == Tweetinvi.Models.StreamState.Running);
@@ -32,7 +31,6 @@ namespace TwitterWall.Test
         [Fact]
         public void StreamStop()
         {
-            TwitterStream stream = TwitterStream.Instance();
             stream.Stop();
             Assert.True(stream.StreamStatus() == Tweetinvi.Models.StreamState.Stop);
         }
@@ -40,7 +38,6 @@ namespace TwitterWall.Test
         [Fact]
         public void StreamFollowsPerson()
         {
-            TwitterStream stream = TwitterStream.Instance();
             Assert.True(stream.GetStream().FollowingUserIds.Count > 0);
         }
     }

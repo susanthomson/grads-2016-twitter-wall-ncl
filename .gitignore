@@ -264,4 +264,5 @@ paket-files/
 __pycache__/
 *.pyc
 StreamConfig.json
+TwitterWall/src/TwitterWall/lib
 TwitterWall/src/TwitterWall/wwwroot/libs/

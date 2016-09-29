@@ -13,6 +13,7 @@ RUN apt-get install -y nodejs
 
 RUN npm install
 RUN npm install -g jasmine
+RUN npm run setup
 
 RUN ["dotnet", "restore"]
 RUN ["dotnet", "publish", "-o", "/app"]

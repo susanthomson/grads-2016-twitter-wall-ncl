@@ -56,8 +56,10 @@
   "publishOptions": {
     "include": [
       "wwwroot",
+      "wwwroot/libs",
       "**/*.cshtml",
       "appsettings.json",
+      "Twitter/StreamConfig.json",
       "web.config"
     ]
   },

@@ -5,6 +5,7 @@
     "start": "npm run lint && tsc && concurrently \"npm run tsc:w\" \"npm run lite\" ",
     "lite": "lite-server -c bs-config.json",
     "postinstall": "typings install && gulp restore",
+    "setup": "typings install && gulp restore",
     "test": "jasmine",
     "tsc": "tsc",
     "tsc:w": "tsc -w",

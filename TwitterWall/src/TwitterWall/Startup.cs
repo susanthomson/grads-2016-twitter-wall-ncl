@@ -58,17 +58,10 @@ namespace TwitterWall
             loggerFactory.AddDebug();
 
             app.UseApplicationInsightsRequestTelemetry();
-            app.UseWebSockets();
 
             // Angular 2 routing handler:
             app.Use(async (context, next) =>
             {
-                
-                if (context.WebSockets.IsWebSocketRequest)
-                {
-                    WebSocket ws = await context.WebSockets.AcceptWebSocketAsync();
-                }
-
                 await next();
 
                 if (context.Response.StatusCode == 404
@@ -81,7 +74,8 @@ namespace TwitterWall
 
             app.UseStaticFiles();
             app.UseMvc();
-            //app.UseSignalR();
+            app.UseSignalR();
+            app.UseWebSockets();
         }
     }
 }

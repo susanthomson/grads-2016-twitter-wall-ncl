@@ -13,26 +13,18 @@ module.exports = function (config) {
         frameworks: ['jasmine'],
         plugins: [
           require('karma-jasmine'),
-          require('karma-chrome-launcher'),
+          require('karma-phantomjs-launcher'),
           require('karma-jasmine-html-reporter'), // click "Debug" in browser to see it
           require('karma-htmlfile-reporter') // crashing w/ strange socket error
         ],
-
-        customLaunchers: {
-            // From the CLI. Not used here but interesting
-            // chrome setup for travis CI using chromium
-            Chrome_travis_ci: {
-                base: 'Chrome',
-                flags: ['--no-sandbox']
-            }
-        },
         files: [
           // System.js for module loading
           'libs/systemjs/dist/system.src.js',
+          'libs/systemjs/dist/system-polyfills.js',
 
           // Polyfills
           'libs/core-js/client/shim.js',
-          'libs/reflect-metadata/Reflect.js',
+          'libs/reflect-metadata/reflect.js',
 
           // zone.js
           'libs/zone.js/dist/zone.js',
@@ -72,7 +64,6 @@ module.exports = function (config) {
           { pattern: testSrcBase + '**/*.ts', included: false, watched: false },
           { pattern: testBase + '**/*.js.map', included: false, watched: false }
         ],
-
         // Proxied base paths for loading assets
         proxies: {
             // required for component assets fetched by Angular's compiler
@@ -93,12 +84,13 @@ module.exports = function (config) {
             pageTitle: 'Unit Tests',
             subPageTitle: __dirname
         },
+        
 
-        port: 9876,
+        port: 8910,
         colors: true,
+        hostname: "127.0.0.1",
         logLevel: config.LOG_INFO,
-        autoWatch: true,
-        browsers: ['Chrome'],
-        singleRun: false
+        browsers: ['PhantomJS'],
+        singleRun: true
     })
 }

@@ -8,8 +8,8 @@ using TwitterWall.Context;
 namespace TwitterWall.Migrations
 {
     [DbContext(typeof(TweetContext))]
-    [Migration("20161003082229_notNullableTweetId")]
-    partial class notNullableTweetId
+    [Migration("20161003141821_test")]
+    partial class test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -22,7 +22,8 @@ namespace TwitterWall.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("TweetId");
+                    b.Property<int?>("TweetId")
+                        .IsRequired();
 
                     b.Property<string>("Url")
                         .IsRequired();
@@ -60,7 +61,8 @@ namespace TwitterWall.Migrations
                 {
                     b.HasOne("TwitterWall.Models.Tweet", "Tweet")
                         .WithMany("MediaList")
-                        .HasForeignKey("TweetId");
+                        .HasForeignKey("TweetId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
         }
     }

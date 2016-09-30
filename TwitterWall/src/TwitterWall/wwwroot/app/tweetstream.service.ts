@@ -1,16 +1,18 @@
 ﻿import { Injectable } from "@angular/core";
+import { Subject } from "rxjs/Subject";
+import { Tweet } from "./tweet";
 declare var $: any;
 
 @Injectable()
 export class TweetStream {
-    private connection: any;
-    private tweets: Array<Tweet>;
+    private conn: any;
+    private tweetsChanged = new Subject<Tweet[]>();
+    tweets: Tweet[] = [];
+    public changeTweets$ = this.tweetsChanged.asObservable();
 
     constructor() {
-        this.connection = $.connection.twitterHub;
-        this.connection.hub.start().done(() => {
-            this.streamTweets();
-        });
+        this.conn = $.connection.twitterHub;
+        this.streamTweets();
     }
 
     getTweets(): Array<Tweet> {
@@ -18,8 +20,11 @@ export class TweetStream {
     }
 
     streamTweets() {
-        this.connection.client.receiveTweet = (tweet) => {
+        this.conn.client.receiveTweet = (tweet) => {
             this.tweets.push(tweet);
+            this.tweetsChanged.next(this.tweets);
         };
+        $.connection.hub.start().done(() => {
+        });
     }
 }

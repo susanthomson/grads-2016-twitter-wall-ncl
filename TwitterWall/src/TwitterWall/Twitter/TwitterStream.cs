@@ -15,7 +15,8 @@ namespace TwitterWall
     class TwitterStream
     {
         private static TwitterStream _instance;
-        public TweetRepository _tweetRepo = new TweetRepository();
+        public MediaDBRepository _mediaRepo = new MediaDBRepository();
+        public TweetDBRepository _tweetRepo = new TweetDBRepository();
         private const string CONSUMER_KEY = "CONSUMER_KEY";
         private const string CONSUMER_SECRET = "CONSUMER_SECRET";
         private const string ACCESS_TOKEN = "ACCESS_TOKEN";
@@ -32,30 +33,23 @@ namespace TwitterWall
         }
 
         private void ConfigureStream()
-        {
-            // @bristech ID : 1600909274
-            stream.AddFollow(1600909274);
+        {       
+            stream.AddFollow(Subscriptions.GetId(Subscriptions.Users.BRISTECH));
             stream.MatchingTweetReceived += (sender, args) =>
             {
-                Models.Tweet newTweet = new Models.Tweet(args.Tweet.CreatedBy.Id, args.Tweet.Text, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt, args.Tweet.CreatedBy.Name, args.Tweet.CreatedBy.ProfileImageUrl);
-                if (args.Tweet.Media.Count > 0)
+                Models.Tweet newTweet = new Models.Tweet(args.Tweet.Id, args.Tweet.Text, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt, args.Tweet.CreatedBy.Name, args.Tweet.CreatedBy.ProfileImageUrl);
+                TwitterWall.Models.Tweet result = _tweetRepo.Find(obj => obj.TweetId == newTweet.TweetId).SingleOrDefault();
+                if (result == null)
                 {
-                    List<string> imageList = new List<string>();
-                    foreach (Tweetinvi.Logic.TwitterEntities.MediaEntity e in args.Tweet.Media)
+                    _tweetRepo.Add(newTweet);
+                    _mediaRepo.AddFromTweet(args.Tweet);                   
+
+                    // Invoke receiveTweet method on client side
+                    if (TweetsController._connectionManager != null)
                     {
-                        if (e.MediaType.Equals("photo"))
-                        {
-                            imageList.Add(e.MediaURL);
-                        }
-                    }
-                    if (imageList.Count > 0)
-                    {
-                        newTweet.AttachedImages = imageList;
+                        TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.All.receiveTweet(_tweetRepo.Find(t => t.TweetId == newTweet.TweetId).SingleOrDefault());
                     }
                 }
-                _tweetRepo.Add(newTweet);
-                // Invoke receiveTweet method on client side
-                TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.All.receiveTweet(newTweet);
             };
         }
 

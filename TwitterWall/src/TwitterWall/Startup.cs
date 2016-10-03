@@ -11,13 +11,14 @@ using TwitterWall.Repository;
 using TwitterWall.Models;
 using Microsoft.AspNetCore.SignalR.Infrastructure;
 using System.IO;
-using Microsoft.AspNetCore.Http;
-using System.Net.WebSockets;
+using Microsoft.EntityFrameworkCore;
+using TwitterWall.Context;
 
 namespace TwitterWall
 {
     public class Startup
     {
+        public static string ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog = TwitterWall; Integrated Security = True; Pooling=False";
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -49,6 +50,8 @@ namespace TwitterWall
             services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddMvc();
+
+            services.AddDbContext<TweetContext>(options => options.UseSqlServer(ConnectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -74,8 +77,8 @@ namespace TwitterWall
 
             app.UseStaticFiles();
             app.UseMvc();
-            app.UseSignalR();
             app.UseWebSockets();
+            app.UseSignalR();
         }
     }
 }

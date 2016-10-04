@@ -4,11 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TwitterWall.Models;
+using TwitterWall.Repository;
 
 namespace TwitterWall.Hubs
 {
     public class TwitterHub : Hub
     {
-        // SignalR Hub class, in this class define functions which clients can call
+        StickyDBRepository _stickyRepo = new StickyDBRepository();
+
+        public void AddStickyTweet(long id)
+        {
+            _stickyRepo.Add(id);
+        }
+
+        public void RemoveStickyTweet(long id)
+        {
+            _stickyRepo.RemoveByTweetId(id);
+        }
     }
 }

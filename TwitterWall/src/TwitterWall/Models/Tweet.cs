@@ -35,6 +35,7 @@ namespace TwitterWall.Models
         public string Name { get; set; }
         public string ProfileImage { get; set; }
         
-        public ICollection<MediaUrl> MediaList { get; set; }        
+        public ICollection<MediaUrl> MediaList { get; set; }
+        public ICollection<Sticky> StickyList { get; set; }
     }
 }

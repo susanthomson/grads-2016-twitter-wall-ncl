@@ -14,7 +14,7 @@ namespace TwitterWall.Repository
 
         public MediaDBRepository()
         {
-            var optionsBuilder = new DbContextOptionsBuilder<TweetContext>();
+            DbContextOptionsBuilder<TweetContext> optionsBuilder = new DbContextOptionsBuilder<TweetContext>();
             optionsBuilder.UseSqlServer(Startup.ConnectionString);
             context = new TweetContext(optionsBuilder.Options);
         }

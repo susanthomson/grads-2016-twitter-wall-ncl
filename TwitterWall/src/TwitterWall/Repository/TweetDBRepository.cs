@@ -13,8 +13,8 @@ namespace TwitterWall.Repository
         TweetContext context;
 
         public TweetDBRepository()
-        {            
-            var optionsBuilder = new DbContextOptionsBuilder<TweetContext>();
+        {
+            DbContextOptionsBuilder<TweetContext> optionsBuilder = new DbContextOptionsBuilder<TweetContext>();
             optionsBuilder.UseSqlServer(Startup.ConnectionString);
             context = new TweetContext(optionsBuilder.Options);
         }

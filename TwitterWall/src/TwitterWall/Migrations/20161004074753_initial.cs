@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace TwitterWall.Migrations
 {
-    public partial class test : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -47,9 +47,33 @@ namespace TwitterWall.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Sticky",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    TweetId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sticky", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Sticky_Tweets_TweetId",
+                        column: x => x.TweetId,
+                        principalTable: "Tweets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_MediaUrls_TweetId",
                 table: "MediaUrls",
+                column: "TweetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sticky_TweetId",
+                table: "Sticky",
                 column: "TweetId");
         }
 
@@ -57,6 +81,9 @@ namespace TwitterWall.Migrations
         {
             migrationBuilder.DropTable(
                 name: "MediaUrls");
+
+            migrationBuilder.DropTable(
+                name: "Sticky");
 
             migrationBuilder.DropTable(
                 name: "Tweets");

@@ -34,6 +34,21 @@ namespace TwitterWall.Migrations
                     b.ToTable("MediaUrls");
                 });
 
+            modelBuilder.Entity("TwitterWall.Models.Sticky", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("TweetId")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TweetId");
+
+                    b.ToTable("Sticky");
+                });
+
             modelBuilder.Entity("TwitterWall.Models.Tweet", b =>
                 {
                     b.Property<int>("Id")
@@ -60,6 +75,14 @@ namespace TwitterWall.Migrations
                 {
                     b.HasOne("TwitterWall.Models.Tweet", "Tweet")
                         .WithMany("MediaList")
+                        .HasForeignKey("TweetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("TwitterWall.Models.Sticky", b =>
+                {
+                    b.HasOne("TwitterWall.Models.Tweet", "Tweet")
+                        .WithMany("StickyList")
                         .HasForeignKey("TweetId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

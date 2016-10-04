@@ -51,16 +51,16 @@ describe("Twittercard component tests", () => {
     });
 
     it("should remove a specific tweet and return correct length", () => {
-        fixture.detectChanges()
+        fixture.detectChanges();
         component.tweetStream.pushTweets();
-        component.removeTweet(2)
-        expect(component.tweets.length).toBe(1)
+        component.removeTweet(2);
+        expect(component.tweets.length).toBe(1);
     });
 
     it("should remove a specific tweet and return correct id", () => {
-        fixture.detectChanges()
+        fixture.detectChanges();
         component.tweetStream.pushTweets();
-        component.removeTweet(2)
+        component.removeTweet(2);
         expect(component.tweets[0].Id).toBe(1);
     });
 });

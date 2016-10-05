@@ -12,6 +12,7 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x |  bash -
 RUN apt-get install -y nodejs
 
 RUN npm install --production
+RUN npm run setup
 
 RUN ["dotnet", "restore"]
 RUN ["dotnet", "publish", "-o", "/app"]

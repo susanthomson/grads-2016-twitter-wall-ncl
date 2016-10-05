@@ -77,7 +77,6 @@ namespace TwitterWall
 
             app.UseStaticFiles();
             app.UseMvc();
-            app.UseWebSockets();
             app.UseSignalR();
         }
     }

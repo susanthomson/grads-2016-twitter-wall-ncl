@@ -26,6 +26,8 @@ var BubbleComponent = (function () {
         var _this = this;
         this.translationPoint = 0;
         this.points = [];
+        this.showTweet = false;
+        this.fullScreen = false;
         // Use only until tweets are implemented
         this.images = [];
         this.imageNumber = 0;
@@ -52,8 +54,8 @@ var BubbleComponent = (function () {
     ;
     BubbleComponent.prototype.ngOnInit = function () {
         var _this = this;
-        this.width = 1900;
-        this.height = 800;
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
         this.displayPoint = new vector_1.Vector(this.width / 2, this.height / 2);
         this.generateCanvas();
         this.populateNodes();
@@ -76,7 +78,7 @@ var BubbleComponent = (function () {
     };
     ;
     BubbleComponent.prototype.generateCanvas = function () {
-        var canvas = d3.select("#bubble-canvas").append("canvas")
+        var canvas = d3.select("#bubble-canvas").insert("canvas", ":first-child")
             .attr("width", this.width)
             .attr("height", this.height)
             .attr("id", "canv")
@@ -142,9 +144,17 @@ var BubbleComponent = (function () {
     BubbleComponent.prototype.increaseRadius = function (node) {
         if (node.radius >= MAX_RADIUS) {
             node.isIncreasing = false;
+            var self_1 = this;
             setTimeout(function () {
-                node.isDecreasing = true;
+                self_1.showTweet = false;
+                setTimeout(function () {
+                    node.isDecreasing = true;
+                }, 1000);
             }, TIME_TO_SHOW);
+            this.showTweet = true;
+            var td = document.getElementById("tweet-display-group");
+            td.style.left = node.x;
+            td.style.top = node.y;
             return;
         }
         node.isDisplayed = true;
@@ -209,13 +219,7 @@ var BubbleComponent = (function () {
     };
     ;
     BubbleComponent.prototype.goFullScreen = function () {
-        // Can't use ViewChild here because canvas is generated dynamically by d3
-        var elem = document.getElementById("canv");
-        if (elem.webkitRequestFullScreen) {
-            elem.webkitRequestFullScreen();
-            this.width = window.innerWidth;
-            this.height = window.innerHeight;
-        }
+        this.fullScreen = true;
     };
     ;
     BubbleComponent.prototype.tick = function () {
@@ -260,7 +264,7 @@ var BubbleComponent = (function () {
     BubbleComponent = __decorate([
         core_1.Component({
             selector: "bubble-canvas",
-            template: "\n        <button (click)=\"goFullScreen()\">Fullscreen</button>\n        <button (click)=\"removeTest()\">Remove 1</button>\n        <div id=\"bubble-canvas\" (click)=\"addNode()\"></div>\n    "
+            template: "\n        <button (click)=\"goFullScreen()\">Fullscreen</button>\n        <button (click)=\"removeTest()\">Remove 1</button>\n        <div id=\"bubble-canvas\" (click)=\"addNode()\" [class.fullscreen]=\"fullScreen\">\n            <div tweet-display style=\"position: absolute;\" id=\"tweet-display\" class=\"step\" [class.show]=\"showTweet\"><div>\n        </div>\n\n    "
         }), 
         __metadata('design:paramtypes', [])
     ], BubbleComponent);

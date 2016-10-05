@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { Vector } from "./vector";
+import { TweetDisplay } from "./tweetdisplay.component";
 import * as d3 from "d3";
 
 const MAX_NODES = 20;
@@ -18,7 +19,10 @@ const GRAVITY = 0.01;
     template: `
         <button (click)="goFullScreen()">Fullscreen</button>
         <button (click)="removeTest()">Remove 1</button>
-        <div id="bubble-canvas" (click)="addNode()"></div>
+        <div id="bubble-canvas" (click)="addNode()" [class.fullscreen]="fullScreen">
+            <div tweet-display style="position: absolute;" id="tweet-display" class="step" [class.show]="showTweet"><div>
+        </div>
+
     `
 })
 export class BubbleComponent implements OnInit {
@@ -31,6 +35,8 @@ export class BubbleComponent implements OnInit {
     translationPoint: number = 0;
     points: Vector[] = [];
     displayPoint: Vector;
+    showTweet = false;
+    fullScreen = false;
 
     // Use only until tweets are implemented
     images: HTMLImageElement[] = [];
@@ -60,8 +66,8 @@ export class BubbleComponent implements OnInit {
     };
 
     ngOnInit(): void {
-        this.width = 1900;
-        this.height = 800;
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
         this.displayPoint = new Vector(this.width / 2, this.height / 2);
         this.generateCanvas();
         this.populateNodes();
@@ -88,7 +94,7 @@ export class BubbleComponent implements OnInit {
     };
 
     generateCanvas(): void {
-        const canvas = d3.select("#bubble-canvas").append("canvas")
+        const canvas = d3.select("#bubble-canvas").insert("canvas", ":first-child")
                         .attr("width", this.width)
                         .attr("height", this.height)
                         .attr("id", "canv")
@@ -157,11 +163,19 @@ export class BubbleComponent implements OnInit {
 
     increaseRadius(node): void {
         if (node.radius >= MAX_RADIUS) {
-          node.isIncreasing = false;
-          setTimeout(function() {
-            node.isDecreasing = true;
-          }, TIME_TO_SHOW);
-          return;
+            node.isIncreasing = false;
+            let self = this;
+            setTimeout(function() {
+                self.showTweet = false;
+                setTimeout(() => {
+                    node.isDecreasing = true;
+                }, 1000);
+            }, TIME_TO_SHOW);
+            this.showTweet = true;
+            let td = document.getElementById("tweet-display-group");
+            td.style.left = node.x;
+            td.style.top = node.y;
+            return;
         }
         node.isDisplayed = true;
         node.isFixed = true;
@@ -170,14 +184,13 @@ export class BubbleComponent implements OnInit {
 
     decreaseRadius(node): void {
         if (node.radius <= MIN_RADIUS) {
-          node.isDecreasing = false;
-          node.isDisplayed = false;
-          node.isFixed = false;
-          this.translationPoint = 0;
-          this.points = [];
-          return;
+            node.isDecreasing = false;
+            node.isDisplayed = false;
+            node.isFixed = false;
+            this.translationPoint = 0;
+            this.points = [];
+            return;
         }
-
         node.radius -= INCREASE_STEP;
     };
 
@@ -228,13 +241,7 @@ export class BubbleComponent implements OnInit {
     };
 
     goFullScreen(): void {
-        // Can't use ViewChild here because canvas is generated dynamically by d3
-        let elem = document.getElementById("canv");
-        if (elem.webkitRequestFullScreen) {
-            elem.webkitRequestFullScreen();
-            this.width = window.innerWidth;
-            this.height = window.innerHeight;
-        }
+        this.fullScreen = true;
     };
 
     tick(): void {

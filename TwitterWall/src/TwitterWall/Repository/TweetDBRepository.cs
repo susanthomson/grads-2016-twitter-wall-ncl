@@ -8,47 +8,56 @@ using TwitterWall.Context;
 
 namespace TwitterWall.Repository
 {
-    public class TweetDBRepository : IRepository<Tweet>
+    public class TweetDBRepository : Repository<Tweet>
     {
-        TweetContext context;
-
-        public TweetDBRepository()
+        public TweetDBRepository() : base()
         {
-            DbContextOptionsBuilder<TweetContext> optionsBuilder = new DbContextOptionsBuilder<TweetContext>();
-            optionsBuilder.UseSqlServer(Startup.ConnectionString);
-            context = new TweetContext(optionsBuilder.Options);
         }
 
-        public TweetDBRepository(TweetContext ctx)
+        public TweetDBRepository(TweetContext ctx) : base(ctx)
         {
-            context = ctx;
         }
 
-        public Tweet Get(long id)
+        public override Tweet Get(long id)
         {
-            return context.Tweets.Where(t => t.Id == id).SingleOrDefault();
+            using (TweetContext context = GetContext())
+            {
+                return context.Tweets.Where(t => t.Id == id).SingleOrDefault();
+            }
         }
 
-        public IEnumerable<Tweet> GetAll()
+        public override IEnumerable<Tweet> GetAll()
         {
-            return context.Tweets.Include(t=>t.MediaList);
+            using (TweetContext context = GetContext())
+            {
+                return context.Tweets.Include(t => t.MediaList).ToList();
+            }
         }
 
-        public IEnumerable<Tweet> Find(Func<Tweet, bool> exp)
+        public override IEnumerable<Tweet> Find(Func<Tweet, bool> exp)
         {
-            return context.Tweets.Include(t => t.MediaList).Where<Tweet>(exp);
+            using (TweetContext context = GetContext())
+            {
+                return context.Tweets.Include(t => t.MediaList).Where<Tweet>(exp).ToList();
+            }
         }
 
-        public void Add(Tweet entity)
+        public override void Add(Tweet entity)
         {
-            context.Tweets.Add(entity);
-            context.SaveChanges();
+            using (TweetContext context = GetContext())
+            {
+                context.Tweets.Add(entity);
+                context.SaveChanges();
+            }
         }
 
-        public void Remove(long id)
+        public override void Remove(long id)
         {
-            context.Tweets.Remove(Get(id));
-            context.SaveChanges();
+            using (TweetContext context = GetContext())
+            {
+                context.Tweets.Remove(Get(id));
+                context.SaveChanges();
+            }
         }
     }
 }

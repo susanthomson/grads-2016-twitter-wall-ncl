@@ -8,58 +8,71 @@ using TwitterWall.Models;
 
 namespace TwitterWall.Repository
 {
-    public class MediaDBRepository : IRepository<MediaUrl>
+    public class MediaDBRepository : Repository<MediaUrl>
     {
-        TweetContext context;
-
-        public MediaDBRepository()
+        public MediaDBRepository() : base()
         {
-            DbContextOptionsBuilder<TweetContext> optionsBuilder = new DbContextOptionsBuilder<TweetContext>();
-            optionsBuilder.UseSqlServer(Startup.ConnectionString);
-            context = new TweetContext(optionsBuilder.Options);
         }
 
-        public MediaDBRepository(TweetContext ctx)
+        public MediaDBRepository(TweetContext ctx) : base(ctx)
         {
-            context = ctx;
         }
 
-        public MediaUrl Get(long id)
+        public override MediaUrl Get(long id)
         {
-            return context.MediaUrls.Where(m => m.Id == id).SingleOrDefault();
+            using (TweetContext context = GetContext())
+            {
+                return context.MediaUrls.Where(m => m.Id == id).SingleOrDefault();
+            }                
         }
 
-        public IEnumerable<MediaUrl> GetAll()
+        public override IEnumerable<MediaUrl> GetAll()
         {
-            return context.MediaUrls; 
+            using (TweetContext context = GetContext())
+            {
+                return context.MediaUrls;
+            }
         }
 
-        public IEnumerable<MediaUrl> Find(Func<MediaUrl, bool> exp)
+        public override IEnumerable<MediaUrl> Find(Func<MediaUrl, bool> exp)
         {
-            return context.MediaUrls.Where<MediaUrl>(exp);
+            using (TweetContext context = GetContext())
+            {
+                return context.MediaUrls.Where<MediaUrl>(exp);
+            }
         }
 
-        public void Add(MediaUrl entity)
+        public override void Add(MediaUrl entity)
         {
-            context.MediaUrls.Add(entity);
-            context.SaveChanges();
+            using (TweetContext context = GetContext())
+            {
+                context.Attach(entity.Tweet);
+                context.MediaUrls.Add(entity);
+                context.SaveChanges();
+            }
         }
 
-        public void Remove(long id)
+        public override void Remove(long id)
         {
-            context.MediaUrls.Remove(Get(id));
-            context.SaveChanges();
+            using (TweetContext context = GetContext())
+            {
+                context.MediaUrls.Remove(Get(id));
+                context.SaveChanges();
+            }
         }
 
         public void AddFromTweet(Tweetinvi.Models.ITweet tweet)
         {
-            Tweet result = context.Tweets.Where(t => t.TweetId == tweet.Id).SingleOrDefault();
-            if (result != null)
+            using (TweetContext context = GetContext())
             {
-                List<Tweetinvi.Models.Entities.IMediaEntity> mediaEntities = tweet.Media.Where(e => e.MediaType.Equals("photo")).ToList();
-                foreach (Tweetinvi.Logic.TwitterEntities.MediaEntity entity in mediaEntities)
+                Tweet result = context.Tweets.Where(t => t.TweetId == tweet.Id).SingleOrDefault();
+                if (result != null)
                 {
-                    Add(new MediaUrl(entity.MediaURL, result));
+                    List<Tweetinvi.Models.Entities.IMediaEntity> mediaEntities = tweet.Media.Where(e => e.MediaType.Equals("photo")).ToList();
+                    foreach (Tweetinvi.Logic.TwitterEntities.MediaEntity entity in mediaEntities)
+                    {
+                        Add(new MediaUrl(entity.MediaURL, result));
+                    }
                 }
             }
         }

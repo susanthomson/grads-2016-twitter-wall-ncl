@@ -1,44 +1,35 @@
 import { Injectable } from "@angular/core";
+import { Queue } from "./queue";
 import { Tweet } from "./tweet";
+import { TweetStream } from "./tweetstream.service";
 
 @Injectable()
-export class Queue {
+export class QueueService {
 
-    private queueSize: number;
-    private tweets: Tweet[];
+    queue: Queue;
+    subscription: any;
 
-    constructor(queueSize: number) {
-        this.tweets = [];
-        this.queueSize < 0 ? this.queueSize = 0 : this.queueSize = queueSize;
+    constructor(private tweetStream, queueLimit: number) {
+        this.queue = new Queue(0);
+        this.getTweetStream();
     }
 
-    getQueue(): Tweet[] {
-        return this.tweets;
+    private getTweetStream() {
+        this.subscription = this.tweetStream.changeTweets$.subscribe(
+            tweets => {
+                tweets.forEach(elem => {
+                    this.queue.push(elem);
+                });
+
+            }
+        );
     }
 
-    getLength(): number {
-        return this.tweets.length;
+    public getQueue() {
+        return this.queue;
     }
 
-    getQueueSize(): number {
-        return this.queueSize;
-    }
-
-    setQueueSize(size: number) {
-        size < 0 ? this.queueSize = 0 : this.queueSize = size;
-    }
-
-    push(tweet: Tweet): void {
-        if ((this.getLength() < this.queueSize) || this.queueSize === 0) {
-            this.tweets.push(tweet);
-        }
-    }
-
-    peek(): Tweet {
-        return this.tweets[this.getLength() - 1];
-    }
-
-    pop(): Tweet {
-        return this.tweets.pop();
+    public getSingleTweet() {
+        return this.queue.pop();
     }
 }

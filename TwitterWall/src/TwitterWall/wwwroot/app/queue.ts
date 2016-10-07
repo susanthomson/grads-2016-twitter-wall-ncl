@@ -7,7 +7,7 @@ export class Queue {
 
     constructor(queueSize: number) {
         this.tweets = [];
-        this.queueSize < 0 ? this.queueSize = 0 : this.queueSize = queueSize;
+        this.queueSize = queueSize < 0 ? 0 : queueSize;
     }
 
     getQueue(): Tweet[] {
@@ -22,14 +22,12 @@ export class Queue {
         return this.queueSize;
     }
 
-    setQueueSize(size: number) {
-        size < 0 ? this.queueSize = 0 : this.queueSize = size;
-    }
-
-    push(tweet: Tweet): void {
+    push(tweet: Tweet): boolean {
         if ((this.getLength() < this.queueSize) || this.queueSize === 0) {
             this.tweets.push(tweet);
+            return true;
         }
+        return false;
     }
 
     peek(): Tweet {

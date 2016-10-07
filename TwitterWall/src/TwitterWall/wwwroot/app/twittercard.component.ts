@@ -41,7 +41,7 @@ export class TwitterCard implements OnInit {
 
     removeTweet(id: number): Boolean {
        const index = this.tweets.findIndex(elem => elem.Id === id);
-       if(index === -1) return false;
+       if (index === -1) return false;
        this.tweets.splice(index, 1);
        return true;
     }

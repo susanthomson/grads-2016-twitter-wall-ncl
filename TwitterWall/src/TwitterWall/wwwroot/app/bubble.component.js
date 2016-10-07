@@ -153,8 +153,9 @@ var BubbleComponent = (function () {
             }, TIME_TO_SHOW);
             this.showTweet = true;
             var td = document.getElementById("tweet-display-group");
-            td.style.left = node.x;
-            td.style.top = node.y;
+            var canv = document.getElementsByTagName("canvas")[0];
+            td.style.left = ((canv.offsetLeft + (canv.width / 2)) - (td.offsetWidth / 2)) + "px";
+            td.style.top = 0 - canv.height + (((canv.height / 2)) - (td.offsetHeight / 2)) + "px";
             return;
         }
         node.isDisplayed = true;

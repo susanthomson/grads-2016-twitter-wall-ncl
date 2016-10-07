@@ -5,7 +5,7 @@ import { Tweet } from "./tweet";
     selector: "[tweet-display]",
     template: `
         <div id="tweet-display-group">
-            <img src="{{tweet.ProfileImage}}"/>
+            <img id="profile-image" src="{{tweet.ProfileImage}}"/>
             <h3 id="username">{{tweet.Handle}}</h3>
             <h3 id="username">{{tweet.Name}}</h3>
             <p id="tweet-body">{{tweet.Body}}</p>

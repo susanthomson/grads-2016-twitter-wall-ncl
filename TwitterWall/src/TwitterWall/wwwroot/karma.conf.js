@@ -35,6 +35,9 @@ module.exports = function (config) {
           'libs/zone.js/dist/async-test.js',
           'libs/zone.js/dist/fake-async-test.js',
 
+          // d3
+          'libs/d3/d3.min.js',
+
           // RxJs
           { pattern: 'libs/rxjs/**/*.js', included: false, watched: false },
           { pattern: 'libs/rxjs/**/*.js.map', included: false, watched: false },
@@ -84,11 +87,12 @@ module.exports = function (config) {
             pageTitle: 'Unit Tests',
             subPageTitle: __dirname
         },
-        
+
 
         port: 8910,
         colors: true,
         hostname: "127.0.0.1",
+        browserDisconnectTolerance: 2,
         logLevel: config.LOG_INFO,
         browsers: ['PhantomJS'],
         singleRun: true

@@ -47,5 +47,3 @@ export class TwitterCard implements OnInit {
     }
 
 }
-
-

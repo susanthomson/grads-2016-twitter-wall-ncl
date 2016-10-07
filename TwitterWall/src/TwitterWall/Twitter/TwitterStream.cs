@@ -33,7 +33,7 @@ namespace TwitterWall
         }
 
         private void ConfigureStream()
-        {       
+        {
             stream.AddFollow(Subscriptions.GetId(Subscriptions.Users.BRISTECH));
             stream.MatchingTweetReceived += (sender, args) =>
             {

@@ -267,3 +267,5 @@ StreamConfig.json
 TwitterWall/src/TwitterWall/typings/
 TwitterWall/src/TwitterWall/lib
 TwitterWall/src/TwitterWall/wwwroot/libs/
+docker-build.sh
+docker-cleanup.sh

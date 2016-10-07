@@ -6,7 +6,15 @@ WORKDIR /tmp/app
 
 RUN apt-get -qq update && apt-get -qqy --no-install-recommends install \
     git \
-    unzip
+    unzip libssl1.0.0
+
+# Trigger the population of the local package cache
+ENV NUGET_XMLDOC_MODE skip
+RUN mkdir warmup \
+    && cd warmup \
+    && dotnet new \
+    && cd .. \
+    && rm -rf warmup
 
 RUN curl -sL https://deb.nodesource.com/setup_6.x |  bash -
 RUN apt-get install -y nodejs

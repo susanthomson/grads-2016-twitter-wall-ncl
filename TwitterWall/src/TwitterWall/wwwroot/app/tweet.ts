@@ -18,5 +18,4 @@
         this.Name = name;
         this.ProfileImage = profileImage;
     }
-
 }

@@ -1,19 +1,17 @@
-import { Component, OnInit, ElementRef } from "@angular/core";
+import { Component, OnInit, Input } from "@angular/core";
 import { Tweet } from "./tweet";
 
 @Component({
     selector: "[tweet-display]",
     template: `
         <div id="tweet-display-group">
-            <img id="profile-image" src="{{tweet.ProfileImage}}"/>
-            <h3 id="username">{{tweet.Handle}}</h3>
-            <h3 id="username">{{tweet.Name}}</h3>
-            <p id="tweet-body">{{tweet.Body}}</p>
+            <img id="profile-image" width="200" height="200" src="{{tweet ? tweet.ProfileImage : test}}"/>
+            <h3 id="username">{{tweet ? tweet.Handle : test}}</h3>
+            <h3 id="name">{{tweet ? tweet.Name : test}}</h3>
+            <p id="tweet-body">{{tweet ? tweet.Body : test}}</p>
         </div>
     `
 })
 export class TweetDisplay {
-    tweet: Tweet = new Tweet(1, 1,
-         "Hello Twitter, I really love being at #bristech", "@Testuser", new Date(), "Test User",
-         "http://pbs.twimg.com/profile_images/708631138407940096/M0Ucjylz.jpg");
+    @Input() tweet: Tweet;
 };

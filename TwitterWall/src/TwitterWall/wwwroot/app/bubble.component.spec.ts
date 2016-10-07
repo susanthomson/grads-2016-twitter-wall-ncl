@@ -1,6 +1,8 @@
 import { AppComponent } from "./app.component";
 import { BubbleComponent } from "./bubble.component";
+import { TweetDisplay } from "./tweetdisplay.component";
 import { TestBed } from "@angular/core/testing";
+import { Tweet } from "./tweet";
 import { Vector } from "./vector";
 
 let bubbleComponent;
@@ -9,16 +11,16 @@ let fixture;
 describe("d3 bubble component", () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [BubbleComponent]
+            declarations: [BubbleComponent, TweetDisplay]
         });
 
         fixture = TestBed.createComponent(BubbleComponent);
         bubbleComponent = fixture.componentInstance;
     });
 
-    it("sets up canvas correctly", () => {
+    it("sets up context correctly", () => {
         fixture.detectChanges();
-        expect(bubbleComponent.canvas).toBeDefined();
+        expect(bubbleComponent.context).toBeDefined();
     });
 
     it("sets up nodes correctly", () => {
@@ -49,7 +51,7 @@ describe("d3 bubble component", () => {
     it("add node adds a new node to the list of nodes", () => {
         fixture.detectChanges();
         let numOfNodes = bubbleComponent.nodes.length;
-        bubbleComponent.addNode();
+        bubbleComponent.addNode(0, 0, new Tweet(0, 0, "", "", new Date(), "", "egg.png"));
         fixture.detectChanges();
         expect(bubbleComponent.nodes.length).toBe(numOfNodes + 1);
     });
@@ -58,7 +60,7 @@ describe("d3 bubble component", () => {
         fixture.detectChanges();
         let numOfNodes = bubbleComponent.nodes.length;
         for (let i = 0; i < 1000; i++) {
-            bubbleComponent.addNode();
+            bubbleComponent.addNode(0, 0, new Tweet(0, 0, "", "", new Date(), "", "egg.png"));
         }
         fixture.detectChanges();
         expect(bubbleComponent.nodes.length).toBeLessThan(1000);
@@ -67,8 +69,8 @@ describe("d3 bubble component", () => {
     it("remove node deletes a node to the list of nodes", () => {
         fixture.detectChanges();
         let numOfNodes = bubbleComponent.nodes.length;
-        bubbleComponent.addNode();
-        bubbleComponent.addNode();
+        bubbleComponent.addNode(0, 0, new Tweet(0, 0, "", "", new Date(), "", "egg.png"));
+        bubbleComponent.addNode(0, 0, new Tweet(0, 0, "", "", new Date(), "", "egg.png"));
         bubbleComponent.removeNode(1);
         fixture.detectChanges();
         expect(bubbleComponent.nodes.length).toBe(numOfNodes + 1);
@@ -77,10 +79,10 @@ describe("d3 bubble component", () => {
     it("only allow maximum number of nodes", () => {
         fixture.detectChanges();
         for (let i = 0; i < 1000; i++) {
-            bubbleComponent.removeNode(1);
+            bubbleComponent.removeNode(0);
         }
         fixture.detectChanges();
-        expect(bubbleComponent.nodes.length).toBeGreaterThan(0);
+        expect(bubbleComponent.nodes.length).not.toBeLessThan(0);
     });
 
     it("node radius increases", () => {

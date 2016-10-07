@@ -269,5 +269,7 @@ TwitterWall/src/TwitterWall/lib
 TwitterWall/src/TwitterWall/wwwroot/libs/
 docker-build.sh
 docker-cleanup.sh
+*.stackdump
+
 TwitterWall/src/TwitterWall/wwwroot/app/*.js
 TwitterWall/src/TwitterWall/wwwroot/app/*.map

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs/Subject";
-import { Tweet } from "./tweet";
+import { Tweet } from "../Models/tweet";
 
 @Injectable()
 export class TweetStreamMock {

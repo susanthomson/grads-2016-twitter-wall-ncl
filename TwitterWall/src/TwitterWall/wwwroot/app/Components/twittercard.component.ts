@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit } from "@angular/core";
-import { TweetStream } from "./tweetstream.service";
-import { Tweet } from "./tweet";
+import { TweetStream } from "../Services/tweetstream.service";
+import { Tweet } from "../Models/tweet";
 
 @Component({
     selector: "twitter-card",

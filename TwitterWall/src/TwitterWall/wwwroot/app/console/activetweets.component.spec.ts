@@ -1,7 +1,7 @@
-﻿import { AppComponent } from "../app.component";
+﻿import { AppComponent } from "../Components/app.component";
 import { ActiveTweets } from "./activetweets.component";
 import { TestBed, ComponentFixture } from "@angular/core/testing";
-import { Tweet } from "../tweet";
+import { Tweet } from "../Models/tweet";
 
 let component: ActiveTweets;
 let fixture: ComponentFixture<ActiveTweets>;

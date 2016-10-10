@@ -1,6 +1,6 @@
 import { TestBed } from "@angular/core/testing";
-import { Queue } from "./queue";
-import { Tweet } from "./tweet";
+import { Queue } from "../Models/queue";
+import { Tweet } from "../Models/tweet";
 
 describe("Queue class tests", () => {
 

@@ -11,13 +11,23 @@
 
 #tweet-display-group {
     background: rgba(255, 255, 255, 1);
-    position: relative;
+    position: absolute;
     border-radius: 50%;
     width: 750px;
     height: 750px;
     padding: 100px;
     color: black;
-    font-size: 50px;
+    font-size: 42px;
+}
+
+#tweet-display {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+#bubble-canvas {
+    position: relative;
 }
 
 #tweet-body {

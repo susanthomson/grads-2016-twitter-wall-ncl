@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.SignalR.Infrastructure;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using TwitterWall.Context;
+using Newtonsoft.Json.Serialization;
 
 namespace TwitterWall
 {
@@ -49,7 +50,7 @@ namespace TwitterWall
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
 
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
             services.AddDbContext<TweetContext>(options => options.UseSqlServer(ConnectionString));
         }

@@ -10,7 +10,7 @@ export class Queue {
         this.queueSize = queueSize < 0 ? 0 : queueSize;
     }
 
-    getQueue(): Tweet[] {
+    asArray(): Tweet[] {
         return this.tweets;
     }
 

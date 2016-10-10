@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
-import { Queue } from "./queue";
-import { Tweet } from "./tweet";
+import { Queue } from "../Models/queue";
+import { Tweet } from "../Models/tweet";
 import { TweetStream } from "./tweetstream.service";
+import { Inject } from "@angular/core";
 
 @Injectable()
 export class QueueService {
@@ -9,7 +10,7 @@ export class QueueService {
     queue: Queue;
     subscription: any;
 
-    constructor(private tweetStream, queueLimit: number) {
+    constructor(@Inject(TweetStream) private tweetStream: TweetStream) {
         this.queue = new Queue(0);
         this.getTweetStream();
     }
@@ -20,7 +21,6 @@ export class QueueService {
                 tweets.forEach(elem => {
                     this.queue.push(elem);
                 });
-
             }
         );
     }
@@ -31,5 +31,9 @@ export class QueueService {
 
     public getSingleTweet() {
         return this.queue.pop();
+    }
+
+    public getInitialTweets(): Promise<any[]> {
+        return this.tweetStream.getAllTweets();
     }
 }

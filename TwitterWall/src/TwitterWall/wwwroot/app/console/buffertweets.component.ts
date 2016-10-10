@@ -1,7 +1,7 @@
-﻿import { Component } from '@angular/core';
-import { Tweet } from "../tweet";
+﻿import { Component } from "@angular/core";
+import { Tweet } from "../Models/tweet";
 @Component({
-    selector: 'buffer-tweets',
+    selector: "buffer-tweets",
     template: `
         <h4>Tweet queue</h4>
         <ul>
@@ -42,11 +42,11 @@ export class BufferTweets {
             return this.approvals[this.bufferTweets[i].TweetId];
         });
         if (tweet) {
-            var index = this.bufferTweets.indexOf(tweet);
+            let index = this.bufferTweets.indexOf(tweet);
             this.removeTweet(index);
             return tweet;
         }
-        return null;        
+        return null;
     }
 
     removeTweet(index: number): void {

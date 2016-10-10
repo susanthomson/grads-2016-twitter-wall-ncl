@@ -34,7 +34,7 @@ namespace TwitterWall
 
         private void ConfigureStream()
         {
-            stream.AddFollow(Subscriptions.GetId(Subscriptions.Users.BRISTECH));
+            stream.AddFollow(Users.BRISTECH);
             stream.MatchingTweetReceived += (sender, args) =>
             {
                 Models.Tweet newTweet = new Models.Tweet(args.Tweet.Id, args.Tweet.Text, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt, args.Tweet.CreatedBy.Name, args.Tweet.CreatedBy.ProfileImageUrl);

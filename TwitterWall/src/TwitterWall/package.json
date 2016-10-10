@@ -6,7 +6,7 @@
     "lite": "lite-server -c bs-config.json",
     "postinstall": "typings install && gulp restore && tsc",
     "test": "npm run lint && tsc && karma start wwwroot/karma.conf.js",
-    "setup": "typings install && gulp restore",
+    "setup": "typings install && gulp restore && tsc",
     "tsc": "tsc",
     "tsc:w": "tsc -w",
     "typings": "typings",

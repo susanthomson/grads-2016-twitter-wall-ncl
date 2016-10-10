@@ -1,6 +1,10 @@
 ﻿import { Injectable } from "@angular/core";
+import { Http, Response } from "@angular/http";
 import { Subject } from "rxjs/Subject";
-import { Tweet } from "./tweet";
+import { Tweet } from "../Models/tweet";
+
+import "rxjs/add/operator/toPromise";
+
 declare var $: any;
 
 @Injectable()
@@ -10,7 +14,7 @@ export class TweetStream {
     tweets: Tweet[] = [];
     public changeTweets$ = this.tweetsChanged.asObservable();
 
-    constructor() {
+    constructor(private http: Http) {
         this.conn = $.connection.twitterHub;
         this.streamTweets();
     }
@@ -25,6 +29,12 @@ export class TweetStream {
             this.tweetsChanged.next(this.tweets);
         };
         $.connection.hub.start().done(() => {
+        });
+    }
+
+    getAllTweets(): Promise<any[]> {
+        return this.http.get("api/tweets").toPromise().then((res) => {
+            return JSON.parse((res as any)._body);
         });
     }
 }

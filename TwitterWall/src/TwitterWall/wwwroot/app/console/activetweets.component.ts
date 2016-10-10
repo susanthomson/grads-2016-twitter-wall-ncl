@@ -1,8 +1,8 @@
-﻿import { Component } from '@angular/core';
-import { Tweet } from "../tweet";
+﻿import { Component } from "@angular/core";
+import { Tweet } from "../Models/tweet";
 @Component({
-    selector: 'active-tweets',
-    template: `        
+    selector: "active-tweets",
+    template: `
         <h4>Display tweets</h4>
         <ul>
             <li *ngFor="let tweet of activeTweets; let i=index">

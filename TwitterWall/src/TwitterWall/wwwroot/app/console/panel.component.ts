@@ -1,6 +1,6 @@
 ﻿import { ViewChild, Component } from "@angular/core";
-import { QueueService } from "../queue.service";
-import { Tweet } from "../tweet";
+import { QueueService } from "../Services/queue.service";
+import { Tweet } from "../Models/tweet";
 import { ActiveTweets} from "./activetweets.component";
 import { BufferTweets} from "./buffertweets.component";
 
@@ -14,14 +14,14 @@ import { BufferTweets} from "./buffertweets.component";
         `
 })
 export class AdminPanelComponent {
-    @ViewChild(ActiveTweets) activeTweets: ActiveTweets
-    @ViewChild(BufferTweets) bufferTweets: BufferTweets
+    @ViewChild(ActiveTweets) activeTweets: ActiveTweets;
+    @ViewChild(BufferTweets) bufferTweets: BufferTweets;
     constructor() {
-        
+
     }
-        
+
     consumeTweet(): void {
-        var tweet = this.bufferTweets.consume();
+        let tweet = this.bufferTweets.consume();
         if (tweet) {
             this.activeTweets.addTweet(tweet);
         }

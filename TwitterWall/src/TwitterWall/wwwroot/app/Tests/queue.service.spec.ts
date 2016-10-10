@@ -1,7 +1,7 @@
 import { TestBed } from "@angular/core/testing";
-import { QueueService } from "./queue.service";
-import { TweetStreamMock } from "./tweetstream.service.mock";
-import { Tweet } from "./tweet";
+import { QueueService } from "../Services/queue.service";
+import { TweetStreamMock } from "../Services/tweetstream.service.mock";
+import { Tweet } from "../Models/tweet";
 
 describe("Queue service tests", () => {
 
@@ -10,7 +10,7 @@ describe("Queue service tests", () => {
 
     beforeEach(() => {
         this.tweetStreamMock = new TweetStreamMock();
-        this.queueService = new QueueService(this.tweetStreamMock, 20);
+        this.queueService = new QueueService(this.tweetStreamMock);
     });
 
     it("queue should return initial tweets", () => {

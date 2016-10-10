@@ -1,11 +1,11 @@
-import { AppComponent } from "./app.component";
-import { TwitterCard } from "./twittercard.component";
+import { AppComponent } from "../Components/app.component";
+import { TwitterCard } from "../Components/twittercard.component";
 import { Injectable } from "@angular/core";
-import { TweetStream } from "./tweetstream.service";
+import { TweetStream } from "../Services/tweetstream.service";
 import { TestBed } from "@angular/core/testing";
 import { Subject } from "rxjs/Subject";
-import { Tweet } from "./tweet";
-import { TweetStreamMock } from "./tweetstream.service.mock";
+import { Tweet } from "../Models/tweet";
+import { TweetStreamMock } from "../Services/tweetstream.service.mock";
 
 
 describe("Twittercard component tests", () => {

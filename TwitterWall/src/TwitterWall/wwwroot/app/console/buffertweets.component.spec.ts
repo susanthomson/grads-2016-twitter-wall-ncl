@@ -1,7 +1,7 @@
-﻿import { AppComponent } from "../app.component";
+﻿import { AppComponent } from "../Components/app.component";
 import { BufferTweets } from "./buffertweets.component";
 import { TestBed, ComponentFixture } from "@angular/core/testing";
-import { Tweet } from "../tweet";
+import { Tweet } from "../Models/tweet";
 
 let component: BufferTweets;
 let fixture: ComponentFixture<BufferTweets>;

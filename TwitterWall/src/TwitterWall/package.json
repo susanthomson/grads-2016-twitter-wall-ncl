@@ -4,7 +4,7 @@
   "scripts": {
     "start": "npm run lint && tsc && concurrently \"npm run tsc:w\" \"npm run lite\" ",
     "lite": "lite-server -c bs-config.json",
-    "postinstall": "typings install && gulp restore",
+    "postinstall": "typings install && gulp restore && tsc",
     "test": "npm run lint && tsc && karma start wwwroot/karma.conf.js",
     "setup": "typings install && gulp restore",
     "tsc": "tsc",

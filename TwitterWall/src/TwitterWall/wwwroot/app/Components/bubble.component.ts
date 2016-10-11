@@ -16,6 +16,7 @@ const TIME_BETWEEN_EXPAND = 2000;
 const TIME_TO_SHOW = 5000;
 const TRANSLATION_TICKS = 100;
 const GRAVITY = 0.01;
+const DEFAULT_IMAGE = "https://pbs.twimg.com/media/CLIz5A9VAAAcbNe.png";
 
 @Component({
     selector: "bubble-canvas",
@@ -46,9 +47,9 @@ export class BubbleComponent implements OnInit {
         this.height = 900;
         this.displayPoint = new Vector(this.width / 2, this.height / 2);
 
-        let initialTweets: Tweet[] = [];
         this.queueService.getInitialTweets().then((tweets) => {
             tweets = tweets.slice(-10);
+            let initialTweets: Tweet[] = [];
             tweets.forEach((tweet) => {
                 tweet.LoadedProfileImage = this.preLoadImage(tweet.ProfileImage);
                 initialTweets.push(tweet);
@@ -68,6 +69,10 @@ export class BubbleComponent implements OnInit {
 
         setInterval(this.getLatestTweet.bind(this), 5000);
 
+        setInterval(() => {
+            this.removeNode(Math.round(Math.random() * this.nodes.length - 1));
+        }, 10000);
+
     };
 
     getLatestTweet(): void {
@@ -82,18 +87,24 @@ export class BubbleComponent implements OnInit {
             return;
         }
 
-        let i = Math.round((Math.random() * this.nodes.length - 2)) + 1;
+        let i = Math.round((Math.random() * this.nodes.length - 1));
         this.displayNode(i);
     }
 
     displayNode(i): void {
-        this.points = NodeFunctions.generateTranslation(new Vector(this.nodes[i].x, this.nodes[i].y), this.displayPoint, TRANSLATION_TICKS);
-        this.nodes[i].isTranslating = true;
-        this.currentTweet = this.nodes[i].tweet;
+        if (this.nodes[i]) {
+            this.points = NodeFunctions.generateTranslation(new Vector(this.nodes[i].x, this.nodes[i].y), this.displayPoint, TRANSLATION_TICKS);
+            this.nodes[i].isTranslating = true;
+            this.currentTweet = this.nodes[i].tweet;
+        }
     }
 
     preLoadImage(url: string): HTMLImageElement {
         let img = new Image();
+        img.onerror = () => {
+            img.src = DEFAULT_IMAGE;
+            return img;
+        };
         img.src = url;
         return img;
     };
@@ -115,7 +126,8 @@ export class BubbleComponent implements OnInit {
                 isDisplayed: false,
                 isTranslating: false,
                 isIncreasing: false,
-                isDecreasing: false
+                isDecreasing: false,
+                isDeleting: false
             }));
     };
 
@@ -133,12 +145,12 @@ export class BubbleComponent implements OnInit {
             this.points = [];
             node.isTranslating = false;
             node.isIncreasing = true;
-            return;
         }
-
-        node.x = this.points[this.translationPoint].x;
-        node.y = this.points[this.translationPoint].y;
-        this.translationPoint++;
+        else {
+            node.x = this.points[this.translationPoint].x;
+            node.y = this.points[this.translationPoint].y;
+            this.translationPoint++;
+        }
     };
 
     addNode(x: number = 0, y: number = 0, tweet: Tweet): void {
@@ -150,10 +162,14 @@ export class BubbleComponent implements OnInit {
     };
 
     removeNode(index: number): void {
-        if (this.nodes.length > 0 && !this.nodes[index].isDisplayed) {
-            this.nodes.splice(index, 1);
-            this.force.resume();
+        if (index >= 0 && index < this.nodes.length && !this.nodes[index].isDisplayed) {
+            this.nodes[index].isDeleting = true;
         }
+    };
+
+    private deleteNode(index: number): void {
+        this.nodes.splice(index, 1);
+        this.force.resume();
     };
 
     tick(): void {
@@ -175,6 +191,13 @@ export class BubbleComponent implements OnInit {
                 this.translateBubble(d);
             }
 
+            if (d.isDeleting) {
+                NodeFunctions.decreaseRadius(d, 0, INCREASE_STEP, this);
+                if (d.radius < 1) {
+                    d.deleted = true;
+                }
+            }
+
             NodeFunctions.collide(this.nodes);
         }
 
@@ -184,6 +207,9 @@ export class BubbleComponent implements OnInit {
         for (i = 0; i < n; i++) {
             this.context.beginPath();
             d = this.nodes[i];
+            if (d.radius < 5) {
+                continue;
+            }
             if (d.isFixed) {
                 d.x = this.displayPoint.x;
                 d.y = this.displayPoint.y;
@@ -193,11 +219,18 @@ export class BubbleComponent implements OnInit {
             this.context.arc(d.x, d.y, d.radius - 4, 0, 2 * Math.PI);
             this.context.fill();
             this.context.save();
-            this.context.arc(d.x, d.y, IMAGE_SIZE / 2 - 2, 0, Math.PI * 2, false);
+            this.context.arc(d.x, d.y, d.radius - 2, 0, Math.PI * 2, false);
             this.context.clip();
-            this.context.drawImage(d.tweet.LoadedProfileImage, d.x - IMAGE_SIZE / 2, d.y - IMAGE_SIZE / 2, IMAGE_SIZE, IMAGE_SIZE);
+            this.context.drawImage(d.tweet.LoadedProfileImage, d.x - d.radius, d.y - d.radius, d.radius * 2, d.radius * 2);
             this.context.restore();
             this.context.closePath();
+        }
+
+        for (i = 0; i < n; i++) {
+            if (this.nodes[i].deleted) {
+                this.deleteNode(i);
+                break;
+            }
         }
 
         this.force.resume();

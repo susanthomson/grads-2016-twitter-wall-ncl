@@ -14,4 +14,8 @@ export class Vector {
     divide(d: number): Vector {
         return new Vector(this.x / d, this.y / d);
     }
+
+    multiply(d: number): Vector {
+        return new Vector(this.x * d, this.y * d);
+    }
 }

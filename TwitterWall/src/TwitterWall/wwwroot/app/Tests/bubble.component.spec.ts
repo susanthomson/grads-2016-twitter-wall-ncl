@@ -62,6 +62,10 @@ describe("d3 bubble component", () => {
         bubbleComponent.addNode(0, 0, new Tweet(7, 5675, "", "", new Date(), "", "egg.png"));
         bubbleComponent.removeNode(0);
 
+        // Animation reduces node radius to zero
+        bubbleComponent.nodes[0].radius = 0;
+        bubbleComponent.tick();
+
         fixture.detectChanges();
         expect(bubbleComponent.nodes.length).toBe(numOfNodes + 1);
     });

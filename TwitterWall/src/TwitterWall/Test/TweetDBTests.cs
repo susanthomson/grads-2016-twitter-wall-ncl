@@ -17,12 +17,8 @@ namespace TwitterWall.Test
 {
     public class TweetDBTests
     {
-        DbContextOptionsBuilder<TweetContext> contextBuilder;
-
         public TweetDBTests()
         {
-            contextBuilder = new DbContextOptionsBuilder<TweetContext>();
-            contextBuilder.UseSqlServer(Startup.ConnectionString);
         }
         private Mock<DbSet<Tweet>> setUpAsQueriable(IQueryable<Tweet> data)
         {
@@ -46,7 +42,7 @@ namespace TwitterWall.Test
             mockSet.Setup(d => d.Add(It.IsAny<Tweet>())).Callback<Tweet>((r) => tweets.Add(r));
             mockSet.Setup(d => d.Remove(It.IsAny<Tweet>())).Callback<Tweet>((r) => tweets.Remove(r));
 
-            var mockContext = new Mock<TweetContext>(contextBuilder.Options);
+            var mockContext = new Mock<TweetContext>();
             mockContext.Setup(c => c.Tweets).Returns(mockSet.Object);
 
             // Arrange
@@ -74,7 +70,7 @@ namespace TwitterWall.Test
             mockSet.Setup(d => d.Add(It.IsAny<Tweet>())).Callback<Tweet>((r) => tweets.Add(r));
             mockSet.Setup(d => d.Remove(It.IsAny<Tweet>())).Callback<Tweet>((r) => tweets.Remove(r));
 
-            var mockContext = new Mock<TweetContext>(contextBuilder.Options);
+            var mockContext = new Mock<TweetContext>();
             mockContext.Setup(c => c.Tweets).Returns(mockSet.Object);
 
             // Arrange
@@ -101,7 +97,7 @@ namespace TwitterWall.Test
             mockSet.Setup(d => d.Add(It.IsAny<Tweet>())).Callback<Tweet>((r) => tweets.Add(r));
             mockSet.Setup(d => d.Remove(It.IsAny<Tweet>())).Callback<Tweet>((r) => tweets.Remove(r));
 
-            var mockContext = new Mock<TweetContext>(contextBuilder.Options);
+            var mockContext = new Mock<TweetContext>();
             mockContext.Setup(c => c.Tweets).Returns(mockSet.Object);
 
             // Arrange
@@ -127,7 +123,7 @@ namespace TwitterWall.Test
             mockSet.Setup(d => d.Add(It.IsAny<Tweet>())).Callback<Tweet>((r) => tweets.Add(r));
             mockSet.Setup(d => d.Remove(It.IsAny<Tweet>())).Callback<Tweet>((r) => tweets.Remove(r));
 
-            var mockContext = new Mock<TweetContext>(contextBuilder.Options);
+            var mockContext = new Mock<TweetContext>();
             mockContext.Setup(c => c.Tweets).Returns(mockSet.Object);
 
             // Arrange

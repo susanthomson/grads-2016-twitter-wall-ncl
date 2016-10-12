@@ -263,7 +263,7 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
-StreamConfig.json
+Config.json
 TwitterWall/src/TwitterWall/typings/
 TwitterWall/src/TwitterWall/lib
 TwitterWall/src/TwitterWall/wwwroot/libs/

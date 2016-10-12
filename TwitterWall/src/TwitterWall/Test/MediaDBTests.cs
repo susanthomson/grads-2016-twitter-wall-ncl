@@ -13,12 +13,8 @@ namespace TwitterWall.Test
 {
     public class MediaDBTests
     {
-        DbContextOptionsBuilder<TweetContext> contextBuilder;
-
         public MediaDBTests()
         {
-            contextBuilder = new DbContextOptionsBuilder<TweetContext>();
-            contextBuilder.UseSqlServer(Startup.ConnectionString);
         }
 
         private Mock<DbSet<MediaUrl>> setUpAsQueriable(IQueryable<MediaUrl> data)
@@ -43,7 +39,7 @@ namespace TwitterWall.Test
             urlMockSet.Setup(d => d.Add(It.IsAny<MediaUrl>())).Callback<MediaUrl>((r) => urls.Add(r));
             urlMockSet.Setup(d => d.Remove(It.IsAny<MediaUrl>())).Callback<MediaUrl>((r) => urls.Remove(r));
 
-            var mockContext = new Mock<TweetContext>(contextBuilder.Options);
+            var mockContext = new Mock<TweetContext>();
             mockContext.Setup(c => c.MediaUrls).Returns(urlMockSet.Object);
 
             // Arrange
@@ -72,7 +68,7 @@ namespace TwitterWall.Test
             urlMockSet.Setup(d => d.Add(It.IsAny<MediaUrl>())).Callback<MediaUrl>((r) => urls.Add(r));
             urlMockSet.Setup(d => d.Remove(It.IsAny<MediaUrl>())).Callback<MediaUrl>((r) => urls.Remove(r));
 
-            var mockContext = new Mock<TweetContext>(contextBuilder.Options);
+            var mockContext = new Mock<TweetContext>();
             mockContext.Setup(c => c.MediaUrls).Returns(urlMockSet.Object);
 
             // Arrange
@@ -99,7 +95,7 @@ namespace TwitterWall.Test
             urlMockSet.Setup(d => d.Add(It.IsAny<MediaUrl>())).Callback<MediaUrl>((r) => urls.Add(r));
             urlMockSet.Setup(d => d.Remove(It.IsAny<MediaUrl>())).Callback<MediaUrl>((r) => urls.Remove(r));
 
-            var mockContext = new Mock<TweetContext>(contextBuilder.Options);
+            var mockContext = new Mock<TweetContext>();
             mockContext.Setup(c => c.MediaUrls).Returns(urlMockSet.Object);
 
             // Arrange
@@ -126,7 +122,7 @@ namespace TwitterWall.Test
             urlMockSet.Setup(d => d.Add(It.IsAny<MediaUrl>())).Callback<MediaUrl>((r) => urls.Add(r));
             urlMockSet.Setup(d => d.Remove(It.IsAny<MediaUrl>())).Callback<MediaUrl>((r) => urls.Remove(r));
 
-            var mockContext = new Mock<TweetContext>(contextBuilder.Options);
+            var mockContext = new Mock<TweetContext>();
             mockContext.Setup(c => c.MediaUrls).Returns(urlMockSet.Object);
 
             // Arrange

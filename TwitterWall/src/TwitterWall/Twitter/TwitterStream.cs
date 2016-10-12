@@ -21,6 +21,7 @@ namespace TwitterWall
         private const string CONSUMER_SECRET = "CONSUMER_SECRET";
         private const string ACCESS_TOKEN = "ACCESS_TOKEN";
         private const string ACCESS_TOKEN_SECRET = "ACCESS_TOKEN_SECRET";
+        private const string CREDENTIALS_PROPERTY = "TwitterCredentials";
 
 
         Tweetinvi.Streaming.IFilteredStream stream;
@@ -62,11 +63,11 @@ namespace TwitterWall
 
             if (String.IsNullOrEmpty(consumer_key) || String.IsNullOrEmpty(consumer_secret) || String.IsNullOrEmpty(access_token) || String.IsNullOrEmpty(access_token_secret))
             {
-                JObject result = JsonParser.ParseFromFile(@".\Twitter\StreamConfig.json");
-                consumer_key = result[CONSUMER_KEY].ToString();
-                consumer_secret = result[CONSUMER_SECRET].ToString();
-                access_token = result[ACCESS_TOKEN].ToString();
-                access_token_secret = result[ACCESS_TOKEN_SECRET].ToString();
+                dynamic result = JObject.Parse(JsonParser.GetConfig()[CREDENTIALS_PROPERTY].ToString());
+                consumer_key = result[CONSUMER_KEY];
+                consumer_secret = result[CONSUMER_SECRET];
+                access_token = result[ACCESS_TOKEN];
+                access_token_secret = result[ACCESS_TOKEN_SECRET];
             }
 
             Auth.SetUserCredentials(consumer_key, consumer_secret, access_token, access_token_secret);

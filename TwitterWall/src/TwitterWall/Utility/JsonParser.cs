@@ -19,5 +19,10 @@ namespace TwitterWall.Utility
                 return o2;
             }
         }
+
+        public static JObject GetConfig()
+        {
+            return ParseFromFile(@".\Utility\Config.json");
+        }
     }
 }

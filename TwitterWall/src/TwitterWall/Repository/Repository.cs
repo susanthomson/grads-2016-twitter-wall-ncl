@@ -10,12 +10,9 @@ namespace TwitterWall.Repository
     public abstract class Repository<T> : IRepository<T>
     {
         TweetContext context;
-        DbContextOptionsBuilder<TweetContext> optionsBuilder;
 
         public Repository()
         {
-            optionsBuilder = new DbContextOptionsBuilder<TweetContext>();
-            optionsBuilder.UseSqlServer(Startup.ConnectionString);
         }
 
         public Repository(TweetContext ctx)
@@ -27,7 +24,7 @@ namespace TwitterWall.Repository
         {
             if (context == null)
             {
-                return new TweetContext(optionsBuilder.Options);
+                return new TweetContext();
             }
             else
             {

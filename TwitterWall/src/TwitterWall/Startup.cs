@@ -19,7 +19,6 @@ namespace TwitterWall
 {
     public class Startup
     {
-        public static string ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog = TwitterWall; Integrated Security = True; Pooling=False";
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -52,7 +51,7 @@ namespace TwitterWall
 
             services.AddMvc().AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
-            services.AddDbContext<TweetContext>(options => options.UseSqlServer(ConnectionString));
+            services.AddDbContext<TweetContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

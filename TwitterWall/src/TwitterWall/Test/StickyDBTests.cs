@@ -13,12 +13,8 @@ namespace TwitterWall.Test
 {
     public class StickyDBTests
     {
-        DbContextOptionsBuilder<TweetContext> contextBuilder;
-
         public StickyDBTests()
         {
-            contextBuilder = new DbContextOptionsBuilder<TweetContext>();
-            contextBuilder.UseSqlServer(Startup.ConnectionString);
         }
 
         private Mock<DbSet<Sticky>> setUpAsQueriable(IQueryable<Sticky> data)
@@ -42,7 +38,7 @@ namespace TwitterWall.Test
             var urlMockSet = setUpAsQueriable(data);
             urlMockSet.Setup(d => d.Add(It.IsAny<Sticky>())).Callback<Sticky>((r) => stickies.Add(r));
 
-            var mockContext = new Mock<TweetContext>(contextBuilder.Options);
+            var mockContext = new Mock<TweetContext>();
             mockContext.Setup(c => c.Sticky).Returns(urlMockSet.Object);
 
             // Arrange
@@ -71,7 +67,7 @@ namespace TwitterWall.Test
             urlMockSet.Setup(d => d.Add(It.IsAny<Sticky>())).Callback<Sticky>((r) => stickies.Add(r));
             urlMockSet.Setup(d => d.Remove(It.IsAny<Sticky>())).Callback<Sticky>((r) => stickies.Remove(r));
 
-            var mockContext = new Mock<TweetContext>(contextBuilder.Options);
+            var mockContext = new Mock<TweetContext>();
             mockContext.Setup(c => c.Sticky).Returns(urlMockSet.Object);
 
             // Arrange
@@ -98,7 +94,7 @@ namespace TwitterWall.Test
             urlMockSet.Setup(d => d.Add(It.IsAny<Sticky>())).Callback<Sticky>((r) => stickies.Add(r));
             urlMockSet.Setup(d => d.Remove(It.IsAny<Sticky>())).Callback<Sticky>((r) => stickies.Remove(r));
 
-            var mockContext = new Mock<TweetContext>(contextBuilder.Options);
+            var mockContext = new Mock<TweetContext>();
             mockContext.Setup(c => c.Sticky).Returns(urlMockSet.Object);
 
             // Arrange
@@ -122,7 +118,7 @@ namespace TwitterWall.Test
             urlMockSet.Setup(d => d.Add(It.IsAny<Sticky>())).Callback<Sticky>((r) => stickies.Add(r));
             urlMockSet.Setup(d => d.Remove(It.IsAny<Sticky>())).Callback<Sticky>((r) => stickies.Remove(r));
 
-            var mockContext = new Mock<TweetContext>(contextBuilder.Options);
+            var mockContext = new Mock<TweetContext>();
             mockContext.Setup(c => c.Sticky).Returns(urlMockSet.Object);
 
             // Arrange

@@ -4,18 +4,23 @@ import { TweetDisplay } from "../Components/tweetdisplay.component";
 import { TestBed } from "@angular/core/testing";
 import { Tweet } from "../Models/tweet";
 import { Vector } from "../Models/vector";
-import { QueueService } from "../Services/queue.service";
-import { QueueServiceMock } from "../Services/queue.service.mock";
+import { TweetStreamMock } from "../Services/tweetstream.service.mock";
+import { TweetStream } from "../Services/tweetstream.service";
+import { Router } from "@angular/router";
 
 let bubbleComponent;
 let fixture;
 
+class RouterMock {
+    url = "/";
+}
 
 describe("d3 bubble component", () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [BubbleComponent, TweetDisplay],
-            providers: [{provide: QueueService, useClass: QueueServiceMock}]
+            providers: [{provide: TweetStream, useClass: TweetStreamMock},
+                {provide: Router, useClass: RouterMock}]
         });
 
         fixture = TestBed.createComponent(BubbleComponent);
@@ -29,7 +34,7 @@ describe("d3 bubble component", () => {
 
     it("sets up nodes correctly", () => {
         fixture.detectChanges();
-        expect(bubbleComponent.nodes.length).toBeGreaterThan(0);
+        expect(bubbleComponent.nodes).toBeDefined();
     });
 
     it("sets up force correctly", () => {

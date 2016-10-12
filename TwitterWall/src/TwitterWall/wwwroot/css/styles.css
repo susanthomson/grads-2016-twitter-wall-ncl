@@ -1,6 +1,7 @@
 ﻿body {
     background: #fff;
     color: black;
+    font-family: Raleway;
 }
 
 .tweetcards {
@@ -28,6 +29,7 @@
 
 #bubble-canvas {
     position: relative;
+    background-color: black;
 }
 
 #tweet-body {
@@ -58,4 +60,12 @@
 
 .approved {
     color: green;
+}
+
+#get-involved-text {
+    color: white;
+    font-size: 30px;
+    margin-top: -50px;
+    font-weight: 500;
+    margin-left: 5px;
 }

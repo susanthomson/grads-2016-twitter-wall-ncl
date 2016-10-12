@@ -23,6 +23,7 @@ const DEFAULT_IMAGE = "https://pbs.twimg.com/media/CLIz5A9VAAAcbNe.png";
     template: `
         <div id="bubble-canvas" [class.fullscreen]="fullScreen">
             <div tweet-display [tweet]="currentTweet" style="position: absolute;" id="tweet-display" class="step" [class.show]="showTweet"></div>
+            <p id="get-involved-text">Get involved using #Bristech2016</p>
         </div>
     `
 })
@@ -114,7 +115,7 @@ export class BubbleComponent implements OnInit {
                         .attr("width", this.width)
                         .attr("height", this.height)
                         .attr("id", "canv")
-                        .attr("style", "background: black;");
+                        .attr("style", "background: rgba(0,0,0,0);");
 
         this.context = (canvas as any).node().getContext("2d");
     };

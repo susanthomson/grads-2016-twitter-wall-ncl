@@ -1,5 +1,7 @@
 ﻿import { Component } from "@angular/core";
 import { Tweet } from "../Models/tweet";
+import { TweetStream } from "../Services/tweetstream.service";
+
 @Component({
     selector: "buffer-tweets",
     template: `
@@ -16,17 +18,12 @@ export class BufferTweets {
     bufferTweets: Tweet[] = [];
     counter: number = 0;
     approvals: Object = {};
-    constructor() {
-        setInterval(() => {
-            this.generateTweet();
-        }, 3000);
-    }
 
-    generateTweet(): void {
-        if (this.bufferTweets.length < 5) {
-            this.counter += 1;
-            this.bufferTweets.push(new Tweet(this.counter, this.counter, "Fake Tweet " + this.counter, "FakeHandle", new Date(), "Fake", "http://blog.eckelberry.com/wp-content/uploads/2016/02/Fake-Companies-List-Announced-By-TCS-and-IBM-2015.png"));
-        }
+    constructor(private tweetStream: TweetStream) {
+        this.bufferTweets = this.tweetStream.getQueue();
+        this.tweetStream.queueEvent$.subscribe((tweets) => {
+            this.bufferTweets = tweets;
+        });
     }
 
     changeApproval(index: number): void {
@@ -37,7 +34,7 @@ export class BufferTweets {
         return this.approvals[this.bufferTweets[index].TweetId];
     }
 
-    consume(): Tweet {
+    popFirst(): Tweet {
         let tweet = this.bufferTweets.find((el, i) => {
             return this.approvals[this.bufferTweets[i].TweetId];
         });
@@ -50,7 +47,6 @@ export class BufferTweets {
     }
 
     removeTweet(index: number): void {
-        delete this.approvals[this.bufferTweets[index].TweetId];
-        this.bufferTweets.splice(index, 1);
+        this.tweetStream.removeTweet(this.bufferTweets[index]);
     }
 }

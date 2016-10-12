@@ -1,8 +1,7 @@
 ﻿import { ViewChild, Component } from "@angular/core";
-import { QueueService } from "../Services/queue.service";
 import { Tweet } from "../Models/tweet";
-import { ActiveTweets} from "./activetweets.component";
-import { BufferTweets} from "./buffertweets.component";
+import { ActiveTweets } from "./activetweets.component";
+import { BufferTweets } from "./buffertweets.component";
 
 @Component({
     selector: "admin-panel",
@@ -21,7 +20,7 @@ export class AdminPanelComponent {
     }
 
     consumeTweet(): void {
-        let tweet = this.bufferTweets.consume();
+        let tweet = this.bufferTweets.popFirst();
         if (tweet) {
             this.activeTweets.addTweet(tweet);
         }

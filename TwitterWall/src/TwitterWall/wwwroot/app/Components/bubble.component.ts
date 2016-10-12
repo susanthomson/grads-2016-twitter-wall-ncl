@@ -2,7 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { Vector } from "../Models/vector";
 import { TweetDisplay } from "./tweetdisplay.component";
 import { Tweet } from "../Models/tweet";
-import { QueueService } from "../Services/queue.service";
+import { TweetStream } from "../Services/tweetstream.service";
+import { Router } from "@angular/router";
 import * as d3 from "d3";
 
 import { NodeFunctions } from "../Models/nodefunctions";
@@ -22,7 +23,7 @@ const DEFAULT_IMAGE = "https://pbs.twimg.com/media/CLIz5A9VAAAcbNe.png";
     selector: "bubble-canvas",
     template: `
         <div id="bubble-canvas" [class.fullscreen]="fullScreen">
-            <div tweet-display [tweet]="currentTweet" style="position: absolute;" id="tweet-display" class="step" [class.show]="showTweet"></div>
+            <div tweet-display [tweet]="currentTweet" id="tweet-display" class="step" [class.show]="showTweet"></div>
             <p id="get-involved-text">Get involved using #Bristech2016</p>
         </div>
     `
@@ -40,7 +41,7 @@ export class BubbleComponent implements OnInit {
     showTweet = false;
     currentTweet: Tweet = new Tweet(1, 1, "", "", new Date(), "", "");
 
-    constructor(private queueService: QueueService) {
+    constructor(private tweetStream: TweetStream, private router: Router) {
     };
 
     ngOnInit(): void {
@@ -48,43 +49,46 @@ export class BubbleComponent implements OnInit {
         this.height = 900;
         this.displayPoint = new Vector(this.width / 2, this.height / 2);
 
-        this.queueService.getInitialTweets().then((tweets) => {
-            tweets = tweets.slice(-10);
-            let initialTweets: Tweet[] = [];
-            tweets.forEach((tweet) => {
-                tweet.LoadedProfileImage = this.preLoadImage(tweet.ProfileImage);
-                initialTweets.push(tweet);
-            });
-            this.populateNodes(initialTweets);
-            this.generateCanvas();
-            this.setupForce();
-            // Center div in canvas
-            let td = document.getElementById("tweet-display-group");
-            let canv = document.getElementsByTagName("canvas")[0];
-            td.style.left = ((canv.offsetLeft + (canv.width / 2)) - (td.offsetWidth / 2)) + "px";
-            td.style.top = (((canv.height / 2)) - (td.offsetHeight / 2)) + "px";
-            this.force.on("tick", this.tick.bind(this));
-        });
+        let initialTweets = this.tweetStream.getActiveTweets();
+        this.populateNodes(initialTweets);
+        this.generateCanvas();
+        this.setupForce();
+
+        this.tweetStream.activeQueueEvent$.subscribe(this.activeTweetsChanged.bind(this));
+
+        // Center div in canvas
+        let td = document.getElementById("tweet-display-group");
+        let canv = document.getElementsByTagName("canvas")[0];
+        td.style.left = ((canv.offsetLeft + (canv.width / 2)) - (td.offsetWidth / 2)) + "px";
+        td.style.top = (((canv.height / 2)) - (td.offsetHeight / 2)) + "px";
+        this.force.on("tick", this.tick.bind(this));
+
 
         setInterval(this.displayRandomNode.bind(this), TIME_BETWEEN_EXPAND);
-
-        setInterval(this.getLatestTweet.bind(this), 5000);
-
-        setInterval(() => {
-            this.removeNode(Math.round(Math.random() * this.nodes.length - 1));
-        }, 10000);
-
     };
 
-    getLatestTweet(): void {
-        let tweet = this.queueService.getSingleTweet();
-        if (tweet !== undefined) {
-            this.addNode(0, 0, tweet);
+    activeTweetsChanged(activeTweets): void {
+        if (activeTweets.length - this.nodes.length > 1) {
+            activeTweets.forEach((tweet) => {
+                this.addNode(0, 0, tweet);
+            });
+            return;
+        }
+
+        if (activeTweets.length >= this.nodes.length) {
+            this.addNode(0, 0, activeTweets.slice(-1)[0]);
+        }
+        else {
+            let toDelete = this.nodes.filter((node) => {
+                return !activeTweets.filter(tweet => node.tweet.Id === tweet.Id).length;
+            });
+
+            this.removeNode(this.nodes.indexOf(toDelete[0]));
         }
     }
 
     displayRandomNode(): void {
-        if (!this.nodes || !this.nodes.every(n => !n.isDisplayed) || this.nodes.length === 0) {
+        if (this.router.url !== "/" || !this.nodes || !this.nodes.every(n => !n.isDisplayed) || this.nodes.length === 0) {
             return;
         }
 
@@ -163,8 +167,13 @@ export class BubbleComponent implements OnInit {
     };
 
     removeNode(index: number): void {
-        if (index >= 0 && index < this.nodes.length && !this.nodes[index].isDisplayed) {
-            this.nodes[index].isDeleting = true;
+        if (index >= 0 && index < this.nodes.length) {
+            if (!this.nodes[index].isDisplayed) {
+                this.nodes[index].isDeleting = true;
+            }
+            else {
+                this.nodes[index].toBeDeleted = true;
+            }
         }
     };
 
@@ -199,6 +208,10 @@ export class BubbleComponent implements OnInit {
                 }
             }
 
+            if (d.toBeDeleted && !d.isDisplayed) {
+                d.isDeleting = true;
+            }
+
             NodeFunctions.collide(this.nodes);
         }
 
@@ -222,7 +235,11 @@ export class BubbleComponent implements OnInit {
             this.context.save();
             this.context.arc(d.x, d.y, d.radius - 2, 0, Math.PI * 2, false);
             this.context.clip();
-            this.context.drawImage(d.tweet.LoadedProfileImage, d.x - d.radius, d.y - d.radius, d.radius * 2, d.radius * 2);
+            try {
+                this.context.drawImage(d.tweet.LoadedProfileImage, d.x - d.radius, d.y - d.radius, d.radius * 2, d.radius * 2);
+            } catch (err) {
+                d.tweet.LoadedProfileImage = this.preLoadImage(d.tweet.ProfileImage);
+            }
             this.context.restore();
             this.context.closePath();
         }

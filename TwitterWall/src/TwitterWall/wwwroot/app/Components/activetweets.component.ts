@@ -1,5 +1,7 @@
 ﻿import { Component } from "@angular/core";
 import { Tweet } from "../Models/tweet";
+import { TweetStream } from "../Services/tweetstream.service";
+
 @Component({
     selector: "active-tweets",
     template: `
@@ -14,15 +16,18 @@ import { Tweet } from "../Models/tweet";
 })
 export class ActiveTweets {
     activeTweets: Tweet[] = [];
-    constructor() {
-
+    constructor(private tweetStream: TweetStream) {
+        this.activeTweets = this.tweetStream.getActiveTweets();
+        this.tweetStream.activeQueueEvent$.subscribe((tweets) => {
+            this.activeTweets = tweets;
+        });
     }
 
     removeTweet(index: number): void {
-        this.activeTweets.splice(index, 1);
+        this.tweetStream.removeActiveTweet(this.activeTweets[index]);
     }
 
     addTweet(tweet: Tweet): void {
-        this.activeTweets.push(tweet);
+        this.tweetStream.addActiveTweet(tweet);
     }
 }

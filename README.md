@@ -1,38 +1,38 @@
-# Twitter Wall ~ Newcastle Graduates 2016 (work in progress)
+# Twitter Wall ~ Newcastle Graduates 2016
 This project is a TwitterWall created by the Newcastle 2016 graduates. 
 
-As this project is a work in progress, you may/will encounter some bugs.
-
-# Technologies:
+## Technologies:
 Backend: .NET Core 1.0, Docker (for deployment)
 Frontend: Angular 2.0 with TypeScript
 
-# Requirements:
+## Requirements:
 Node.js
 .NET Core 1.0.1
 
-# How to install this awesome project:
+## How to install this awesome project:
 First, clone the repo.
 
 Next, run "npm install". This should install any dependencies and also run the neccesary gulp tasks.
 
 Now, you need to edit the configuration file for your twitter account. 
-    1) First, go to https://apps.twitter.com and login with your twitter credentials.
-    2) Create a new application.
-    3) Within your new application, click on the 'Keys and Access Tokens' tab.
-    4) Copy the relevant keys into /Twitter/StreamConfig.json.example (you may need to generate your access tokens beforehand)
-    5) Finally, rename the StreamConfig.json.example file to StreamConfig.json
+* First, go to https://apps.twitter.com and login with your twitter credentials.
+* Create a new application.
+* Within your new application, click on the 'Keys and Access Tokens' tab.
+* Copy the relevant keys into /Utility/Config.example.json (you may need to generate your access tokens beforehand)
+* Finally, rename the Config.example.json file to Config.json
+	
+Note: If it's the first time running the application, dont forget to update database schema using entity framework.
 
 Finally, run "dotnet restore" and then "dotnet run" to run the server.
 
-# Tests:
+## Tests:
 The project currently uses xUnit for backend testing. To run these tests, use "dotnet test".
-For frontend, Karma (I know right...) and Jasmine are used. To run the frontend tests, use "npm test".
+For frontend, Karma and Jasmine are used. To run the frontend tests, use "npm test".
 
-# Demo:
+## Demo:
 You can see a live version at: http://twitter-wall-ncl.herokuapp.com
 
-# Contributors:
-Ben Lambert
-Justas Miknys
-Marcus Redgrave-Close
+## Contributors:
+* Ben Lambert
+* Justas Miknys
+* Marcus Redgrave-Close

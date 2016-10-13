@@ -19,8 +19,9 @@ export class TweetDisplay implements OnChanges {
     @ViewChild("tweetbody") tweetbodyelem: ElementRef;
 
     ngOnChanges(changes) {
-        this.tweet.Body = this.tweet.Body.replace(/(@\S+)/g, "<span class='mention'>$1</span>");
-        this.tweet.Body = this.tweet.Body.replace(/(#\S+)/g, "<span class='hashtag'>$1</span>");
+        this.tweet.Body = this.tweet.Body.replace(/[A-Za-z]+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~\?\/.=]+/g, "<span class='url'>$&</span>");
+        this.tweet.Body = this.tweet.Body.replace(/(@\S+)/g, "<span class='mention'>$&</span>");
+        this.tweet.Body = this.tweet.Body.replace(/(#\S+)/g, "<span class='hashtag'>$&</span>");
         this.tweetbodyelem.nativeElement.innerHTML = this.tweet.Body;
 
         this.tweet.Date = new Date(this.tweet.Date);

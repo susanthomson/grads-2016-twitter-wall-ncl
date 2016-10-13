@@ -56,7 +56,7 @@
     text-align: center;
 }
 
-.hashtag, .mention {
+.hashtag, .mention, .url {
     color: #0078A3;
 }
 

@@ -19,7 +19,9 @@ export class TweetDisplay implements OnChanges {
     @ViewChild("tweetbody") tweetbodyelem: ElementRef;
 
     ngOnChanges(changes) {
-        this.tweetbodyelem.nativeElement.innerHTML = this.tweet.Body.replace(/(#\S+)/g, "<span class='hashtag'>$1</span>");
+        this.tweet.Body = this.tweet.Body.replace(/(@\S+)/g, "<span class='mention'>$1</span>");
+        this.tweet.Body = this.tweet.Body.replace(/(#\S+)/g, "<span class='hashtag'>$1</span>");
+        this.tweetbodyelem.nativeElement.innerHTML = this.tweet.Body;
 
         this.tweet.Date = new Date(this.tweet.Date);
         let offset = (new Date()).getTimezoneOffset() / 60;

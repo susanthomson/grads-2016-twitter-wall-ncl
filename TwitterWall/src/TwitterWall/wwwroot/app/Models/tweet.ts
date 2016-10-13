@@ -2,10 +2,10 @@
 
     public Id: number;
     public TweetId: number;
-    private Body: string;
-    private Handle: string;
-    private Date: Date;
-    private Name: string;
+    public Body: string;
+    public Handle: string;
+    public Date: Date;
+    public Name: string;
     public ProfileImage: string;
     public LoadedProfileImage: HTMLImageElement;
 

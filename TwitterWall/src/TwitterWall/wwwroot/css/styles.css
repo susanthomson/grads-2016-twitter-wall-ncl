@@ -11,14 +11,19 @@
 }
 
 #tweet-display-group {
-    background: rgba(255, 255, 255, 1);
+    background: rgba(230, 230, 230, 1);
     position: absolute;
+    color: black;
     border-radius: 50%;
     width: 800px;
     height: 800px;
-    padding: 100px;
-    color: black;
-    font-size: 42px;
+    font-size: 28px;
+    padding-top: 100px;
+    display:flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content:center;
+    align-items:center;
 }
 
 #tweet-display {
@@ -34,11 +39,37 @@
 
 #tweet-body {
     width: 600px;
+    text-align: justify;
+    text-align-last: center;
+    height: 350px;
+    width: 500px;
+    overflow: hidden;
+}
+
+#name {
+    font-weight: 600;
+    width: 400px;
     text-align: center;
 }
 
+#username {
+    width: 600px;
+    text-align: center;
+}
+
+.hashtag {
+    color: blue;
+    font-weight: 600;
+}
+
+h2, h3 {
+    margin: 0;
+    margin-bottom: 25px;
+}
+
 #profile-image {
-    margin-left: 150px;
+    margin-bottom: 75px;
+    border-radius: 50%;
 }
 
 .show {
@@ -65,7 +96,12 @@
 #get-involved-text {
     color: white;
     font-size: 30px;
-    margin-top: -50px;
+    margin-top: -45px;
     font-weight: 500;
     margin-left: 5px;
+}
+
+#twitter-logo {
+    width: 40px;
+    height: 32.5px;
 }

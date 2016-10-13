@@ -76,7 +76,7 @@ export class BubbleComponent implements OnInit {
         }
 
         if (activeTweets.length >= this.nodes.length) {
-            this.addNode(0, 0, activeTweets.slice(-1)[0]);
+            this.addNode(0, 0, activeTweets[activeTweets.length - 1]);
         }
         else {
             let toDelete = this.nodes.filter((node) => {
@@ -88,7 +88,7 @@ export class BubbleComponent implements OnInit {
     }
 
     displayRandomNode(): void {
-        if (this.router.url !== "/" || !this.nodes || !this.nodes.every(n => !n.isDisplayed) || this.nodes.length === 0) {
+        if (!this.nodes || !this.nodes.length) {
             return;
         }
 
@@ -97,7 +97,7 @@ export class BubbleComponent implements OnInit {
     }
 
     displayNode(i): void {
-        if (this.nodes[i]) {
+        if (this.nodes[i] && this.nodes.every(n => !n.isDisplayed && !n.isTranslating) && this.router.url === "/") {
             this.points = NodeFunctions.generateTranslation(new Vector(this.nodes[i].x, this.nodes[i].y), this.displayPoint, TRANSLATION_TICKS);
             this.nodes[i].isTranslating = true;
             this.currentTweet = this.nodes[i].tweet;

@@ -38,7 +38,6 @@
 }
 
 #tweet-body {
-    width: 600px;
     text-align: justify;
     text-align-last: center;
     height: 350px;
@@ -57,9 +56,8 @@
     text-align: center;
 }
 
-.hashtag {
-    color: blue;
-    font-weight: 600;
+.hashtag, .mention, .url {
+    color: #0078A3;
 }
 
 h2, h3 {

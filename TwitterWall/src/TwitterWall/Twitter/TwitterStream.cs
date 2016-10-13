@@ -28,7 +28,7 @@ namespace TwitterWall
 
         protected TwitterStream()
         {
-            SetCredentials();       
+            SetCredentials();
             stream = Stream.CreateFilteredStream();
             ConfigureStream();
         }
@@ -36,6 +36,7 @@ namespace TwitterWall
         private void ConfigureStream()
         {
             stream.AddFollow(Users.BRISTECH);
+            stream.AddTrack("linux");
             stream.MatchingTweetReceived += (sender, args) =>
             {
                 Models.Tweet newTweet = new Models.Tweet(args.Tweet.Id, args.Tweet.Text, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt, args.Tweet.CreatedBy.Name, args.Tweet.CreatedBy.ProfileImageUrlFullSize);
@@ -43,7 +44,7 @@ namespace TwitterWall
                 if (result == null)
                 {
                     _tweetRepo.Add(newTweet);
-                    _mediaRepo.AddFromTweet(args.Tweet);                   
+                    _mediaRepo.AddFromTweet(args.Tweet);
 
                     // Invoke receiveTweet method on client side
                     if (TweetsController._connectionManager != null)
@@ -55,7 +56,7 @@ namespace TwitterWall
         }
 
         private void SetCredentials()
-        {            
+        {
             string consumer_key = Environment.GetEnvironmentVariable(CONSUMER_KEY);
             string consumer_secret = Environment.GetEnvironmentVariable(CONSUMER_SECRET);
             string access_token = Environment.GetEnvironmentVariable(ACCESS_TOKEN);
@@ -75,7 +76,7 @@ namespace TwitterWall
 
         public void Start()
         {
-            stream.StartStreamMatchingAllConditionsAsync();
+            stream.StartStreamMatchingAnyConditionAsync();
         }
 
         public void Stop()

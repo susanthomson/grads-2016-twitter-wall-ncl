@@ -41,7 +41,10 @@ export class BubbleComponent implements OnInit {
     showTweet = false;
     currentTweet: Tweet = new Tweet(1, 1, "", "", new Date(), "", "");
 
+    displayCount: number = 0;
+
     constructor(private tweetStream: TweetStream, private router: Router) {
+
     };
 
     ngOnInit(): void {
@@ -62,10 +65,18 @@ export class BubbleComponent implements OnInit {
         td.style.left = ((canv.offsetLeft + (canv.width / 2)) - (td.offsetWidth / 2)) + "px";
         td.style.top = (((canv.height / 2)) - (td.offsetHeight / 2)) + "px";
         this.force.on("tick", this.tick.bind(this));
-
-
-        setInterval(this.displayRandomNode.bind(this), TIME_BETWEEN_EXPAND);
+        setInterval(this.displayNode.bind(this), TIME_BETWEEN_EXPAND);
+        this.nodeDisplayInterval();
     };
+
+    nodeDisplayInterval(): void {
+        setTimeout(() => {
+            this.displayNode();
+            if (this.router.url === "/") {
+                this.nodeDisplayInterval();
+            }
+        }, TIME_BETWEEN_EXPAND);
+    }
 
     activeTweetsChanged(activeTweets): void {
         if (activeTweets.length - this.nodes.length > 1) {
@@ -87,21 +98,15 @@ export class BubbleComponent implements OnInit {
         }
     }
 
-    displayRandomNode(): void {
-        if (!this.nodes || !this.nodes.length) {
-            return;
-        }
-
-        let i = Math.round((Math.random() * this.nodes.length - 1));
-        this.displayNode(i);
-    }
-
-    displayNode(i): void {
-        if (this.nodes[i] && this.nodes.every(n => !n.isDisplayed && !n.isTranslating) && this.router.url === "/") {
+    displayNode(): void {
+        if (this.router.url === "/" && this.nodes.every(n => !n.isDisplayed && !n.isTranslating) && this.nodes && this.nodes.length) {
+            let i = this.displayCount % this.nodes.length;
             this.points = NodeFunctions.generateTranslation(new Vector(this.nodes[i].x, this.nodes[i].y), this.displayPoint, TRANSLATION_TICKS);
             this.nodes[i].isTranslating = true;
             this.currentTweet = this.nodes[i].tweet;
+            this.displayCount = (this.displayCount + 1) % this.nodes.length;
         }
+        
     }
 
     preLoadImage(url: string): HTMLImageElement {

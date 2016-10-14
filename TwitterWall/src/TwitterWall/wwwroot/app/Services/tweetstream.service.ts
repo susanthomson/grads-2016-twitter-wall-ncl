@@ -48,7 +48,7 @@ export class TweetStream {
                 return false;
             });
             this.activeQueueChanged.next(this.activeTweets);
-        }
+        };
 
         $.connection.hub.start().done(() => {
             this.init.next(true);

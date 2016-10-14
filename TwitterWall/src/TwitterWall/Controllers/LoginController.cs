@@ -1,0 +1,156 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
+using System.Diagnostics;
+using System.Net;
+using System.Text;
+using static TwitterWall.Twitter.TwitterAuth;
+using TwitterWall.Twitter;
+using TwitterWall.Repository;
+using TwitterWall.Models;
+using System.Linq;
+using TwitterWall.Utility;
+
+namespace TwitterWall.Controllers
+{
+    [Route("api/[controller]")]
+    public class LoginController : Controller
+    {
+        private UserDBRepository _userRepo;
+        public MockMessageHandler _handler;
+        private const string API_REQUEST_TOKEN = "https://api.twitter.com/oauth/request_token";
+        private const string API_ACCESS_TOKEN = "https://api.twitter.com/oauth/access_token";
+
+        public LoginController(UserDBRepository repo)
+        {
+            _userRepo = repo;
+        }
+
+        [HttpGet]
+        public ActionResult Get()
+        {
+            Login().Wait();
+            string responseString = Login().Result;
+
+            if (String.IsNullOrEmpty(responseString))
+            {
+                return StatusCode(400);
+            }
+
+            // Dont need to strip off key as its used in the oauth/authorize request
+            string oauthToken = responseString.Split('&')[0];
+            string redirectString = "https://api.twitter.com/oauth/authorize?" + oauthToken;
+
+            return Content(redirectString);
+        }
+
+        async private Task<String> Login()
+        {
+            TwitterStream ts = TwitterStream.Instance();
+            using (HttpClient client = _handler == null ?  new HttpClient() : new HttpClient(_handler))
+            {
+                Random rand = new Random();
+                TwitterAuth auth = new TwitterAuthBuilder(rand)
+                            .SetConsumerKeys(ts.ConsumerKey, ts.ConsumerSecret)
+                            .SetSignatureMethod("HMAC-SHA1")
+                            .SetVersion("1.0")
+                            .SetUrl(API_REQUEST_TOKEN)
+                            .BuildAndSign();
+
+
+                string callback = Uri.EscapeUriString("/api/login/callback");
+                StringContent content = new StringContent("{ \"oauth_callback\", \"" + callback + "\"}", Encoding.UTF8, "application/json");
+                client.DefaultRequestHeaders.Add("Authorization", auth.AuthenticationHeader);
+
+                HttpResponseMessage response = await client.PostAsync(API_REQUEST_TOKEN, content);
+
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    return "";
+                }
+
+                // Response looks like: oauth_token=TOKEN&oauth_token_secret=SECRET&oauth_callback_confirmed=true
+                return await response.Content.ReadAsStringAsync();
+            }
+        }
+
+        [Route("callback")]
+        [HttpGet]
+        public ActionResult Get(int id, [FromQuery]string oauth_token, [FromQuery]string oauth_verifier)
+        {
+            Task<UserCredential> task = GetUserTokens(oauth_token, oauth_verifier);
+            task.Wait();
+            if (task.Result != null)
+            {
+                return Content("<script language='javascript' type='text/javascript'>window.sessionStorage.setItem('token', '" + task.Result.GetHash() + "'); window.sessionStorage.setItem('handle', '" + task.Result.Handle + "'); window.location.href = '/admin';</script>", "text/html");
+            }
+            else
+            {
+                return Content("<script language='javascript' type='text/javascript'>window.location.href = '/admin';</script>", "text/html");
+            }
+
+        }
+
+        async private Task<UserCredential> GetUserTokens(string oauth_token, string oauth_verifier)
+        {
+            using (HttpClient client = _handler == null ? new HttpClient() : new HttpClient(_handler))
+            {
+                TwitterStream ts = TwitterStream.Instance();
+                Random rand = new Random();
+                TwitterAuth auth = new TwitterAuthBuilder(rand)
+                    .SetConsumerKeys(ts.ConsumerKey, ts.ConsumerSecret)
+                    .SetSignatureMethod("HMAC-SHA1")
+                    .SetUrl(API_ACCESS_TOKEN)
+                    .SetVersion("1.0")
+                    .SetOauthToken(oauth_token)
+                    .BuildAndSign();
+
+                List<KeyValuePair<string, string>> data = new List<KeyValuePair<string, string>>();
+                data.Add(new KeyValuePair<string, string>("oauth_verifier", oauth_verifier));
+                FormUrlEncodedContent content = new FormUrlEncodedContent(data);
+                client.DefaultRequestHeaders.Add("oauth_verifier", oauth_verifier);
+                client.DefaultRequestHeaders.Add("Authorization", auth.AuthenticationHeader);
+
+                HttpResponseMessage response = await client.PostAsync(API_ACCESS_TOKEN, content);
+
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    return null;
+                }
+
+                string responseString = await response.Content.ReadAsStringAsync();
+
+                string accessToken = responseString.Split('&')[0].Split('=')[1];
+                string accessSecret = responseString.Split('&')[1].Split('=')[1];
+                string screenName = responseString.Split('&')[3].Split('=')[1];
+
+                User user = _userRepo.Find(u => u.Handle == screenName && u.Type == "ADMIN").SingleOrDefault();
+                if (user != null)
+                {
+                    UserCredential uc = new UserCredential(screenName, accessToken, accessSecret);
+                    uc.GenerateHash();
+                    ts.AddUserCredentials(uc);
+                    return uc;
+                }
+
+                return null;
+            }
+        }
+
+        [Route("change")]
+        [HttpGet]
+        public bool Get([FromQuery]string handle, [FromQuery]string token)
+        {
+            TwitterStream ts = TwitterStream.Instance();
+            if (ts.ChangeUserCredentials(handle, token))
+            {
+                ts.Restart();
+                return true;
+            }
+
+            return false;
+        }
+    }
+}

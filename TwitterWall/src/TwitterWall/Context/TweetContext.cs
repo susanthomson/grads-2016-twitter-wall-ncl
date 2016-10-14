@@ -31,5 +31,6 @@ namespace TwitterWall.Context
         public virtual DbSet<MediaUrl> MediaUrls { get; set; }
         public virtual DbSet<Sticky> Sticky { get; set; }
         public virtual DbSet<Subscription> Subscriptions { get; set; }
+        public virtual DbSet<User> Users { get; set; }
     }
 }

@@ -113,7 +113,6 @@ export class BubbleComponent implements OnInit, OnDestroy {
             this.currentTweet = this.nodes[i].tweet;
             this.displayCount = (this.displayCount + 1) % this.nodes.length;
         }
-
     }
 
     preLoadImage(url: string): HTMLImageElement {

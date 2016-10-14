@@ -8,6 +8,7 @@ using TwitterWall.Context;
 using TwitterWall.Models;
 using TwitterWall.Repository;
 using TwitterWall.Twitter;
+using TwitterWall.Utility;
 using Xunit;
 
 namespace TwitterWall.Test
@@ -57,8 +58,8 @@ namespace TwitterWall.Test
         {
             stream.ConfigureStream();
             stream.Start();
-            System.Threading.Thread.Sleep(2000);
-            Assert.True(stream.StreamStatus() == Tweetinvi.Models.StreamState.Running);
+            System.Threading.Thread.Sleep(4000);
+            Assert.Equal(Tweetinvi.Models.StreamState.Running, stream.StreamStatus());
         }
 
         [Fact]
@@ -69,9 +70,30 @@ namespace TwitterWall.Test
         }
 
         [Fact]
-        public void StreamFollowsPerson()
+        public void StreamChangesCredentialsIfUserLoggedIn()
         {
-            Assert.True(stream.GetStream().FollowingUserIds.Count > 0);
+            UserCredential uc = new UserCredential("handle", "test", "test");
+            string hash = uc.GenerateHash();
+            stream.AddUserCredentials(uc);
+            Assert.True(stream.ChangeUserCredentials("handle", hash));
+        }
+
+        [Fact]
+        public void StreamDoesNotChangeCredentialsIfUserDoesntExist()
+        {
+            UserCredential uc = new UserCredential("handle", "test", "test");
+            string hash = uc.GenerateHash();
+            stream.AddUserCredentials(uc);
+            Assert.False(stream.ChangeUserCredentials("handdasle", hash));
+        }
+
+        [Fact]
+        public void StreamDoesNotChangeCredentialsIfHashIsIncorrect()
+        {
+            UserCredential uc = new UserCredential("handle", "test", "test");
+            string hash = uc.GenerateHash();
+            stream.AddUserCredentials(uc);
+            Assert.False(stream.ChangeUserCredentials("handle", hash + "error"));
         }
     }
 }

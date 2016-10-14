@@ -10,14 +10,16 @@ import { AdminPanelComponent } from "./Components/panel.component";
 import { RouterModule }   from "@angular/router";
 import { BufferTweets } from "./Components/buffertweets.component";
 import { ActiveTweets } from "./Components/activetweets.component";
+import { Subscriptions } from "./Components/subscriptions.component";
+import { FormsModule } from "@angular/forms";
 
 @NgModule({
-    imports: [BrowserModule, HttpModule, RouterModule.forRoot([
+    imports: [BrowserModule, FormsModule, HttpModule, RouterModule.forRoot([
             { path: "", component: BubbleComponent },
             { path: "admin", component: AdminPanelComponent }
         ])
     ],
-    declarations: [AppComponent, BubbleComponent, TweetDisplay, AdminPanelComponent, BufferTweets, ActiveTweets],
+    declarations: [AppComponent, BubbleComponent, TweetDisplay, AdminPanelComponent, BufferTweets, ActiveTweets, Subscriptions],
     providers: [TweetStream, TweetStreamMock],
     bootstrap: [AppComponent]
 })

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
+using TwitterWall.Twitter;
 
 namespace TwitterWall
 {
@@ -13,6 +14,7 @@ namespace TwitterWall
         public static void Main(string[] args)
         {
             TwitterStream stream = TwitterStream.Instance();
+            stream.ConfigureStream();
             stream.Start();
 
             String portnum = Environment.GetEnvironmentVariable("PORT");

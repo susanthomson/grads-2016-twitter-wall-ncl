@@ -24,7 +24,7 @@ export class TweetDisplay implements OnChanges {
         this.tweet.Body = this.tweet.Body.replace(/(#\S+)/g, "<span class='hashtag'>$&</span>");
         this.tweetbodyelem.nativeElement.innerHTML = this.tweet.Body;
 
-        this.tweet.Date = new Date(this.tweet.Date);
+        this.tweet.Date = new Date(this.tweet.Date.toString());
         let offset = (new Date()).getTimezoneOffset() / 60;
         let timeDiff = Date.now() - (this.tweet.Date.getTime() + (offset * 1000 * 3600));
         let diffSeconds = Math.floor(timeDiff / 1000);

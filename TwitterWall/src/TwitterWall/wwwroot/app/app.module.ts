@@ -12,6 +12,7 @@ import { BufferTweets } from "./Components/buffertweets.component";
 import { ActiveTweets } from "./Components/activetweets.component";
 import { Subscriptions } from "./Components/subscriptions.component";
 import { FormsModule } from "@angular/forms";
+import { TwitterLogin } from "./Services/twitterlogin.service";
 
 @NgModule({
     imports: [BrowserModule, FormsModule, HttpModule, RouterModule.forRoot([
@@ -20,7 +21,7 @@ import { FormsModule } from "@angular/forms";
         ])
     ],
     declarations: [AppComponent, BubbleComponent, TweetDisplay, AdminPanelComponent, BufferTweets, ActiveTweets, Subscriptions],
-    providers: [TweetStream, TweetStreamMock],
+    providers: [TweetStream, TweetStreamMock, TwitterLogin],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

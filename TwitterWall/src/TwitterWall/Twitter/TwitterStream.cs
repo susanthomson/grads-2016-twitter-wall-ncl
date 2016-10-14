@@ -26,6 +26,12 @@ namespace TwitterWall.Twitter
         private const string ACCESS_TOKEN_SECRET = "ACCESS_TOKEN_SECRET";
         private const string CREDENTIALS_PROPERTY = "TwitterCredentials";
 
+        public string ConsumerKey { get; set; }
+        public string ConsumerSecret { get; set; }
+        public string AccessToken { get; set; }
+        public string AccessTokenSecret { get; set; }
+        public List<UserCredential> Users = new List<UserCredential>();
+
         private const String TRACK_PROPERTY = "TRACK";
 
         Tweetinvi.Streaming.IFilteredStream stream;
@@ -41,7 +47,7 @@ namespace TwitterWall.Twitter
             stream.ClearFollows();
             stream.ClearTracks();
 
-            stream.AddFollow(Users.BRISTECH);
+            stream.AddFollow(Utility.Users.BRISTECH);
 
             foreach(Subscription s in _subRepo.GetAll())
             {
@@ -69,23 +75,51 @@ namespace TwitterWall.Twitter
             };
         }
 
+        public void AddUserCredentials(UserCredential user)
+        {
+            UserCredential uc;
+            if ((uc = Users.Find(u => u.Handle == user.Handle)) == null)
+            {
+                Users.Add(user);
+            }
+            else 
+            {
+                Users.Remove(uc);
+                Users.Add(user);
+            }
+           
+        }
+
+        public bool ChangeUserCredentials(string handle, string hash)
+        {
+            UserCredential uc;
+            if ((uc = Users.Find(u =>u.Handle == handle)) != null && uc.VerifyHash(hash))
+            {
+                AccessToken = uc.GetAccessToken();
+                AccessTokenSecret = uc.GetAccessSecret();
+                Auth.SetUserCredentials(ConsumerKey, ConsumerSecret, AccessToken, AccessTokenSecret);
+                return true;
+            }
+            return false;
+        }
+
         private void SetCredentials()
         {
-            string consumer_key = Environment.GetEnvironmentVariable(CONSUMER_KEY);
-            string consumer_secret = Environment.GetEnvironmentVariable(CONSUMER_SECRET);
-            string access_token = Environment.GetEnvironmentVariable(ACCESS_TOKEN);
-            string access_token_secret = Environment.GetEnvironmentVariable(ACCESS_TOKEN_SECRET);
+            ConsumerKey = Environment.GetEnvironmentVariable(CONSUMER_KEY);
+            ConsumerSecret = Environment.GetEnvironmentVariable(CONSUMER_SECRET);
+            AccessToken = Environment.GetEnvironmentVariable(ACCESS_TOKEN);
+            AccessTokenSecret = Environment.GetEnvironmentVariable(ACCESS_TOKEN_SECRET);
 
-            if (String.IsNullOrEmpty(consumer_key) || String.IsNullOrEmpty(consumer_secret) || String.IsNullOrEmpty(access_token) || String.IsNullOrEmpty(access_token_secret))
+            if (String.IsNullOrEmpty(ConsumerKey) || String.IsNullOrEmpty(ConsumerSecret) || String.IsNullOrEmpty(AccessToken) || String.IsNullOrEmpty(AccessTokenSecret))
             {
                 dynamic result = JObject.Parse(JsonParser.GetConfig()[CREDENTIALS_PROPERTY].ToString());
-                consumer_key = result[CONSUMER_KEY];
-                consumer_secret = result[CONSUMER_SECRET];
-                access_token = result[ACCESS_TOKEN];
-                access_token_secret = result[ACCESS_TOKEN_SECRET];
+                ConsumerKey = result[CONSUMER_KEY];
+                ConsumerSecret = result[CONSUMER_SECRET];
+                AccessToken = result[ACCESS_TOKEN];
+                AccessTokenSecret = result[ACCESS_TOKEN_SECRET];
             }
 
-            Auth.SetUserCredentials(consumer_key, consumer_secret, access_token, access_token_secret);
+            Auth.SetUserCredentials(ConsumerKey, ConsumerSecret, AccessToken, AccessTokenSecret);
         }
 
         public void Start()

@@ -45,7 +45,7 @@ describe("d3 bubble component", () => {
     it("add node adds a new node to the list of nodes", () => {
         fixture.detectChanges();
         let numOfNodes = bubbleComponent.nodes.length;
-        bubbleComponent.addNode(0, 0, new Tweet(0, 0, "", "", new Date(), "", "egg.png"));
+        bubbleComponent.addNode(0, 0, new Tweet(0, 0, "", "", new Date(), "", "egg.png", []));
         fixture.detectChanges();
         expect(bubbleComponent.nodes.length).toBe(numOfNodes + 1);
     });
@@ -54,7 +54,7 @@ describe("d3 bubble component", () => {
         fixture.detectChanges();
         let numOfNodes = bubbleComponent.nodes.length;
         for (let i = 0; i < 1000; i++) {
-            bubbleComponent.addNode(i, i, new Tweet(0, 0, "", "", new Date(), "", "egg.png"));
+            bubbleComponent.addNode(i, i, new Tweet(0, 0, "", "", new Date(), "", "egg.png", []));
         }
         fixture.detectChanges();
         expect(bubbleComponent.nodes.length).toBeLessThan(1000);
@@ -63,8 +63,8 @@ describe("d3 bubble component", () => {
     it("remove node deletes a node from the list of nodes", () => {
         fixture.detectChanges();
         let numOfNodes = bubbleComponent.nodes.length;
-        bubbleComponent.addNode(0, 0, new Tweet(6, 676, "", "", new Date(), "", "egg.png"));
-        bubbleComponent.addNode(0, 0, new Tweet(7, 5675, "", "", new Date(), "", "egg.png"));
+        bubbleComponent.addNode(0, 0, new Tweet(6, 676, "", "", new Date(), "", "egg.png",[]));
+        bubbleComponent.addNode(0, 0, new Tweet(7, 5675, "", "", new Date(), "", "egg.png", []));
         bubbleComponent.removeNode(0);
 
         // Animation reduces node radius to zero
@@ -78,8 +78,8 @@ describe("d3 bubble component", () => {
     it("duplicate tweets not inserted", () => {
         fixture.detectChanges();
         let numOfNodes = bubbleComponent.nodes.length;
-        bubbleComponent.addNode(0, 0, new Tweet(5, 5, "", "", new Date(), "", "egg.png"));
-        bubbleComponent.addNode(0, 0, new Tweet(5, 5, "", "", new Date(), "", "egg.png"));
+        bubbleComponent.addNode(0, 0, new Tweet(5, 5, "", "", new Date(), "", "egg.png", []));
+        bubbleComponent.addNode(0, 0, new Tweet(5, 5, "", "", new Date(), "", "egg.png", []));
 
         fixture.detectChanges();
         expect(bubbleComponent.nodes.length).toBe(numOfNodes + 1);

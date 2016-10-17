@@ -15,16 +15,32 @@ namespace TwitterWall.Controllers
     {
         public static IConnectionManager _connectionManager { get; set; }
 
-        public TweetsController(IConnectionManager connectionManager)
+        private TweetDBRepository _tweetRepo;
+
+        public TweetsController(IConnectionManager connectionManager, TweetDBRepository repo)
         {
             _connectionManager = connectionManager;
+            _tweetRepo = repo;
         }
 
         // GET api/values
         [HttpGet]
-        public IEnumerable<Tweet> Get()
-        {
-            return TwitterStream.Instance()._tweetRepo.GetAll();
+        public IEnumerable<Tweet> Get(string latest)
+        {            
+            if (!String.IsNullOrEmpty(latest))
+            {
+                int limitNumber;
+                bool result = Int32.TryParse(latest, out limitNumber);
+                if (result && limitNumber >= 0)
+                {
+                    return _tweetRepo.GetLatest(limitNumber);
+                }
+                return null;
+            }
+            else
+            {
+                return _tweetRepo.GetAll();
+            }
         }
     }
 }

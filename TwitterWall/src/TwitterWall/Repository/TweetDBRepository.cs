@@ -30,7 +30,25 @@ namespace TwitterWall.Repository
         {
             using (TweetContext context = GetContext())
             {
-                return context.Tweets.Include(t => t.MediaList).ToList();
+                return context.Tweets.Include(t => t.MediaList).Include(t=>t.StickyList).ToList();
+            }
+        }
+
+        public IEnumerable<Tweet> GetLatest(int limit)
+        {
+            using (TweetContext context = GetContext())
+            {
+                List<Tweet> result = new List<Tweet>();
+                result.AddRange(context.Tweets.Where(t => t.StickyList.Count > 0).Include(t => t.StickyList));
+                int fill = limit - result.Count;
+                if (fill > 0)
+                {
+                    List<Tweet> latestNonStickyTweets = new List<Tweet>();
+                    latestNonStickyTweets.AddRange(context.Tweets.OrderByDescending(t => t.Date).Include(t => t.StickyList).Where(t => t.StickyList.Count == 0).Take(fill));
+                    latestNonStickyTweets.Reverse();
+                    result.AddRange(latestNonStickyTweets);
+                }
+                return result;
             }
         }
 

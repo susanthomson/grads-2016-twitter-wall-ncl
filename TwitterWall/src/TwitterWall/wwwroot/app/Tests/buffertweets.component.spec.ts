@@ -23,27 +23,27 @@ describe("Admin panel buffer tweets component", () => {
     });
 
     it("Add element", () => {
-        component.bufferTweets.push(new Tweet(1, 1, "", "", new Date(), "", ""));
+        component.bufferTweets.push(new Tweet(1, 1, "", "", new Date(), "", "", []));
         fixture.detectChanges();
         expect(component.bufferTweets.length).toEqual(1);
     });
 
     it("Remove element", () => {
-        component.bufferTweets.push(new Tweet(1, 1, "", "", new Date(), "", ""));
+        component.bufferTweets.push(new Tweet(1, 1, "", "", new Date(), "", "", []));
         component.removeTweet(0);
         fixture.detectChanges();
         expect(component.bufferTweets.length).toEqual(0);
     });
 
     it("Approve tweet", () => {
-        component.bufferTweets.push(new Tweet(1, 1, "", "", new Date(), "", ""));
+        component.bufferTweets.push(new Tweet(1, 1, "", "", new Date(), "", "", []));
         component.changeApproval(0);
         fixture.detectChanges();
         expect(component.isTweetApproved(0)).toEqual(true);
     });
 
     it("Consume approved tweet", () => {
-        component.bufferTweets.push(new Tweet(0, 0, "", "", new Date(), "", ""));
+        component.bufferTweets.push(new Tweet(0, 0, "", "", new Date(), "", "", []));
         component.changeApproval(0);
         component.popFirst();
         fixture.detectChanges();

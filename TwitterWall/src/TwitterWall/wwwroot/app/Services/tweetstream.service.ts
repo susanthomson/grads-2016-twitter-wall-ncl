@@ -8,6 +8,8 @@ import "rxjs/add/operator/toPromise";
 
 declare var $: any;
 
+const DELETION_INTERVAL = 10000;
+
 @Injectable()
 export class TweetStream {
     private conn: any;
@@ -42,7 +44,7 @@ export class TweetStream {
             this.initialised = true;
         });
 
-        this.getAllTweets().then((tweets) => {
+        this.getLatestTweets().then((tweets) => {
             this.activeTweets = tweets.slice(-this.activeQueueSize);
             this.activeQueueChanged.next(this.activeTweets);
         });
@@ -53,15 +55,21 @@ export class TweetStream {
 
             }
             else if (this.tweetsQueue.length > 0) {
-                let tweet = this.activeTweets[Date.now() % this.activeQueueSize];
-                this.removeActiveTweet(tweet);
-                this.addActiveTweet(this.popNextTweet());
+                this.activeTweets.some((tweet) => {
+                    // If a tweet has been stickied, then the StickyList array length will be one element
+                    if (tweet.StickyList.length === 0) {
+                        this.removeActiveTweet(tweet);
+                        this.addActiveTweet(this.popNextTweet());
+                        return true;
+                    }
+                    return false;
+                });
             }
-        }, 10000);
+        }, DELETION_INTERVAL);
     }
 
-    getAllTweets(): Promise<any[]> {
-        return this.http.get("api/tweets").toPromise().then((res) => {
+    getLatestTweets(): Promise<any[]> {
+        return this.http.get("api/tweets?latest=" + this.activeQueueSize).toPromise().then((res) => {
             return JSON.parse((res as any)._body);
         });
     }

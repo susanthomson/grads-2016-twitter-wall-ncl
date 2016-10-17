@@ -39,7 +39,7 @@ export class BubbleComponent implements OnInit {
     points: Vector[] = [];
     displayPoint: Vector;
     showTweet = false;
-    currentTweet: Tweet = new Tweet(1, 1, "", "", new Date(), "", "");
+    currentTweet: Tweet = new Tweet(1, 1, "", "", new Date(), "", "", []);
 
     displayCount: number = 0;
 

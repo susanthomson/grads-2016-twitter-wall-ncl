@@ -52,6 +52,7 @@ namespace TwitterWall
             services.AddMvc().AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
             services.AddDbContext<TweetContext>();
+            services.AddScoped<TweetDBRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

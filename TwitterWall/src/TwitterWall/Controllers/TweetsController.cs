@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using TwitterWall.Models;
 using TwitterWall.Repository;
 using Microsoft.AspNetCore.SignalR.Infrastructure;
+using TwitterWall.Twitter;
 
 namespace TwitterWall.Controllers
 {

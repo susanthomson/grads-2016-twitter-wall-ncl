@@ -19,6 +19,12 @@ export class TweetStream {
     public activeQueueEvent$ = this.activeQueueChanged.asObservable();
     activeQueueSize: number = 15;
 
+    private tracks = new Subject<any[]>();
+    public tracksReceived$ = this.tracks.asObservable();
+
+    private init = new Subject<boolean>();
+    public initialisationChanged$ = this.init.asObservable();
+    private initialised: boolean = false;
     constructor(private http: Http) {
         this.tweetsQueue = [];
         this.activeTweets = [];
@@ -26,7 +32,15 @@ export class TweetStream {
         this.conn.client.receiveTweet = (tweet) => {
             this.addTweet(tweet);
         };
-        $.connection.hub.start().done(() => {});
+
+        this.conn.client.receivetracks = (tracks) => {
+            this.tracks.next(tracks);
+        };
+
+        $.connection.hub.start().done(() => {
+            this.init.next(true);
+            this.initialised = true;
+        });
 
         this.getAllTweets().then((tweets) => {
             this.activeTweets = tweets.slice(-this.activeQueueSize);
@@ -102,5 +116,27 @@ export class TweetStream {
             this.tweetsQueue.splice(index, 1);
             this.queueChanged.next(this.tweetsQueue);
         }
+    }
+
+    followTrack(keyword: string): void {
+        if (keyword.length < 60) {
+            this.conn.server.followTrack(keyword);
+        }
+    }
+
+    getTracks(): void {
+        this.conn.server.getTracks();
+    }
+
+    removeTrack(keyword: number): void {
+        this.conn.server.removeTrack(keyword);
+    }
+
+    restartStream(): void {
+        this.conn.server.restartStream();
+    }
+
+    isInitialised(): boolean {
+        return this.initialised;
     }
 }

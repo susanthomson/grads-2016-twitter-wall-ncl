@@ -21,6 +21,9 @@ export class TweetStreamMock {
     public activeQueueEvent$ = this.activeQueueChanged.asObservable();
     activeQueueSize: number = 5;
 
+    private tracks = new Subject<any[]>();
+    public tracksReceived$ = this.tracks.asObservable();
+
     constructor() {
         this.tweetsQueue = [];
         this.activeTweets = [];
@@ -76,5 +79,23 @@ export class TweetStreamMock {
             this.tweetsQueue.splice(index, 1);
             this.queueChanged.next(this.tweetsQueue);
         }
+    }
+
+    followTrack(keyword: string): void {
+        let keywords: Array<{ Id: number, Value: string, Type: string }> = [];
+        keywords.push({ Id: 1, Value: "", Type: "" });
+        this.tracks.next(keywords);
+    }
+
+    getTracks(): void {
+        this.tracks.next([]);
+    }
+
+    removeTrack(): void {
+        this.tracks.next([]);
+    }
+
+    isInitialised(): boolean {
+        return true;
     }
 }

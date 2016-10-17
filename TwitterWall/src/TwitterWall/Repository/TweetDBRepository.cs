@@ -56,7 +56,7 @@ namespace TwitterWall.Repository
         {
             using (TweetContext context = GetContext())
             {
-                return context.Tweets.Include(t => t.MediaList).Where<Tweet>(exp).ToList();
+                return context.Tweets.Include(t => t.MediaList).Include(t=>t.StickyList).Where<Tweet>(exp).ToList();
             }
         }
 

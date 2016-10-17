@@ -14,14 +14,16 @@ namespace TwitterWall.Hubs
         StickyDBRepository _stickyRepo = new StickyDBRepository();
         TwitterStream stream = TwitterStream.Instance();
 
-        public void AddStickyTweet(long id)
+        public void AddStickyTweet(long tweetId)
         {
-            _stickyRepo.Add(id);
+            _stickyRepo.Add(tweetId);
+            Clients.All.stickyChanged(stream._tweetRepo.Find(t => t.Id == tweetId).SingleOrDefault());
         }
 
-        public void RemoveStickyTweet(long id)
+        public void RemoveStickyTweet(long tweetId)
         {
-            _stickyRepo.RemoveByTweetId(id);
+            _stickyRepo.RemoveByTweetId(tweetId);
+            Clients.All.stickyChanged(stream._tweetRepo.Find(t => t.Id == tweetId).SingleOrDefault());
         }
 
         public void FollowTrack(string keyword)

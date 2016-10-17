@@ -39,6 +39,17 @@ export class TweetStream {
             this.tracks.next(tracks);
         };
 
+        this.conn.client.stickyChanged = (newTweet: Tweet) => {
+            this.activeTweets.some((tweet, i) => {
+                if (tweet.Id === newTweet.Id) {
+                    this.activeTweets[i] = newTweet;
+                    return true;
+                }
+                return false;
+            });
+            this.activeQueueChanged.next(this.activeTweets);
+        }
+
         $.connection.hub.start().done(() => {
             this.init.next(true);
             this.initialised = true;
@@ -146,5 +157,13 @@ export class TweetStream {
 
     isInitialised(): boolean {
         return this.initialised;
+    }
+
+    addSticky(tweetId: number): void {
+        this.conn.server.addStickyTweet(tweetId);
+    }
+
+    removeSticky(tweetId: number): void {
+        this.conn.server.removeStickyTweet(tweetId);
     }
 }

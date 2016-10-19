@@ -20,13 +20,13 @@ describe("Admin panel active tweets component", () => {
     });
 
     it("Add element", () => {
-        component.addTweet(new Tweet(1, 1, "", "", new Date(), "", "", []));
+        component.addTweet(new Tweet(1, 1, "", "", new Date(), "", "", [], []));
         fixture.detectChanges();
         expect(component.activeTweets.length).toEqual(1);
     });
 
     it("Remove element", () => {
-        component.addTweet(new Tweet(0, 0, "", "", new Date(), "", "", []));
+        component.addTweet(new Tweet(0, 0, "", "", new Date(), "", "", [], []));
         component.removeTweet(0);
         fixture.detectChanges();
         expect(component.activeTweets.length).toEqual(0);

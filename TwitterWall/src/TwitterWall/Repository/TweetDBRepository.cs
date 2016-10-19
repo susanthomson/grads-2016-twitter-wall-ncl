@@ -39,12 +39,12 @@ namespace TwitterWall.Repository
             using (TweetContext context = GetContext())
             {
                 List<Tweet> result = new List<Tweet>();
-                result.AddRange(context.Tweets.Where(t => t.StickyList.Count > 0).Include(t => t.StickyList));
+                result.AddRange(context.Tweets.Where(t => t.StickyList.Count > 0).Include(t => t.StickyList).Include(t=>t.MediaList));
                 int fill = limit - result.Count;
                 if (fill > 0)
                 {
                     List<Tweet> latestNonStickyTweets = new List<Tweet>();
-                    latestNonStickyTweets.AddRange(context.Tweets.OrderByDescending(t => t.Date).Include(t => t.StickyList).Where(t => t.StickyList.Count == 0).Take(fill));
+                    latestNonStickyTweets.AddRange(context.Tweets.OrderByDescending(t => t.Date).Include(t => t.StickyList).Include(t=>t.MediaList).Where(t => t.StickyList.Count == 0).Take(fill));
                     latestNonStickyTweets.Reverse();
                     result.AddRange(latestNonStickyTweets);
                 }

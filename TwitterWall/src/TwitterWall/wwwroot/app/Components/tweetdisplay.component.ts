@@ -5,10 +5,19 @@ import { Tweet } from "../Models/tweet";
     selector: "[tweet-display]",
     template: `
         <div id="tweet-display-group">
-            <h2 id="name"><img id="twitter-logo" src="../../img/Twitter_Social_Icon_Blue.png">{{tweet.Name}}</h2>
-            <h3 id="username">@{{tweet.Handle}} <small>{{time}}</small></h3>
-            <img id="profile-image" width="150" height="150" src="{{tweet.ProfileImage}}"/>
+            <div>
+                <img class="profile-image" src="{{tweet.ProfileImage}}"/>
+                <div class="names-container">
+                    <h2 id="name">{{tweet.Name}}</h2>
+                    <img id="twitter-logo" src="../../img/Twitter_Social_Icon_Blue.png">
+                    <h3 id="username">@{{tweet.Handle}}</h3>
+                </div>
+            </div>
             <div id="tweet-body" #tweetbody></div>
+            <div class="attached-images">
+                <img *ngFor="let img of tweet.MediaList; let i=index" src="{{img.Url}}"/>
+            </div>
+            <span id="timestamp">{{time}}</span>
         </div>
     `
 })

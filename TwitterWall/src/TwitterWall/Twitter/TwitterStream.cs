@@ -53,7 +53,7 @@ namespace TwitterWall.Twitter
 
             stream.MatchingTweetReceived += (sender, args) =>
             {
-                Models.Tweet newTweet = new Models.Tweet(args.Tweet.Id, args.Tweet.Text, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt, args.Tweet.CreatedBy.Name, args.Tweet.CreatedBy.ProfileImageUrlFullSize);
+                Models.Tweet newTweet = new Models.Tweet(args.Tweet.Id, args.Tweet.FullText, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt, args.Tweet.CreatedBy.Name, args.Tweet.CreatedBy.ProfileImageUrlFullSize);
                 TwitterWall.Models.Tweet result = _tweetRepo.Find(obj => obj.TweetId == newTweet.TweetId).SingleOrDefault();
                 if (result == null)
                 {

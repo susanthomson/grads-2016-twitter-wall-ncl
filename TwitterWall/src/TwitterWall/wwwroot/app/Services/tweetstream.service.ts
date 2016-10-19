@@ -24,6 +24,9 @@ export class TweetStream {
     private tracks = new Subject<any[]>();
     public tracksReceived$ = this.tracks.asObservable();
 
+    private users = new Subject<any[]>();
+    public usersReceived$ = this.users.asObservable();
+
     private init = new Subject<boolean>();
     public initialisationChanged$ = this.init.asObservable();
     private initialised: boolean = false;
@@ -35,10 +38,16 @@ export class TweetStream {
             this.addTweet(tweet);
         };
 
-        this.conn.client.receivetracks = (tracks) => {
+        this.conn.client.receiveTracks = (tracks) => {
             this.tracks.next(tracks);
         };
 
+        this.conn.client.receiveUsers = (users) => {
+            this.users.next(users);
+        };
+
+        this.conn.client.stickyChanged = (newTweet: Tweet) => {
+            this.activeTweets.some((tweet, i) => {
         this.conn.client.tweetChanged = (newTweet: Tweet) => {
             let success = this.activeTweets.some((tweet, i) => {
                 if (tweet.Id === newTweet.Id) {
@@ -160,8 +169,17 @@ export class TweetStream {
         this.conn.server.getTracks();
     }
 
-    removeTrack(keyword: number): void {
-        this.conn.server.removeTrack(keyword);
+
+   followUser(userId: string): void {
+        this.conn.server.followUser(userId);
+    }
+
+    getUsers(): void {
+        this.conn.server.getPriorityUsers();
+    }
+
+    removeSubscription(id: number, type: string): void {
+        this.conn.server.removeSubscription(id, type);
     }
 
     restartStream(): void {

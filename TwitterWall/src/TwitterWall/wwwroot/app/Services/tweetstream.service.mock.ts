@@ -24,6 +24,10 @@ export class TweetStreamMock {
     private tracks = new Subject<any[]>();
     public tracksReceived$ = this.tracks.asObservable();
 
+    private users = new Subject<any[]>();
+    public usersReceived$ = this.users.asObservable();
+
+
     constructor() {
         this.tweetsQueue = [];
         this.activeTweets = [];
@@ -43,7 +47,6 @@ export class TweetStreamMock {
             this.activeQueueChanged.next(this.activeTweets);
             return true;
         }
-
         return false;
     }
 
@@ -54,17 +57,14 @@ export class TweetStreamMock {
             this.activeQueueChanged.next(this.activeTweets);
             return true;
         }
-
         return false;
     }
 
     popNextTweet(): Tweet {
         let tweet = this.tweetsQueue.shift();
-
         if (tweet) {
             this.queueChanged.next(this.tweetsQueue);
         }
-
         return tweet;
     }
 
@@ -104,8 +104,23 @@ export class TweetStreamMock {
         this.tracks.next([]);
     }
 
-    removeTrack(): void {
-        this.tracks.next([]);
+    followUser(userId: string): void {
+        let keywords: Array<{ Id: number, Value: string, Type: string }> = [];
+        keywords.push({ Id: 1, Value: "", Type: "" });
+        this.users.next(keywords);
+    }
+
+    getUsers(): void {
+        this.users.next([]);
+    }
+
+    removeSubscription(id: number, type: string): void {
+        if (type === "TRACK") {
+            this.tracks.next([]);
+        }
+        else if (type === "PERSON") {
+            this.users.next([]);
+        }
     }
 
     isInitialised(): boolean {

@@ -1,131 +1,114 @@
-﻿body {
-    background: #fff;
-    color: black;
-    font-family: Raleway;
+body {
+  background: #fff;
+  color: black;
+  font-family: Raleway;
 }
-
 .tweetcards {
-    min-height: 200px;
-    max-height: 200px;
-    overflow: hidden;
+  min-height: 200px;
+  max-height: 200px;
+  overflow: hidden;
 }
-
 #tweet-display-group {
-    background: rgba(245, 245, 245, 1);
-    position: absolute;
-    color: black;
-    border-radius: 50%;
-    width: 800px;
-    height: 800px;
-    font-size: 28px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+  background: #f5f5f5;
+  position: absolute;
+  color: black;
+  border-radius: 50%;
+  width: 800px;
+  height: 800px;
+  font-size: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
-
 #tweet-display {
-    position: absolute;
-    top: 0px;
-    left: 0px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
 }
-
 #bubble-canvas {
-    position: relative;
-    background-color: black;
+  position: relative;
+  background-color: black;
 }
-
 #tweet-body {
-    max-width: 500px;
-    overflow: hidden;
-    font-size: 25px;
-    margin-top: 15px;
+  max-width: 500px;
+  overflow: hidden;
+  font-size: 25px;
+  margin-top: 15px;
 }
-
 #name {
-    display: inline;
-    font-weight: 600;
-    text-align: center;
-    font-size: 22px;
+  display: inline;
+  font-weight: 600;
+  text-align: center;
+  font-size: 22px;
 }
-
 #username {
-    text-align: left;
-    color: #a19c9c;
-    font-size: 18px;
-    font-weight: 500;
+  text-align: left;
+  color: #a19c9c;
+  font-size: 18px;
+  font-weight: 500;
 }
-
-.hashtag, .mention, .url {
-    color: #0078A3;
+.hashtag,
+.mention,
+.url {
+  color: #0078A3;
 }
-
-h2, h3 {
-    margin: 0;
-    margin-bottom: 25px;
+h2,
+h3 {
+  margin: 0;
+  margin-bottom: 25px;
 }
-
 .profile-image {
-    border-radius: 50%;
-    vertical-align: top;
-    width: 80px;
-    height: 80px;
+  border-radius: 50%;
+  vertical-align: top;
+  width: 80px;
+  height: 80px;
 }
-
 .show {
-    opacity: 1 !important;
+  opacity: 1 !important;
 }
-
 .step {
-    transition: ease-in 0.5s all;
-    opacity: 0;
+  transition: ease-in 0.5s all;
+  opacity: 0;
 }
-
 .fullscreen {
-    position: absolute;
-    top: 0px;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
 }
-
 .approved {
-    color: green;
+  color: green;
 }
-
 #get-involved-text {
-    color: white;
-    font-size: 30px;
-    margin-top: -45px;
-    font-weight: 500;
-    margin-left: 5px;
+  color: white;
+  font-size: 30px;
+  margin-top: -45px;
+  font-weight: 500;
+  margin-left: 5px;
 }
-
 #twitter-logo {
-    width: 40px;
-    height: 32.5px;
-    display: inline-block;
+  width: 40px;
+  height: 32.5px;
+  display: inline-block;
 }
-
 .attached-images img {
-    max-width: 250px;
-    max-height: 150px;
-    padding: 5px;   
+  max-width: 250px;
+  max-height: 150px;
+  padding: 5px;
 }
-
 .attached-images {
-    margin-top: 20px; 
-    max-width: 500px; 
-    max-height: 300px;
+  margin-top: 20px;
+  max-width: 500px;
+  max-height: 300px;
 }
-
 #timestamp {
-    color: #a19c9c;
-    font-size: 18px;
-    margin-top: 15px;
+  color: #a19c9c;
+  font-size: 18px;
+  margin-top: 15px;
 }
-
 .names-container {
-    display: inline-block;
+  display: inline-block;
 }

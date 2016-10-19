@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TwitterWall.Context;
 using TwitterWall.Models;
 using TwitterWall.Repository;
+using TwitterWall.Utility;
 using Xunit;
 
 namespace TwitterWall.Test
@@ -50,7 +51,7 @@ namespace TwitterWall.Test
             // Act
             var result = repo.Get(newSubscription.Id);
 
-            // Asert
+            // Assert
             Assert.Equal(result, newSubscription);
         }
 
@@ -77,7 +78,7 @@ namespace TwitterWall.Test
             // Act
             repo.Remove(3);
 
-            // Asert
+            // Assert
             Assert.Equal(0, subscriptions.Count);
         }
 
@@ -103,8 +104,33 @@ namespace TwitterWall.Test
             // Act
             var result = repo.Get(newSubscription.Id);
 
-            // Asert
+            // Assert
             Assert.Equal(result, newSubscription);
+        }
+
+        [Fact]
+        public void TestGetAllTracks()
+        {
+            Subscription newTrack = new Subscription() { Id = 3, Value = "A", Type = Common.SubType.TRACK.ToString() };
+            Subscription newSpeaker = new Subscription() { Id = 4, Value = "A", Type = Common.SubType.PERSON.ToString() };
+
+            //Setup
+            var subscriptions = new List<Subscription>()
+            {
+                newTrack, newSpeaker
+            };
+            var data = subscriptions.AsQueryable();
+            var mockSet = setUpAsQueriable(data);
+            var mockContext = new Mock<TweetContext>();
+            mockContext.Setup(c => c.Subscriptions).Returns(mockSet.Object);
+
+            // Arrange
+            SubscriptionDBRepository repo = new SubscriptionDBRepository(mockContext.Object);
+            // Act
+            var result = repo.GetAll(Common.SubType.TRACK);
+
+            // Assert
+            Assert.Equal(result.ToList().First(), newTrack);
         }
 
         [Fact]
@@ -129,7 +155,7 @@ namespace TwitterWall.Test
             // Act
             var result = repo.Get(6);
 
-            // Asert
+            // Assert
             Assert.Null(result);
         }
     }

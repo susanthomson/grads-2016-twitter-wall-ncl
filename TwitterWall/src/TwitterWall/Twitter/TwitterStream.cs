@@ -32,8 +32,6 @@ namespace TwitterWall.Twitter
         public string AccessTokenSecret { get; set; }
         public List<UserCredential> Users = new List<UserCredential>();
 
-        private const String TRACK_PROPERTY = "TRACK";
-
         Tweetinvi.Streaming.IFilteredStream stream;
 
         protected TwitterStream()
@@ -47,13 +45,21 @@ namespace TwitterWall.Twitter
             stream.ClearFollows();
             stream.ClearTracks();
 
-            stream.AddFollow(Utility.Users.BRISTECH);
+            stream.AddFollow(Common.BRISTECH);
 
             foreach(Subscription s in _subRepo.GetAll())
             {
-                if (s.Type == TRACK_PROPERTY)
+                if (s.Type == Common.SubType.TRACK.ToString())
                 {
                     stream.AddTrack(s.Value);
+                }
+                else if( s.Type == Common.SubType.PERSON.ToString())
+                {
+                    long userId;
+                    bool validId = Int64.TryParse(s.Value, out userId);
+                    if (validId) {
+                        stream.AddFollow(userId);
+                    }
                 }
             }
 
@@ -82,12 +88,12 @@ namespace TwitterWall.Twitter
             {
                 Users.Add(user);
             }
-            else 
+            else
             {
                 Users.Remove(uc);
                 Users.Add(user);
             }
-           
+
         }
 
         public bool ChangeUserCredentials(string handle, string hash)
@@ -160,17 +166,29 @@ namespace TwitterWall.Twitter
 
         public void AddTrack(String keyword)
         {
-            _subRepo.Add(new Subscription(keyword, TRACK_PROPERTY));
+            _subRepo.Add(new Subscription(keyword, Common.SubType.TRACK.ToString()));
+        }
+
+        public void AddPriorityUser(string userId)
+        {
+            _subRepo.Add(new Subscription(userId, Common.SubType.PERSON.ToString()));
         }
 
         public List<Subscription> GetTracks()
         {
-            return _subRepo.GetAll().ToList();
+            return _subRepo.GetAll(Common.SubType.TRACK).ToList();
         }
 
-        public void RemoveTrack(int id)
+        public List<Subscription> GetPriorityUsers()
+        {
+            return _subRepo.GetAll(Common.SubType.PERSON).ToList();
+        }
+
+        public void RemoveSubscription(int id)
         {
             _subRepo.Remove(id);
         }
+
+
     }
 }

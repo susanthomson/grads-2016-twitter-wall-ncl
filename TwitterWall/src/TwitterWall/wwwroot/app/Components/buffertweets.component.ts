@@ -1,5 +1,6 @@
 ﻿import { Component } from "@angular/core";
 import { Tweet } from "../Models/tweet";
+import { Person } from "../Models/person";
 import { TweetStream } from "../Services/tweetstream.service";
 
 @Component({
@@ -16,6 +17,7 @@ import { TweetStream } from "../Services/tweetstream.service";
 })
 export class BufferTweets {
     bufferTweets: Tweet[] = [];
+    bufferUsers: Person[] = [];
     counter: number = 0;
     approvals: Object = {};
 
@@ -23,6 +25,9 @@ export class BufferTweets {
         this.bufferTweets = this.tweetStream.getQueue();
         this.tweetStream.queueEvent$.subscribe((tweets) => {
             this.bufferTweets = tweets;
+        });
+        this.tweetStream.usersReceived$.subscribe((users) => {
+            this.bufferUsers = users;
         });
     }
 
@@ -35,15 +40,33 @@ export class BufferTweets {
     }
 
     popFirst(): Tweet {
-        let tweet = this.bufferTweets.find((el, i) => {
-            return this.approvals[this.bufferTweets[i].TweetId];
+        let tweet, speakerTweet, findSpeaker;
+        this.bufferTweets.find((el, i) => {
+            findSpeaker = this.bufferUsers.some(user => {
+                if (user.Value === el.Handle) {
+                    let index = this.bufferTweets.indexOf(el);
+                    this.removeTweet(index);
+                    speakerTweet = el;
+                    return true;
+                }
+                return false;
+            });
+            return findSpeaker;
         });
-        if (tweet) {
-            let index = this.bufferTweets.indexOf(tweet);
-            this.removeTweet(index);
-            return tweet;
+
+        if (findSpeaker) {
+            return speakerTweet;
+        } else {
+            tweet = this.bufferTweets.find((el, i) => {
+                return this.approvals[this.bufferTweets[i].TweetId];
+            });
+            if (tweet) {
+                let index = this.bufferTweets.indexOf(tweet);
+                this.removeTweet(index);
+                return tweet;
+            }
+            return null;
         }
-        return null;
     }
 
     removeTweet(index: number): void {

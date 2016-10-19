@@ -35,11 +35,19 @@ namespace TwitterWall.Repository
             }
         }
 
+        public IEnumerable<Subscription> GetAll(Utility.Common.SubType type)
+        {
+            using (TweetContext context = GetContext())
+            {
+                return context.Subscriptions.Where(subscription => subscription.Type == type.ToString()).ToList();
+            }
+        }
+
         public override IEnumerable<Subscription> Find(Func<Subscription, bool> exp)
         {
             using (TweetContext context = GetContext())
             {
-                return context.Subscriptions.Where<Subscription>(exp);
+                return context.Subscriptions.Where<Subscription>(exp).ToList();
             }
         }
 

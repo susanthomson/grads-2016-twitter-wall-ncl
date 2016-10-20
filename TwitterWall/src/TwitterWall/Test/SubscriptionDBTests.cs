@@ -134,6 +134,30 @@ namespace TwitterWall.Test
         }
 
         [Fact]
+        public void CheckTwitterId()
+        {
+            Subscription newSubscription = new Subscription() { Id = 3, Value = "Track", Type = "Track" };
+            //Setup
+            var subscriptions = new List<Subscription>()
+            {
+                newSubscription
+            };
+            var data = subscriptions.AsQueryable();
+            var mockSet = setUpAsQueriable(data);
+
+            var mockContext = new Mock<TweetContext>();
+            mockContext.Setup(c => c.Subscriptions).Returns(mockSet.Object);
+
+            // Arrange
+            SubscriptionDBRepository repo = new SubscriptionDBRepository(mockContext.Object);
+            // Act
+            var result = repo.Get(3);
+
+            // Assert
+            Assert.Equal(result.TwitterId, 0);
+        }
+
+        [Fact]
         public void GetNonExistantItem()
         {
             Subscription newSubscription = new Subscription() { Id = 3, Value = "Track", Type = "Track" };

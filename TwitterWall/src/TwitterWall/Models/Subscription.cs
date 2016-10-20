@@ -20,11 +20,19 @@ namespace TwitterWall.Models
             this.Type = type;
         }
 
+        public Subscription(string value, long twitterId, string type)
+        {
+            this.Value = value;
+            this.TwitterId = twitterId;
+            this.Type = type;
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
         public string Value { get; set; }
+        public long TwitterId { get; set; }
         [Required]
         public string Type { get; set; }
     }

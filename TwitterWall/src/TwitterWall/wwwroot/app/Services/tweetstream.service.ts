@@ -27,6 +27,9 @@ export class TweetStream {
     private users = new Subject<any[]>();
     public usersReceived$ = this.users.asObservable();
 
+    private errorMessage = new Subject<string>();
+    public errorMessageReceived$ = this.errorMessage.asObservable();
+
     private init = new Subject<boolean>();
     public initialisationChanged$ = this.init.asObservable();
     private initialised: boolean = false;
@@ -74,6 +77,10 @@ export class TweetStream {
             }
         };
 
+        this.conn.client.notRealUser = (errMessage: string) => {
+            this.errorMessage.next(errMessage);
+        }
+
         $.connection.hub.start().done(() => {
             this.init.next(true);
             this.initialised = true;
@@ -117,7 +124,7 @@ export class TweetStream {
         return this.activeTweets;
     }
 
-    addActiveTweet(tweet: Tweet): boolean {
+    addActiveTweet(tweet: Tweet): boolean {        
         if (tweet && this.activeTweets.length < this.activeQueueSize) {
             this.activeTweets.push(tweet);
             this.activeQueueChanged.next(this.activeTweets);

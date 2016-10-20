@@ -28,9 +28,14 @@ export class TweetStreamMock {
     public usersReceived$ = this.users.asObservable();
 
 
+    private errorMessage = new Subject<string>();
+    public errorMessageReceived$ = this.errorMessage.asObservable();
+
+
     constructor() {
         this.tweetsQueue = [];
         this.activeTweets = [];
+        
     }
 
     getQueue(): Tweet[] {

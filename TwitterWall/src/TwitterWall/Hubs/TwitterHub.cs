@@ -35,7 +35,10 @@ namespace TwitterWall.Hubs
 
         public void FollowUser(string userId)
         {
-            stream.AddPriorityUser(userId);
+            if (!stream.AddPriorityUser(userId))
+            {
+                Clients.Caller.notRealUser("That user does not exist!");
+            }
             GetPriorityUsers();
         }
 

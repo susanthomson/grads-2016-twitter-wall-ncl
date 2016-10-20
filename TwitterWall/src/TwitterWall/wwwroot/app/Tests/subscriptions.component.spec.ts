@@ -18,18 +18,18 @@ describe("Subscription component", () => {
         fixture = TestBed.createComponent(Subscriptions);
         component = fixture.componentInstance;
     });
-    
+
     it("Add track", () => {
         component.inputTrack = "Test";
         component.addTrack();
         fixture.detectChanges();
         expect(component.tracks.length).toEqual(1);
     });
-    
+
     it("Remove track", () => {
         component.tracks.push({ Id: 1, Value: "", Type: "" });
         component.removeTrack(0);
         expect(component.tracks.length).toEqual(0);
     });
-    
+
 });

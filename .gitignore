@@ -273,3 +273,4 @@ docker-cleanup.sh
 
 TwitterWall/src/TwitterWall/wwwroot/app/*.js
 TwitterWall/src/TwitterWall/wwwroot/app/*.map
+TwitterWall/src/TwitterWall/wwwroot/css/

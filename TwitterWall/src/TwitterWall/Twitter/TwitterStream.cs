@@ -53,15 +53,12 @@ namespace TwitterWall.Twitter
                 {
                     stream.AddTrack(s.Value);
                 }
-                else if( s.Type == Common.SubType.PERSON.ToString())
+                else if(s.Type == Common.SubType.PERSON.ToString())
                 {
-                    long userId;
-                    bool validId = Int64.TryParse(s.Value, out userId);
-                    if (validId) {
-                        stream.AddFollow(userId);
-                    }
+                     stream.AddFollow(s.TwitterId);       
                 }
             }
+         
 
             stream.MatchingTweetReceived += (sender, args) =>
             {
@@ -169,9 +166,15 @@ namespace TwitterWall.Twitter
             _subRepo.Add(new Subscription(keyword, Common.SubType.TRACK.ToString()));
         }
 
-        public void AddPriorityUser(string userId)
+        public Boolean AddPriorityUser(string userId)
         {
-            _subRepo.Add(new Subscription(userId, Common.SubType.PERSON.ToString()));
+            var user = User.GetUserFromScreenName(userId);
+            if (user != null)
+            {
+                _subRepo.Add(new Subscription(userId, user.Id, Common.SubType.PERSON.ToString()));
+                return true;
+            }
+            return false;
         }
 
         public List<Subscription> GetTracks()

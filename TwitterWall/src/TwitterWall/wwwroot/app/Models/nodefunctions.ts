@@ -60,7 +60,7 @@ export class NodeFunctions {
 
     static generateTranslation(p1: Vector, p2: Vector, frames): Vector[] {
         if (p1.x === p2.x && p1.y === p2.y) {
-            return;
+            return [];
         }
 
         // Need to add extra step for last position

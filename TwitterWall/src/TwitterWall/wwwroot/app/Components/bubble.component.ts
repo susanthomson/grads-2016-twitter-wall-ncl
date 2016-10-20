@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Vector } from "../Models/vector";
 import { TweetDisplay } from "./tweetdisplay.component";
 import { Tweet } from "../Models/tweet";
@@ -28,13 +28,14 @@ const DEFAULT_IMAGE = "https://pbs.twimg.com/media/CLIz5A9VAAAcbNe.png";
         </div>
     `
 })
-export class BubbleComponent implements OnInit {
+export class BubbleComponent implements OnInit, OnDestroy {
     context: any;
     width: number;
     height: number;
     nodes: any;
     root: any;
     force: any;
+    displayTimer: any;
     translationPoint: number = 0;
     points: Vector[] = [];
     displayPoint: Vector;
@@ -65,12 +66,18 @@ export class BubbleComponent implements OnInit {
         td.style.left = ((canv.offsetLeft + (canv.width / 2)) - (td.offsetWidth / 2)) + "px";
         td.style.top = (((canv.height / 2)) - (td.offsetHeight / 2)) + "px";
         this.force.on("tick", this.tick.bind(this));
-        setInterval(this.displayNode.bind(this), TIME_BETWEEN_EXPAND);
         this.nodeDisplayInterval();
     };
 
+    ngOnDestroy(): void {
+        this.force.stop();
+        this.force = null;
+        clearTimeout(this.displayTimer);
+        this.nodes = null;
+    }
+
     nodeDisplayInterval(): void {
-        setTimeout(() => {
+        this.displayTimer = setTimeout(() => {
             this.displayNode();
             if (this.router.url === "/") {
                 this.nodeDisplayInterval();
@@ -106,7 +113,7 @@ export class BubbleComponent implements OnInit {
             this.currentTweet = this.nodes[i].tweet;
             this.displayCount = (this.displayCount + 1) % this.nodes.length;
         }
-        
+
     }
 
     preLoadImage(url: string): HTMLImageElement {

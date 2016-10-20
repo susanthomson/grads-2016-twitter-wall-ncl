@@ -39,15 +39,30 @@ export class TweetStream {
             this.tracks.next(tracks);
         };
 
-        this.conn.client.stickyChanged = (newTweet: Tweet) => {
-            this.activeTweets.some((tweet, i) => {
+        this.conn.client.tweetChanged = (newTweet: Tweet) => {
+            let success = this.activeTweets.some((tweet, i) => {
                 if (tweet.Id === newTweet.Id) {
                     this.activeTweets[i] = newTweet;
                     return true;
                 }
                 return false;
             });
-            this.activeQueueChanged.next(this.activeTweets);
+            if (success) {
+                this.activeQueueChanged.next(this.activeTweets);
+            }
+        };
+
+        this.conn.client.tweetRemoved = (id: number) => {
+            let success = this.activeTweets.some((tweet, i) => {
+                if (tweet.Id === id) {
+                    this.activeTweets.splice(i, 1);
+                    return true;
+                }
+                return false;
+            });
+            if (success) {
+                this.activeQueueChanged.next(this.activeTweets);
+            }
         };
 
         $.connection.hub.start().done(() => {
@@ -99,7 +114,6 @@ export class TweetStream {
             this.activeQueueChanged.next(this.activeTweets);
             return true;
         }
-
         return false;
     }
 
@@ -110,7 +124,6 @@ export class TweetStream {
             this.activeQueueChanged.next(this.activeTweets);
             return true;
         }
-
         return false;
     }
 
@@ -165,5 +178,14 @@ export class TweetStream {
 
     removeSticky(tweetId: number): void {
         this.conn.server.removeStickyTweet(tweetId);
+    }
+
+    removeTweetImage(tweetIndex: number, imageIndex: number, imageId: number): void {
+        this.conn.server.removeTweetImage(imageId);
+        this.activeTweets[tweetIndex].MediaList.splice(imageIndex, 1);
+    }
+
+    removeActiveTweetFromDB(tweet: Tweet): void {
+        this.conn.server.removeTweet(tweet.Id);
     }
 }

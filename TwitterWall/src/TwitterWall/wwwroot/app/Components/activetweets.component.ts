@@ -2,17 +2,53 @@
 import { Tweet } from "../Models/tweet";
 import { TweetStream } from "../Services/tweetstream.service";
 
+
 @Component({
     selector: "active-tweets",
     template: `
-        <h4>Display tweets</h4>
-        <ul>
-            <li *ngFor="let tweet of activeTweets; let i=index">
-                <input type="checkbox" checked="checked" [attr.checked]="tweet.StickyList.length > 0 ? true : null" (click)=sticky(i,$event)>
-                '{{tweet.Body}}', by @{{tweet.Handle}} at {{tweet.Date}}
-                <span class="glyphicon glyphicon-minus" aria-hidden="true" (click)="removeTweet(i)"></span>
-            </li>
-        </ul>
+        <h3>Currently displayed tweets</h3>
+        <div class="displaytweets-container">
+            <table class="displaytweets-table">
+              <tr>
+                <th>Body</th>
+                <th>Name</th>
+                <th>Handle</th>
+                <th>Date</th>
+                <th>Profile Image</th>
+                <th>Attached Images</th>
+                <th>Sticky</th>
+                <th>Remove</th>
+              </tr>
+              <tr *ngFor="let tweet of activeTweets; let i=index">
+                <td class="body-row">
+                    {{tweet.Body}}
+                </td>
+                <td>
+                    {{tweet.Name}}
+                </td>
+                <td>
+                    {{tweet.Handle}}
+                </td>
+                <td>
+                    {{tweet.Date}}
+                </td>
+                <td>
+                    <img class="profile-image" src="{{tweet.ProfileImage}}"/>
+                </td>
+                <td>
+                    <div class="images-container">
+                        <img (click)="removeImage(i, imgIndex, img.Id)" class="small-img" *ngFor="let img of tweet.MediaList; let imgIndex=index" src="{{img.Url}}"/>
+                    </div>
+                </td>
+                <td>
+                    <input type="checkbox" [attr.checked]="tweet.StickyList.length > 0 ? true : null" (click)=sticky(i,$event)>
+                </td>
+                <td>
+                    <button type="button" (click)="removeTweet(i)">Remove</button>
+                </td>
+              </tr>
+            </table>
+        </div>
         `
 })
 export class ActiveTweets {
@@ -25,7 +61,7 @@ export class ActiveTweets {
     }
 
     removeTweet(index: number): void {
-        this.tweetStream.removeActiveTweet(this.activeTweets[index]);
+        this.tweetStream.removeActiveTweetFromDB(this.activeTweets[index]);
     }
 
     addTweet(tweet: Tweet): void {
@@ -39,5 +75,9 @@ export class ActiveTweets {
         else {
             this.tweetStream.removeSticky(this.activeTweets[index].Id);
         }
+    }
+
+    removeImage(tweetIndex: number, imageIndex: number, imageId: number): void {
+        this.tweetStream.removeTweetImage(tweetIndex, imageIndex, imageId);
     }
 }

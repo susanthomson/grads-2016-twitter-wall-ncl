@@ -81,6 +81,19 @@ export class TweetStreamMock {
         }
     }
 
+    removeActiveTweetFromDB(tweet: Tweet): void {
+        let index = this.activeTweets.indexOf(tweet);
+        if (index !== -1) {
+            this.activeTweets.splice(index, 1);
+            this.activeQueueChanged.next(this.activeTweets);
+        }
+    }
+
+    removeTweetImage(tweetIndex: number, imageIndex: number, imageId: number): void {
+        this.activeTweets[tweetIndex].MediaList.splice(imageIndex, 1);
+        this.activeQueueChanged.next(this.activeTweets);
+    }
+
     followTrack(keyword: string): void {
         let keywords: Array<{ Id: number, Value: string, Type: string }> = [];
         keywords.push({ Id: 1, Value: "", Type: "" });

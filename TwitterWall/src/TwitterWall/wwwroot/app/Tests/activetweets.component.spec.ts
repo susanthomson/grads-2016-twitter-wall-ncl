@@ -31,4 +31,11 @@ describe("Admin panel active tweets component", () => {
         fixture.detectChanges();
         expect(component.activeTweets.length).toEqual(0);
     });
+
+    it("Remove image", () => {
+        component.addTweet(new Tweet(0, 0, "", "", new Date(), "", "", [{ Id: 1, Url: "image url" }], []));
+        component.removeImage(0, 0, 1);
+        fixture.detectChanges();
+        expect(component.activeTweets[0].MediaList.length).toEqual(0);
+    });
 });

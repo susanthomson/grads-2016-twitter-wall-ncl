@@ -73,8 +73,13 @@ namespace TwitterWall.Repository
         {
             using (TweetContext context = GetContext())
             {
-                context.Tweets.Remove(Get(id));
-                context.SaveChanges();
+                Tweet tweet = Get(id);
+                if (tweet != null)
+                {
+                    context.Attach(tweet);
+                    context.Tweets.Remove(tweet);
+                    context.SaveChanges();
+                }
             }
         }
     }

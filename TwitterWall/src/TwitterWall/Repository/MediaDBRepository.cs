@@ -38,7 +38,7 @@ namespace TwitterWall.Repository
         {
             using (TweetContext context = GetContext())
             {
-                return context.MediaUrls.Where<MediaUrl>(exp);
+                return context.MediaUrls.Include(m=>m.Tweet).Where<MediaUrl>(exp).ToList();
             }
         }
 
@@ -56,8 +56,13 @@ namespace TwitterWall.Repository
         {
             using (TweetContext context = GetContext())
             {
-                context.MediaUrls.Remove(Get(id));
-                context.SaveChanges();
+                MediaUrl url = Get(id);
+                if (url != null)
+                {
+                    context.Attach(url);
+                    context.MediaUrls.Remove(url);
+                    context.SaveChanges();
+                }
             }
         }
 

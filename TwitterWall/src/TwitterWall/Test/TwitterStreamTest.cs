@@ -58,8 +58,10 @@ namespace TwitterWall.Test
         {
             stream.ConfigureStream();
             stream.Start();
-            System.Threading.Thread.Sleep(4000);
-            Assert.Equal(Tweetinvi.Models.StreamState.Running, stream.StreamStatus());
+            stream.GetStream().StreamStarted += (sender, args) =>
+            {
+                Assert.True(true);
+            };
         }
 
         [Fact]

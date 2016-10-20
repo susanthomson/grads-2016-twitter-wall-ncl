@@ -1,6 +1,7 @@
 ﻿import { Component } from "@angular/core";
 import { TweetStream } from "../Services/tweetstream.service";
 import { FormsModule } from "@angular/forms";
+import { Subscription } from "../Models/subscription";
 
 @Component({
     selector: "subscriptions",
@@ -52,8 +53,8 @@ import { FormsModule } from "@angular/forms";
 export class Subscriptions {
     inputTrack: any;
     inputUserId: any;
-    tracks: Array<{ Id: number, Value: string, Type: string }> = [];
-    priorityUsers: Array<{ Id: number, Value: string, Type: string }> = [];
+    tracks: Array<Subscription> = [];
+    priorityUsers: Array<Subscription> = [];
     errorMessage: string;
     streamRestart: boolean = false;
 

@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Subject } from "rxjs/Subject";
 import { Tweet } from "../Models/tweet";
 import { Queue } from "../Models/queue";
+import { Subscription } from "../Models/subscription";
 
 import "rxjs/add/operator/toPromise";
 
@@ -100,7 +101,7 @@ export class TweetStreamMock {
     }
 
     followTrack(keyword: string): void {
-        let keywords: Array<{ Id: number, Value: string, Type: string }> = [];
+        let keywords = Array<Subscription>();
         keywords.push({ Id: 1, Value: "", Type: "" });
         this.tracks.next(keywords);
     }
@@ -110,7 +111,7 @@ export class TweetStreamMock {
     }
 
     followUser(userId: string): void {
-        let keywords: Array<{ Id: number, Value: string, Type: string }> = [];
+        let keywords = Array<Subscription>();
         keywords.push({ Id: 1, Value: "", Type: "" });
         this.users.next(keywords);
     }

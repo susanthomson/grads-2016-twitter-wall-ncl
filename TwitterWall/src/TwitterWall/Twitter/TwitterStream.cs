@@ -45,8 +45,6 @@ namespace TwitterWall.Twitter
             stream.ClearFollows();
             stream.ClearTracks();
 
-            stream.AddFollow(Common.BRISTECH);
-
             foreach(Subscription s in _subRepo.GetAll())
             {
                 if (s.Type == Common.SubType.TRACK.ToString())
@@ -81,16 +79,11 @@ namespace TwitterWall.Twitter
         public void AddUserCredentials(UserCredential user)
         {
             UserCredential uc;
-            if ((uc = Users.Find(u => u.Handle == user.Handle)) == null)
-            {
-                Users.Add(user);
-            }
-            else
+            if ((uc = Users.Find(u => u.Handle == user.Handle)) != null)
             {
                 Users.Remove(uc);
-                Users.Add(user);
             }
-
+            Users.Add(user);
         }
 
         public bool ChangeUserCredentials(string handle, string hash)
@@ -166,12 +159,12 @@ namespace TwitterWall.Twitter
             _subRepo.Add(new Subscription(keyword, Common.SubType.TRACK.ToString()));
         }
 
-        public Boolean AddPriorityUser(string userId)
+        public Boolean AddPriorityUser(string handle)
         {
-            var user = User.GetUserFromScreenName(userId);
+            var user = Tweetinvi.User.GetUserFromScreenName(handle);
             if (user != null)
             {
-                _subRepo.Add(new Subscription(userId, user.Id, Common.SubType.PERSON.ToString()));
+                _subRepo.Add(new Subscription(handle, user.Id, Common.SubType.PERSON.ToString()));
                 return true;
             }
             return false;
@@ -179,12 +172,12 @@ namespace TwitterWall.Twitter
 
         public List<Subscription> GetTracks()
         {
-            return _subRepo.GetAll(Common.SubType.TRACK).ToList();
+            return _subRepo.Find(s => s.Type == Common.SubType.TRACK.ToString()).ToList();
         }
 
         public List<Subscription> GetPriorityUsers()
         {
-            return _subRepo.GetAll(Common.SubType.PERSON).ToList();
+            return _subRepo.Find(s => s.Type == Common.SubType.PERSON.ToString()).ToList();
         }
 
         public void RemoveSubscription(int id)

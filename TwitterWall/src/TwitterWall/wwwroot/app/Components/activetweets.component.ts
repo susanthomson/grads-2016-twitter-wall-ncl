@@ -6,9 +6,8 @@ import { TweetStream } from "../Services/tweetstream.service";
 @Component({
     selector: "active-tweets",
     template: `
-        <h3>Currently displayed tweets</h3>
-        <div class="displaytweets-container">
-            <table class="displaytweets-table">
+            <table class="table">
+              <tbody>
               <tr>
                 <th>Body</th>
                 <th>Name</th>
@@ -47,8 +46,8 @@ import { TweetStream } from "../Services/tweetstream.service";
                     <button type="button" (click)="removeTweet(i)">Remove</button>
                 </td>
               </tr>
+              </tbody>
             </table>
-        </div>
         `
 })
 export class ActiveTweets {

@@ -2,7 +2,6 @@
 import { BufferTweets } from "../Components/buffertweets.component";
 import { TestBed, ComponentFixture, inject } from "@angular/core/testing";
 import { Tweet } from "../Models/tweet";
-import { Person } from "../Models/person";
 import { TweetStreamMock } from "../Services/tweetstream.service.mock";
 import { TweetStream } from "../Services/tweetstream.service";
 
@@ -42,23 +41,12 @@ describe("Admin panel buffer tweets component", () => {
         expect(component.isTweetApproved(0)).toEqual(true);
     });
 
-    it("Consume a normal tweet", () => {
+    it("Consume a tweet", () => {
         component.bufferTweets.push(new Tweet(0, 0, "", "", new Date(), "", "", [], []));
-        fixture.detectChanges();
         component.changeApproval(0);
         component.popFirst();
+        fixture.detectChanges();
         expect(component.bufferTweets.length).toEqual(0);
     });
 
-    it("Consume a speaker's tweet", () => {
-        component.bufferTweets.push(new Tweet(0, 0, "", "someone", new Date(), "", "", [], []));
-        component.bufferTweets.push(new Tweet(0, 0, "", "noone", new Date(), "", "", [], []));
-        let newTweet = new Tweet(0, 0, "", "testuser", new Date(), "", "", [], []);
-        component.bufferTweets.push(newTweet);
-        component.bufferUsers.push(new Person(2, "testuser"));
-        fixture.detectChanges();
-        component.changeApproval(0);
-        let testTweet = component.popFirst();
-        expect(testTweet).toEqual(newTweet);
-    });
 });

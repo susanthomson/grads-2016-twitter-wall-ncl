@@ -33,36 +33,36 @@ namespace TwitterWall.Hubs
             GetTracks();
         }
 
-        public void FollowUser(string userId)
+        public void FollowUser(string handle)
         {
-            if (!stream.AddPriorityUser(userId))
+            if (!stream.AddPriorityUser(handle))
             {
-                Clients.Caller.notRealUser("That user does not exist!");
+                Clients.Caller.invalidUser("That user does not exist!");
             }
-            GetPriorityUsers();
+            else
+            {
+                GetPriorityUsers();
+            }
         }
 
         public void RemoveSubscription(int id, string type)
         {
             Subscription subscription = stream._subRepo.Find(sub => sub.Id == id).First();
-            if (subscription.Type == Common.SubType.TRACK.ToString())
+            if (subscription != null)
             {
                 stream.RemoveSubscription(id);
-                GetTracks();
-            }
-            else if(subscription.Type == Common.SubType.PERSON.ToString())
-            {
-                stream.RemoveSubscription(id);
-                GetPriorityUsers();
+                if (subscription.Type == Common.SubType.TRACK.ToString())
+                {
+                    GetTracks();
+                }
+                else if (subscription.Type == Common.SubType.PERSON.ToString())
+                {
+                    GetPriorityUsers();
+                }
             }
 
         }
 
-        public void RemoveUser(int userId)
-        {
-            stream.RemoveSubscription(userId);
-            GetTracks();
-        }
 
         public void RemoveTweet(long id)
         {

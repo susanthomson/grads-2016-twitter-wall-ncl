@@ -25,6 +25,7 @@ export class TweetStream {
     public tracksReceived$ = this.tracks.asObservable();
 
     private users = new Subject<any[]>();
+    private priorityUsers = [];
     public usersReceived$ = this.users.asObservable();
 
     private errorMessage = new Subject<string>();
@@ -47,10 +48,9 @@ export class TweetStream {
 
         this.conn.client.receiveUsers = (users) => {
             this.users.next(users);
+            this.priorityUsers = users;
         };
 
-        this.conn.client.stickyChanged = (newTweet: Tweet) => {
-            this.activeTweets.some((tweet, i) => {
         this.conn.client.tweetChanged = (newTweet: Tweet) => {
             let success = this.activeTweets.some((tweet, i) => {
                 if (tweet.Id === newTweet.Id) {
@@ -77,9 +77,9 @@ export class TweetStream {
             }
         };
 
-        this.conn.client.notRealUser = (errMessage: string) => {
+        this.conn.client.invalidUser = (errMessage: string) => {
             this.errorMessage.next(errMessage);
-        }
+        };
 
         $.connection.hub.start().done(() => {
             this.init.next(true);
@@ -124,7 +124,7 @@ export class TweetStream {
         return this.activeTweets;
     }
 
-    addActiveTweet(tweet: Tweet): boolean {        
+    addActiveTweet(tweet: Tweet): boolean { 
         if (tweet && this.activeTweets.length < this.activeQueueSize) {
             this.activeTweets.push(tweet);
             this.activeQueueChanged.next(this.activeTweets);
@@ -154,7 +154,12 @@ export class TweetStream {
     }
 
     addTweet(tweet: Tweet): void {
-        this.tweetsQueue.push(tweet);
+
+        let priority = this.priorityUsers.some((el, index) => {
+                return el.Value === tweet.Handle;
+            }
+        );
+        priority ? this.tweetsQueue.unshift(tweet) : this.tweetsQueue.push(tweet);
         this.queueChanged.next(this.tweetsQueue);
     }
 
@@ -166,7 +171,7 @@ export class TweetStream {
         }
     }
 
-    followTrack(keyword: string): void {
+   followTrack(keyword: string): void {
         if (keyword.length < 60) {
             this.conn.server.followTrack(keyword);
         }
@@ -176,9 +181,8 @@ export class TweetStream {
         this.conn.server.getTracks();
     }
 
-
-   followUser(userId: string): void {
-        this.conn.server.followUser(userId);
+   followUser(handle: string): void {
+        this.conn.server.followUser(handle);
     }
 
     getUsers(): void {

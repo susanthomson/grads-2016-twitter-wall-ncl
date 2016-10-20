@@ -88,6 +88,22 @@ namespace TwitterWall.Migrations
                     b.ToTable("Tweets");
                 });
 
+            modelBuilder.Entity("TwitterWall.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Handle");
+
+                    b.Property<string>("Type");
+
+                    b.Property<long>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("TwitterWall.Models.MediaUrl", b =>
                 {
                     b.HasOne("TwitterWall.Models.Tweet", "Tweet")

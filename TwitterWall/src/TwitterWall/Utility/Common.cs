@@ -13,5 +13,7 @@ namespace TwitterWall.Utility
             TRACK,
             PERSON
         }
+
+        public static readonly string BanType = "BANNED";
     }
 }

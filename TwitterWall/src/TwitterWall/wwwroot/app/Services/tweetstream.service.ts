@@ -31,6 +31,9 @@ export class TweetStream {
     private errorMessage = new Subject<string>();
     public errorMessageReceived$ = this.errorMessage.asObservable();
 
+    private bannedUsers = new Subject<any[]>();
+    public bannedUsersReceived$ = this.bannedUsers.asObservable();
+
     private init = new Subject<boolean>();
     public initialisationChanged$ = this.init.asObservable();
     private initialised: boolean = false;
@@ -49,6 +52,10 @@ export class TweetStream {
         this.conn.client.receiveUsers = (users) => {
             this.users.next(users);
             this.priorityUsers = users;
+        };
+
+        this.conn.client.receiveBannedUsers = (bannedUsers) => {
+            this.bannedUsers.next(bannedUsers);
         };
 
         this.conn.client.tweetChanged = (newTweet: Tweet) => {
@@ -79,6 +86,16 @@ export class TweetStream {
 
         this.conn.client.invalidUser = (errMessage: string) => {
             this.errorMessage.next(errMessage);
+        };
+
+        this.conn.client.userBanned = (users: any) => {
+            for (const tweet of this.activeTweets) {
+                if (tweet.Handle === users[users.length-1].Handle) this.removeActiveTweet(tweet);
+            }
+            for (const tweet of this.tweetsQueue) {
+                if (tweet.Handle === users[users.length-1].Handle) this.removeTweet(tweet);
+            }
+            this.bannedUsers.next(users);
         };
 
         $.connection.hub.start().done(() => {
@@ -124,7 +141,7 @@ export class TweetStream {
         return this.activeTweets;
     }
 
-    addActiveTweet(tweet: Tweet): boolean { 
+    addActiveTweet(tweet: Tweet): boolean {
         if (tweet && this.activeTweets.length < this.activeQueueSize) {
             this.activeTweets.push(tweet);
             this.activeQueueChanged.next(this.activeTweets);
@@ -187,6 +204,10 @@ export class TweetStream {
 
     getUsers(): void {
         this.conn.server.getPriorityUsers();
+   }
+
+    getBannedUsers(): void {
+        this.conn.server.getBannedUsers();
     }
 
     removeSubscription(id: number, type: string): void {
@@ -216,5 +237,13 @@ export class TweetStream {
 
     removeActiveTweetFromDB(tweet: Tweet): void {
         this.conn.server.removeTweet(tweet.Id);
+    }
+
+    banUser(tweet: Tweet): void {
+        this.conn.server.banUser(tweet);
+    }
+
+    removeBannedUser(userId: number) {
+        this.conn.server.removeBannedUser(userId);
     }
 }

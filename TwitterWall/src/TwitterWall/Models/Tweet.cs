@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Newtonsoft.Json;
 
 namespace TwitterWall.Models
 {
@@ -15,7 +14,7 @@ namespace TwitterWall.Models
 
         }
 
-        public Tweet(long tweetId, string body, string handle, DateTime date, string name, string profileImage)
+        public Tweet(long tweetId, string body, string handle, DateTime date, string name, string profileImage, long userId)
         {
             this.TweetId = tweetId;
             this.Body = body;
@@ -23,6 +22,7 @@ namespace TwitterWall.Models
             this.Date = date;
             this.Name = name;
             this.ProfileImage = profileImage;
+            this.UserId = userId;
         }
 
         [Key]
@@ -34,6 +34,7 @@ namespace TwitterWall.Models
         public DateTime Date { get; set; }
         public string Name { get; set; }
         public string ProfileImage { get; set; }
+        public long UserId { get; set; }
         
         public ICollection<MediaUrl> MediaList { get; set; }
         public ICollection<Sticky> StickyList { get; set; }

@@ -2,6 +2,7 @@
 import { Tweet } from "../Models/tweet";
 import { ActiveTweets } from "./activetweets.component";
 import { BufferTweets } from "./buffertweets.component";
+import { BannedUsers } from "./bannedusers.component";
 import { TwitterLogin } from "../Services/twitterlogin.service";
 import { TweetStream } from "../Services/tweetstream.service";
 
@@ -31,6 +32,7 @@ import { TweetStream } from "../Services/tweetstream.service";
                     </div>
                     <div class="col-sm-6">
                         <subscriptions></subscriptions>
+                        <banned-users></banned-users>
                 </div>
             </div>
         </div>

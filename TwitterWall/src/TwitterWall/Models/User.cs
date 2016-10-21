@@ -9,6 +9,17 @@ namespace TwitterWall.Models
 {
     public class User
     {
+        public User()
+        {
+            
+        }
+
+        public User(long userId, string handle)
+        {
+            this.UserId = userId;
+            this.Handle = handle;
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }

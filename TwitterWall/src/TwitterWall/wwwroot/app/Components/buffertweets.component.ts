@@ -10,6 +10,7 @@ import { TweetStream } from "../Services/tweetstream.service";
             <li *ngFor="let tweet of bufferTweets; let i=index" (click)="changeApproval(i)" [ngClass]="{'approved': isTweetApproved(i)}">
                 '{{tweet.Body}}', by @{{tweet.Handle}} at {{tweet.Date}}
                 <span class="glyphicon glyphicon-minus" aria-hidden="true" (click)="removeTweet(i)"></span>
+                <span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true" (click)="banUser(tweet)"></span>
             </li>
         </ul>
         `
@@ -48,5 +49,9 @@ export class BufferTweets {
  
     removeTweet(index: number): void {
         this.tweetStream.removeTweet(this.bufferTweets[index]);
+    }
+
+    banUser(tweet) {
+        this.tweetStream.banUser(tweet);
     }
 }

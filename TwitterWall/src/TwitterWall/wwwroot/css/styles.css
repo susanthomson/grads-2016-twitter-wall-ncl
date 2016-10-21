@@ -1,7 +1,9 @@
 ﻿body {
-    background: #fff;
-    color: black;
     font-family: Raleway;
+    position: absolute;
+    top:    0; bottom:  0;
+    left:   0; right:   0;
+    overflow: hidden;
 }
 
 .tweetcards {
@@ -11,7 +13,6 @@
 }
 
 #tweet-display-group {
-    background: rgba(245, 245, 245, 1);
     position: absolute;
     color: black;
     border-radius: 50%;
@@ -26,14 +27,23 @@
 }
 
 #tweet-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: absolute;
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
 
 #bubble-canvas {
-    position: relative;
-    background-color: black;
+    background-color: #eee;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
 
 #tweet-body {
@@ -66,19 +76,20 @@ h2, h3 {
     margin-bottom: 25px;
 }
 
-.profile-image {
+.profile-image, #profile-image-bubble {
     border-radius: 50%;
     vertical-align: top;
     width: 80px;
     height: 80px;
 }
 
-.show {
-    opacity: 1 !important;
+.main-tweet.visible {
+    opacity: 1;
+    transition: cubic-bezier(0.75, 0.045, 0.25, 1) 3.9s all;
 }
 
-.step {
-    transition: ease-in 0.5s all;
+.main-tweet {
+    transition: cubic-bezier(0.75, 0.045, 0.25, 1) 3.2s all;
     opacity: 0;
 }
 
@@ -94,12 +105,23 @@ h2, h3 {
     color: green;
 }
 
-#get-involved-text {
-    color: white;
-    font-size: 30px;
-    margin-top: -45px;
+#brand {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    color: #777;
+    font-size: 20px;
     font-weight: 500;
-    margin-left: 5px;
+    text-align: left;
+}
+#brand img {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 10px;
+    border-radius: 50%;
+}
+#brand span {
+    display: block;
 }
 
 #twitter-logo {
@@ -111,12 +133,12 @@ h2, h3 {
 .attached-images img {
     max-width: 250px;
     max-height: 150px;
-    padding: 5px;   
+    padding: 5px;
 }
 
 .attached-images {
-    margin-top: 20px; 
-    max-width: 500px; 
+    margin-top: 20px;
+    max-width: 500px;
     max-height: 300px;
 }
 

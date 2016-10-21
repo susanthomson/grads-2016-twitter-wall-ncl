@@ -1,35 +1,30 @@
 import { Vector } from "../Models/vector";
 
 export class NodeFunctions {
-    static decreaseRadius(node, minRadius, step, context): void {
+    static decreaseRadius(node, minRadius, radius, context): void {
         if (node.radius <= minRadius) {
             node.isDecreasing = false;
             node.isDisplayed = false;
+            node.isTranslating = false;
             node.isFixed = false;
-            context.translationPoint = 0;
-            context.points = [];
             return;
         }
-        node.radius -= step;
+        node.radius = radius;
     };
 
-    static increaseRadius(node, maxRadius, step, timeToDisplay, context): void {
+    static increaseRadius(node, maxRadius, radius, timeToDisplay, context): void {
         if (node.radius >= maxRadius) {
             node.isIncreasing = false;
             setTimeout(() => {
                 context.showTweet = false;
-
-                // Set time for circle to decrease to be after tweet fades
-                setTimeout(() => {
-                    node.isDecreasing = true;
-                }, 1000);
+                node.isDecreasing = true;
+                node.scaleStartTime = Date.now();
             }, timeToDisplay);
-            context.showTweet = true;
             return;
         }
+        context.showTweet = true;
         node.isDisplayed = true;
-        node.isFixed = true;
-        node.radius += step;
+        node.radius = radius;
     };
 
     static collide(nodes): void {
@@ -49,34 +44,22 @@ export class NodeFunctions {
                     let collision = node1Pos.subtract(node2Pos);
                     let norm = collision.divide(nodeDistance);
 
-                    nodes[i].x = node.x + (norm.x * (pen / 2));
-                    nodes[i].y = node.y + (norm.y * (pen / 2));
-                    nodes[j].x = node2.x - (norm.x * (pen / 2));
-                    nodes[j].y = node2.y - (norm.y * (pen / 2));
+                    if (node.isTranslating || node.isDisplayed) {
+                        node2.x = node2.x - (norm.x * (pen / 2)) * 2;
+                        node2.y = node2.y - (norm.y * (pen / 2)) * 2;
+                    }
+                    else if (node2.isTranslating || node2.isDisplayed) {
+                        node.x = node.x + (norm.x * (pen / 2)) * 2;
+                        node.y = node.y + (norm.y * (pen / 2)) * 2;
+                    }
+                    else {
+                        node.x = node.x + (norm.x * (pen / 2));
+                        node.y = node.y + (norm.y * (pen / 2));
+                        node2.x = node2.x - (norm.x * (pen / 2));
+                        node2.y = node2.y - (norm.y * (pen / 2));
+                    }
                 }
             }
         }
-    };
-
-    static generateTranslation(p1: Vector, p2: Vector, frames): Vector[] {
-        if (p1.x === p2.x && p1.y === p2.y) {
-            return [];
-        }
-
-        // Need to add extra step for last position
-        frames = frames - 1;
-
-        let dx = p2.x - p1.x;
-        let dy = p2.y - p1.y;
-        let incrementX = dx / frames;
-        let incrementY = dy / frames;
-        let a = new Array();
-
-        a.push(p1);
-        for (let frame = 0; frame < frames - 1; frame++) {
-            a.push(new Vector(p1.x + (incrementX * frame), p1.y + (incrementY * frame)));
-        }
-        a.push(p2);
-        return (a);
     };
 }

@@ -4,9 +4,9 @@ import { Tweet } from "../Models/tweet";
 @Component({
     selector: "[tweet-display]",
     template: `
-        <div id="tweet-display-group">
+        <div id="tweet-display-group" class="main-tweet" [style.transform]="currentScale()" [class.visible]="showTweet">
             <div>
-                <img class="profile-image" src="{{tweet.ProfileImage}}"/>
+                <img id="profile-image-bubble" src="{{tweet.ProfileImage}}"/>
                 <div class="names-container">
                     <h2 id="name">{{tweet.Name}}</h2>
                     <img id="twitter-logo" src="../../img/Twitter_Social_Icon_Blue.png">
@@ -23,15 +23,20 @@ import { Tweet } from "../Models/tweet";
 })
 export class TweetDisplay implements OnChanges {
     @Input() tweet: Tweet;
+    @Input() showTweet: boolean;
+    @Input() bubbleSize: number;
+    @Input() maxBubbleSize: number;
+
     tweetbody = "Error";
     time = "Error";
     @ViewChild("tweetbody") tweetbodyelem: ElementRef;
 
     ngOnChanges(changes) {
-        this.tweet.Body = this.tweet.Body.replace(/[A-Za-z]+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~\?\/.=]+/g, "<span class='url'>$&</span>");
-        this.tweet.Body = this.tweet.Body.replace(/(@\S+)/g, "<span class='mention'>$&</span>");
-        this.tweet.Body = this.tweet.Body.replace(/(#\S+)/g, "<span class='hashtag'>$&</span>");
-        this.tweetbodyelem.nativeElement.innerHTML = this.tweet.Body;
+        this.tweetbody = this.tweet.Body;
+        this.tweetbody = this.tweetbody.replace(/[A-Za-z]+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~\?\/.=]+/g, "<span class='url'>$&</span>");
+        this.tweetbody = this.tweetbody.replace(/(@\S+)/g, "<span class='mention'>$&</span>");
+        this.tweetbody = this.tweetbody.replace(/(#\S+)/g, "<span class='hashtag'>$&</span>");
+        this.tweetbodyelem.nativeElement.innerHTML = this.tweetbody;
 
         this.tweet.Date = new Date(this.tweet.Date.toString());
         let offset = (new Date()).getTimezoneOffset() / 60;
@@ -56,5 +61,11 @@ export class TweetDisplay implements OnChanges {
             let plural = diffSeconds !== 1 ? "s" : "";
             this.time = diffSeconds + " second" + plural + " ago";
         }
+    }
+
+    currentScale(): string {
+        return this.showTweet
+            ? "scale(1)"
+            : `scale(${this.bubbleSize / this.maxBubbleSize})`;
     }
 };

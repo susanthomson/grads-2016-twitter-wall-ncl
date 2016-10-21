@@ -19,6 +19,7 @@ namespace TwitterWall.Twitter
         public MediaDBRepository _mediaRepo = new MediaDBRepository();
         public TweetDBRepository _tweetRepo = new TweetDBRepository();
         public SubscriptionDBRepository _subRepo = new SubscriptionDBRepository();
+        public UserDBRepository _userRepo = new UserDBRepository();
 
         private const string CONSUMER_KEY = "CONSUMER_KEY";
         private const string CONSUMER_SECRET = "CONSUMER_SECRET";
@@ -56,22 +57,31 @@ namespace TwitterWall.Twitter
                      stream.AddFollow(s.TwitterId);       
                 }
             }
-         
 
             stream.MatchingTweetReceived += (sender, args) =>
             {
-                Models.Tweet newTweet = new Models.Tweet(args.Tweet.Id, args.Tweet.FullText, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt, args.Tweet.CreatedBy.Name, args.Tweet.CreatedBy.ProfileImageUrlFullSize);
-                TwitterWall.Models.Tweet result = _tweetRepo.Find(obj => obj.TweetId == newTweet.TweetId).SingleOrDefault();
-                if (result == null)
+                Models.User isBannedUser = _userRepo.Find(b => (b.UserId == args.Tweet.CreatedBy.Id) && b.Type == Common.BanType).SingleOrDefault();
+                if (isBannedUser != null)
                 {
-                    _tweetRepo.Add(newTweet);
-                    _mediaRepo.AddFromTweet(args.Tweet);
+                    return;
+                }
 
-                    // Invoke receiveTweet method on client side
-                    if (TweetsController._connectionManager != null)
-                    {
-                        TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.All.receiveTweet(_tweetRepo.Find(t => t.TweetId == newTweet.TweetId).SingleOrDefault());
-                    }
+                Models.Tweet newTweet = new Models.Tweet(args.Tweet.Id, args.Tweet.FullText,
+                    args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt, args.Tweet.CreatedBy.Name,
+                    args.Tweet.CreatedBy.ProfileImageUrlFullSize, args.Tweet.CreatedBy.Id);
+                Models.Tweet result = _tweetRepo.Find(obj => obj.TweetId == newTweet.TweetId).SingleOrDefault();
+
+                if (result != null)
+                {
+                    return;
+                }
+
+                _tweetRepo.Add(newTweet);
+                _mediaRepo.AddFromTweet(args.Tweet);
+                if (TweetsController._connectionManager != null)
+                {
+                    TweetsController._connectionManager.GetHubContext<TwitterHub>()
+                        .Clients.All.receiveTweet(_tweetRepo.Find(t => t.TweetId == newTweet.TweetId).SingleOrDefault());
                 }
             };
         }
@@ -178,6 +188,11 @@ namespace TwitterWall.Twitter
         public List<Subscription> GetPriorityUsers()
         {
             return _subRepo.Find(s => s.Type == Common.SubType.PERSON.ToString()).ToList();
+        }
+
+        public List<Models.User> GetBannedUsers()
+        {
+            return _userRepo.Find(u => u.Type == Common.BanType).ToList();
         }
 
         public void RemoveSubscription(int id)

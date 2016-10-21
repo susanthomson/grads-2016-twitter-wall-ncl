@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TwitterWall.Context;
 using TwitterWall.Models;
 using TwitterWall.Repository;

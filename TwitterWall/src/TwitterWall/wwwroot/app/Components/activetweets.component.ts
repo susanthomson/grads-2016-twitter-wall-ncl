@@ -6,7 +6,8 @@ import { TweetStream } from "../Services/tweetstream.service";
 @Component({
     selector: "active-tweets",
     template: `
-            <table class="table">
+            <div class="table-responsive">
+            <table class="table table-condensed">
               <tbody>
               <tr>
                 <th>Body</th>
@@ -17,6 +18,7 @@ import { TweetStream } from "../Services/tweetstream.service";
                 <th>Attached Images</th>
                 <th>Sticky</th>
                 <th>Remove</th>
+                <th>Ban User</th>
               </tr>
               <tr *ngFor="let tweet of activeTweets; let i=index">
                 <td class="body-row">
@@ -43,11 +45,15 @@ import { TweetStream } from "../Services/tweetstream.service";
                     <input type="checkbox" [attr.checked]="tweet.StickyList.length > 0 ? true : null" (click)=sticky(i,$event)>
                 </td>
                 <td>
-                    <button type="button" (click)="removeTweet(i)">Remove</button>
+                    <button type="button" class="btn btn-warning" (click)="removeTweet(i)">Remove Tweet</button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" (click)="this.banUser(tweet)">Ban user</button>
                 </td>
               </tr>
               </tbody>
             </table>
+        </div>
         `
 })
 export class ActiveTweets {
@@ -78,5 +84,9 @@ export class ActiveTweets {
 
     removeImage(tweetIndex: number, imageIndex: number, imageId: number): void {
         this.tweetStream.removeTweetImage(tweetIndex, imageIndex, imageId);
+    }
+
+    banUser(tweet) {
+        this.tweetStream.banUser(tweet);
     }
 }

@@ -28,6 +28,8 @@ export class TweetStreamMock {
     private users = new Subject<any[]>();
     public usersReceived$ = this.users.asObservable();
 
+    private bannedUsers = new Subject<any[]>();
+    public bannedUsersReceived$ = this.bannedUsers.asObservable();
 
     private errorMessage = new Subject<string>();
     public errorMessageReceived$ = this.errorMessage.asObservable();
@@ -131,5 +133,17 @@ export class TweetStreamMock {
 
     isInitialised(): boolean {
         return true;
+    }
+
+    getBannedUsers(): void {
+        this.bannedUsers.next([]);
+    }
+
+    banUser(handle: string): void {
+        this.bannedUsers.next([handle]);
+    }
+
+    removeBannedUser(userId: number) {
+        this.bannedUsers.next([]);
     }
 }

@@ -11,6 +11,7 @@ import { RouterModule }   from "@angular/router";
 import { BufferTweets } from "./Components/buffertweets.component";
 import { ActiveTweets } from "./Components/activetweets.component";
 import { Subscriptions } from "./Components/subscriptions.component";
+import { BannedUsers } from "./Components/bannedusers.component";
 import { FormsModule } from "@angular/forms";
 import { TwitterLogin } from "./Services/twitterlogin.service";
 
@@ -20,7 +21,7 @@ import { TwitterLogin } from "./Services/twitterlogin.service";
             { path: "admin", component: AdminPanelComponent }
         ])
     ],
-    declarations: [AppComponent, BubbleComponent, TweetDisplay, AdminPanelComponent, BufferTweets, ActiveTweets, Subscriptions],
+    declarations: [AppComponent, BubbleComponent, TweetDisplay, AdminPanelComponent, BufferTweets, ActiveTweets, Subscriptions, BannedUsers],
     providers: [TweetStream, TweetStreamMock, TwitterLogin],
     bootstrap: [AppComponent]
 })

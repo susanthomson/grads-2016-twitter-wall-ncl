@@ -63,7 +63,6 @@ namespace TwitterWall.Hubs
 
         }
 
-
         public void RemoveTweet(long id)
         {
             stream._tweetRepo.Remove(id);
@@ -78,6 +77,11 @@ namespace TwitterWall.Hubs
         public void GetPriorityUsers()
         {
             Clients.All.receiveUsers(stream.GetPriorityUsers());
+        }
+
+        public void GetBannedUsers()
+        {
+            Clients.All.receiveBannedUsers(stream.GetBannedUsers());
         }
 
         public void RestartStream()
@@ -104,6 +108,29 @@ namespace TwitterWall.Hubs
             if (tweet != null)
             {
                 Clients.All.tweetChanged(tweet);
+            }
+        }
+
+        public void BanUser(Tweet tweet)
+        {
+            Tweet serverTweet = stream._tweetRepo.Get(tweet.Id);
+            User alreadyBanned = stream._userRepo.Find(user => user.UserId == serverTweet.UserId).SingleOrDefault();
+            if (alreadyBanned == null)
+            {
+                User newUser = new User(serverTweet.UserId, serverTweet.Handle);
+                newUser.Type = Common.BanType;
+                stream._userRepo.Add(newUser);
+                Clients.All.userBanned(stream.GetBannedUsers());
+            }
+        }
+
+        public void RemoveBannedUser(int bannedUserId)
+        {
+            User bannedUser = stream._userRepo.Get(bannedUserId);
+            if (bannedUser != null)
+            {
+                stream._userRepo.Remove(bannedUserId);
+                GetBannedUsers();
             }
         }
     }

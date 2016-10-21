@@ -53,6 +53,8 @@ namespace TwitterWall.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<long>("TwitterId");
+
                     b.Property<string>("Type")
                         .IsRequired();
 

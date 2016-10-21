@@ -24,6 +24,13 @@ export class TweetStream {
     private tracks = new Subject<any[]>();
     public tracksReceived$ = this.tracks.asObservable();
 
+    private users = new Subject<any[]>();
+    private priorityUsers = [];
+    public usersReceived$ = this.users.asObservable();
+
+    private errorMessage = new Subject<string>();
+    public errorMessageReceived$ = this.errorMessage.asObservable();
+
     private init = new Subject<boolean>();
     public initialisationChanged$ = this.init.asObservable();
     private initialised: boolean = false;
@@ -35,8 +42,13 @@ export class TweetStream {
             this.addTweet(tweet);
         };
 
-        this.conn.client.receivetracks = (tracks) => {
+        this.conn.client.receiveTracks = (tracks) => {
             this.tracks.next(tracks);
+        };
+
+        this.conn.client.receiveUsers = (users) => {
+            this.users.next(users);
+            this.priorityUsers = users;
         };
 
         this.conn.client.tweetChanged = (newTweet: Tweet) => {
@@ -63,6 +75,10 @@ export class TweetStream {
             if (success) {
                 this.activeQueueChanged.next(this.activeTweets);
             }
+        };
+
+        this.conn.client.invalidUser = (errMessage: string) => {
+            this.errorMessage.next(errMessage);
         };
 
         $.connection.hub.start().done(() => {
@@ -108,7 +124,7 @@ export class TweetStream {
         return this.activeTweets;
     }
 
-    addActiveTweet(tweet: Tweet): boolean {
+    addActiveTweet(tweet: Tweet): boolean { 
         if (tweet && this.activeTweets.length < this.activeQueueSize) {
             this.activeTweets.push(tweet);
             this.activeQueueChanged.next(this.activeTweets);
@@ -138,7 +154,12 @@ export class TweetStream {
     }
 
     addTweet(tweet: Tweet): void {
-        this.tweetsQueue.push(tweet);
+
+        let priority = this.priorityUsers.some((el, index) => {
+                return el.Value === tweet.Handle;
+            }
+        );
+        priority ? this.tweetsQueue.unshift(tweet) : this.tweetsQueue.push(tweet);
         this.queueChanged.next(this.tweetsQueue);
     }
 
@@ -150,7 +171,7 @@ export class TweetStream {
         }
     }
 
-    followTrack(keyword: string): void {
+   followTrack(keyword: string): void {
         if (keyword.length < 60) {
             this.conn.server.followTrack(keyword);
         }
@@ -160,8 +181,16 @@ export class TweetStream {
         this.conn.server.getTracks();
     }
 
-    removeTrack(keyword: number): void {
-        this.conn.server.removeTrack(keyword);
+   followUser(handle: string): void {
+        this.conn.server.followUser(handle);
+    }
+
+    getUsers(): void {
+        this.conn.server.getPriorityUsers();
+    }
+
+    removeSubscription(id: number, type: string): void {
+        this.conn.server.removeSubscription(id, type);
     }
 
     restartStream(): void {

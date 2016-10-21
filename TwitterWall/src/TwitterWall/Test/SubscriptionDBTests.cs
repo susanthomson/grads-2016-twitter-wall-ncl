@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TwitterWall.Context;
 using TwitterWall.Models;
 using TwitterWall.Repository;
+using TwitterWall.Utility;
 using Xunit;
 
 namespace TwitterWall.Test
@@ -50,7 +51,7 @@ namespace TwitterWall.Test
             // Act
             var result = repo.Get(newSubscription.Id);
 
-            // Asert
+            // Assert
             Assert.Equal(result, newSubscription);
         }
 
@@ -77,7 +78,7 @@ namespace TwitterWall.Test
             // Act
             repo.Remove(3);
 
-            // Asert
+            // Assert
             Assert.Equal(0, subscriptions.Count);
         }
 
@@ -103,8 +104,58 @@ namespace TwitterWall.Test
             // Act
             var result = repo.Get(newSubscription.Id);
 
-            // Asert
+            // Assert
             Assert.Equal(result, newSubscription);
+        }
+
+        [Fact]
+        public void TestGetAllTracks()
+        {
+            Subscription newTrack = new Subscription() { Id = 3, Value = "A", Type = Common.SubType.TRACK.ToString() };
+            Subscription newSpeaker = new Subscription() { Id = 4, Value = "A", Type = Common.SubType.PERSON.ToString() };
+
+            //Setup
+            var subscriptions = new List<Subscription>()
+            {
+                newTrack, newSpeaker
+            };
+            var data = subscriptions.AsQueryable();
+            var mockSet = setUpAsQueriable(data);
+            var mockContext = new Mock<TweetContext>();
+            mockContext.Setup(c => c.Subscriptions).Returns(mockSet.Object);
+
+            // Arrange
+            SubscriptionDBRepository repo = new SubscriptionDBRepository(mockContext.Object);
+            // Act
+            var result = repo.Find(s => s.Type == Common.SubType.TRACK.ToString());
+
+
+            // Assert
+            Assert.Equal(result.ToList().First(), newTrack);
+        }
+
+        [Fact]
+        public void CheckTwitterId()
+        {
+            Subscription newSubscription = new Subscription() { Id = 3, Value = "Track", Type = "Track" };
+            //Setup
+            var subscriptions = new List<Subscription>()
+            {
+                newSubscription
+            };
+            var data = subscriptions.AsQueryable();
+            var mockSet = setUpAsQueriable(data);
+
+            var mockContext = new Mock<TweetContext>();
+            mockContext.Setup(c => c.Subscriptions).Returns(mockSet.Object);
+
+            // Arrange
+            SubscriptionDBRepository repo = new SubscriptionDBRepository(mockContext.Object);
+            // Act
+            var result = repo.Get(3);
+
+            // Assert
+            Assert.Equal(result.TwitterId, 0);
         }
 
         [Fact]
@@ -129,7 +180,7 @@ namespace TwitterWall.Test
             // Act
             var result = repo.Get(6);
 
-            // Asert
+            // Assert
             Assert.Null(result);
         }
     }

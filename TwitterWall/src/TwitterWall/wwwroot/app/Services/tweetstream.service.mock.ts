@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Subject } from "rxjs/Subject";
 import { Tweet } from "../Models/tweet";
 import { Queue } from "../Models/queue";
+import { Subscription } from "../Models/subscription";
 
 import "rxjs/add/operator/toPromise";
 
@@ -24,9 +25,18 @@ export class TweetStreamMock {
     private tracks = new Subject<any[]>();
     public tracksReceived$ = this.tracks.asObservable();
 
+    private users = new Subject<any[]>();
+    public usersReceived$ = this.users.asObservable();
+
+
+    private errorMessage = new Subject<string>();
+    public errorMessageReceived$ = this.errorMessage.asObservable();
+
+
     constructor() {
         this.tweetsQueue = [];
         this.activeTweets = [];
+        
     }
 
     getQueue(): Tweet[] {
@@ -43,7 +53,6 @@ export class TweetStreamMock {
             this.activeQueueChanged.next(this.activeTweets);
             return true;
         }
-
         return false;
     }
 
@@ -54,17 +63,14 @@ export class TweetStreamMock {
             this.activeQueueChanged.next(this.activeTweets);
             return true;
         }
-
         return false;
     }
 
     popNextTweet(): Tweet {
         let tweet = this.tweetsQueue.shift();
-
         if (tweet) {
             this.queueChanged.next(this.tweetsQueue);
         }
-
         return tweet;
     }
 
@@ -95,7 +101,7 @@ export class TweetStreamMock {
     }
 
     followTrack(keyword: string): void {
-        let keywords: Array<{ Id: number, Value: string, Type: string }> = [];
+        let keywords = Array<Subscription>();
         keywords.push({ Id: 1, Value: "", Type: "" });
         this.tracks.next(keywords);
     }
@@ -104,8 +110,23 @@ export class TweetStreamMock {
         this.tracks.next([]);
     }
 
-    removeTrack(): void {
-        this.tracks.next([]);
+    followUser(userId: string): void {
+        let keywords = Array<Subscription>();
+        keywords.push({ Id: 1, Value: "", Type: "" });
+        this.users.next(keywords);
+    }
+
+    getUsers(): void {
+        this.users.next([]);
+    }
+
+    removeSubscription(id: number, type: string): void {
+        if (type === "TRACK") {
+            this.tracks.next([]);
+        }
+        else if (type === "PERSON") {
+            this.users.next([]);
+        }
     }
 
     isInitialised(): boolean {

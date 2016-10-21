@@ -8,7 +8,7 @@ using TwitterWall.Context;
 namespace TwitterWall.Migrations
 {
     [DbContext(typeof(TweetContext))]
-    [Migration("20161019122349_initial")]
+    [Migration("20161020092223_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,6 +53,8 @@ namespace TwitterWall.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<long>("TwitterId");
 
                     b.Property<string>("Type")
                         .IsRequired();

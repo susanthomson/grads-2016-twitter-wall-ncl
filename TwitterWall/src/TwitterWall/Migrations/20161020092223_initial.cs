@@ -14,6 +14,7 @@ namespace TwitterWall.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
+                    TwitterId = table.Column<long>(nullable: false),
                     Type = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: false)
                 },
@@ -38,6 +39,21 @@ namespace TwitterWall.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tweets", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
+                    Handle = table.Column<string>(nullable: true),
+                    Type = table.Column<string>(nullable: true),
+                    UserId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -100,6 +116,9 @@ namespace TwitterWall.Migrations
 
             migrationBuilder.DropTable(
                 name: "Subscriptions");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Tweets");

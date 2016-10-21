@@ -35,11 +35,12 @@ namespace TwitterWall.Repository
             }
         }
 
+
         public override IEnumerable<Subscription> Find(Func<Subscription, bool> exp)
         {
             using (TweetContext context = GetContext())
             {
-                return context.Subscriptions.Where<Subscription>(exp);
+                return context.Subscriptions.Where<Subscription>(exp).ToList();
             }
         }
 

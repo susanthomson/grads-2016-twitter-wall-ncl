@@ -5,7 +5,6 @@ import { Tweet } from "../Models/tweet";
 import { TweetStreamMock } from "../Services/tweetstream.service.mock";
 import { TweetStream } from "../Services/tweetstream.service";
 
-
 let component: BufferTweets;
 let fixture: ComponentFixture<BufferTweets>;
 
@@ -42,11 +41,12 @@ describe("Admin panel buffer tweets component", () => {
         expect(component.isTweetApproved(0)).toEqual(true);
     });
 
-    it("Consume approved tweet", () => {
+    it("Consume a tweet", () => {
         component.bufferTweets.push(new Tweet(0, 0, "", "", new Date(), "", "", [], []));
         component.changeApproval(0);
         component.popFirst();
         fixture.detectChanges();
         expect(component.bufferTweets.length).toEqual(0);
     });
+
 });

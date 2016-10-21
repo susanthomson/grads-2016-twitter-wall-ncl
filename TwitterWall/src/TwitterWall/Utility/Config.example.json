@@ -1,9 +1,0 @@
-{
-  "ConnectionString": "Placeholder",
-  "TwitterCredentials": {
-    "CONSUMER_KEY": "Placeholder",
-    "CONSUMER_SECRET": "Placeholder",
-    "ACCESS_TOKEN": "Placeholder",
-    "ACCESS_TOKEN_SECRET": "Placeholder"
-  }
-}

@@ -8,16 +8,31 @@ import { TweetStream } from "../Services/tweetstream.service";
 @Component({
     selector: "admin-panel",
     template: `
-        <h3>Admin Console</h3>
-        <button *ngIf="!loggedIn" (click)="login()">Login</button>
-        <span *ngIf="loginError">Error</span>
-        <h4 *ngIf="loading && loggedIn">Connecting to stream...</h4>
-        <div *ngIf="!loading && loggedIn">
-            <button (click)="changeCredentials()">Change Credentials</button>
-            <active-tweets></active-tweets>
-            <button type="button" (click)="consumeTweet()">Display next</button>
-            <buffer-tweets></buffer-tweets>
-            <subscriptions></subscriptions>
+        <div class="container-fluid">
+            <div class="row">
+                <span *ngIf="loginError">Error</span>
+                <button *ngIf="!loggedIn" (click)="login()">Login</button>
+                <span *ngIf="loading && loggedIn"><div class="loader"></div><h3 class="text-center">Loading Admin Panel, please wait...</h3></span>
+                <div *ngIf="!loading && loggedIn">
+                    <div class="col-sm-6">
+                        <button (click)="changeCredentials()">Change Credentials</button>
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><p class="panel-title">Live tweets</p></div>
+                            <div class="panel-body">
+                                <active-tweets></active-tweets>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <buffer-tweets></buffer-tweets>
+                                <button type="button" (click)="consumeTweet()">Display next</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <subscriptions></subscriptions>
+                </div>
+            </div>
         </div>
         `
 })

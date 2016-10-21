@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TwitterWall.Models;
 using TwitterWall.Repository;
 using TwitterWall.Twitter;
+using TwitterWall.Utility;
 
 namespace TwitterWall.Hubs
 {
@@ -32,11 +33,36 @@ namespace TwitterWall.Hubs
             GetTracks();
         }
 
-        public void RemoveTrack(int id)
+        public void FollowUser(string handle)
         {
-            stream.RemoveTrack(id);
-            GetTracks();
+            if (!stream.AddPriorityUser(handle))
+            {
+                Clients.Caller.invalidUser("That user does not exist!");
+            }
+            else
+            {
+                GetPriorityUsers();
+            }
         }
+
+        public void RemoveSubscription(int id, string type)
+        {
+            Subscription subscription = stream._subRepo.Find(sub => sub.Id == id).First();
+            if (subscription != null)
+            {
+                stream.RemoveSubscription(id);
+                if (subscription.Type == Common.SubType.TRACK.ToString())
+                {
+                    GetTracks();
+                }
+                else if (subscription.Type == Common.SubType.PERSON.ToString())
+                {
+                    GetPriorityUsers();
+                }
+            }
+
+        }
+
 
         public void RemoveTweet(long id)
         {
@@ -47,6 +73,11 @@ namespace TwitterWall.Hubs
         public void GetTracks()
         {
             Clients.All.receiveTracks(stream.GetTracks());
+        }
+
+        public void GetPriorityUsers()
+        {
+            Clients.All.receiveUsers(stream.GetPriorityUsers());
         }
 
         public void RestartStream()

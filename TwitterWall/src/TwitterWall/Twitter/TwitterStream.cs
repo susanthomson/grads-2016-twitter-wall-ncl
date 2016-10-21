@@ -32,8 +32,6 @@ namespace TwitterWall.Twitter
         public string AccessTokenSecret { get; set; }
         public List<UserCredential> Users = new List<UserCredential>();
 
-        private const String TRACK_PROPERTY = "TRACK";
-
         Tweetinvi.Streaming.IFilteredStream stream;
 
         protected TwitterStream()
@@ -47,15 +45,18 @@ namespace TwitterWall.Twitter
             stream.ClearFollows();
             stream.ClearTracks();
 
-            stream.AddFollow(Utility.Users.BRISTECH);
-
             foreach(Subscription s in _subRepo.GetAll())
             {
-                if (s.Type == TRACK_PROPERTY)
+                if (s.Type == Common.SubType.TRACK.ToString())
                 {
                     stream.AddTrack(s.Value);
                 }
+                else if(s.Type == Common.SubType.PERSON.ToString())
+                {
+                     stream.AddFollow(s.TwitterId);       
+                }
             }
+         
 
             stream.MatchingTweetReceived += (sender, args) =>
             {
@@ -78,16 +79,11 @@ namespace TwitterWall.Twitter
         public void AddUserCredentials(UserCredential user)
         {
             UserCredential uc;
-            if ((uc = Users.Find(u => u.Handle == user.Handle)) == null)
-            {
-                Users.Add(user);
-            }
-            else 
+            if ((uc = Users.Find(u => u.Handle == user.Handle)) != null)
             {
                 Users.Remove(uc);
-                Users.Add(user);
             }
-           
+            Users.Add(user);
         }
 
         public bool ChangeUserCredentials(string handle, string hash)
@@ -160,17 +156,35 @@ namespace TwitterWall.Twitter
 
         public void AddTrack(String keyword)
         {
-            _subRepo.Add(new Subscription(keyword, TRACK_PROPERTY));
+            _subRepo.Add(new Subscription(keyword, Common.SubType.TRACK.ToString()));
+        }
+
+        public Boolean AddPriorityUser(string handle)
+        {
+            var user = Tweetinvi.User.GetUserFromScreenName(handle);
+            if (user != null)
+            {
+                _subRepo.Add(new Subscription(handle, user.Id, Common.SubType.PERSON.ToString()));
+                return true;
+            }
+            return false;
         }
 
         public List<Subscription> GetTracks()
         {
-            return _subRepo.GetAll().ToList();
+            return _subRepo.Find(s => s.Type == Common.SubType.TRACK.ToString()).ToList();
         }
 
-        public void RemoveTrack(int id)
+        public List<Subscription> GetPriorityUsers()
+        {
+            return _subRepo.Find(s => s.Type == Common.SubType.PERSON.ToString()).ToList();
+        }
+
+        public void RemoveSubscription(int id)
         {
             _subRepo.Remove(id);
         }
+
+
     }
 }

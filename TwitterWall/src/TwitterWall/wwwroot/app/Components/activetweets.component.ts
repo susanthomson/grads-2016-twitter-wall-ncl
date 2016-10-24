@@ -1,7 +1,7 @@
 ﻿import { Component } from "@angular/core";
 import { Tweet } from "../Models/tweet";
 import { TweetStream } from "../Services/tweetstream.service";
-
+import * as moment from 'moment';
 
 @Component({
     selector: "active-tweets",
@@ -31,7 +31,7 @@ import { TweetStream } from "../Services/tweetstream.service";
                     {{tweet.Handle}}
                 </td>
                 <td>
-                    {{tweet.Date}}
+                    {{tweet.FormattedDate}}
                 </td>
                 <td>
                     <img class="profile-image" src="{{tweet.ProfileImage}}"/>
@@ -59,9 +59,16 @@ import { TweetStream } from "../Services/tweetstream.service";
 export class ActiveTweets {
     activeTweets: Tweet[] = [];
     constructor(private tweetStream: TweetStream) {
-        this.activeTweets = this.tweetStream.getActiveTweets();
+        this.activeTweets = this.tweetStream.getActiveTweets().map(this.mapTweet);
         this.tweetStream.activeQueueEvent$.subscribe((tweets) => {
-            this.activeTweets = tweets;
+            this.activeTweets = tweets.map(this.mapTweet);
+        });
+    }
+
+    mapTweet(tweet: Tweet): Tweet {
+        return Object.assign(tweet,
+        {
+            FormattedDate: moment(tweet.Date).format('Do MMM, h:mm a')
         });
     }
 

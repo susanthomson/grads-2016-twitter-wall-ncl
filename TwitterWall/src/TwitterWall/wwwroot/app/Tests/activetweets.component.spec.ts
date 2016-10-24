@@ -4,7 +4,6 @@ import { TestBed, ComponentFixture } from "@angular/core/testing";
 import { Tweet } from "../Models/tweet";
 import { TweetStreamMock } from "../Services/tweetstream.service.mock";
 import { TweetStream } from "../Services/tweetstream.service";
-
 let component: ActiveTweets;
 let fixture: ComponentFixture<ActiveTweets>;
 
@@ -20,20 +19,20 @@ describe("Admin panel active tweets component", () => {
     });
 
     it("Add element", () => {
-        component.addTweet(new Tweet(1, 1, "", "", new Date(), "", "", [], []));
+        component.addTweet(new Tweet(1, 1, "", "", new Date().toString(), "", "", [], []));
         fixture.detectChanges();
         expect(component.activeTweets.length).toEqual(1);
     });
 
     it("Remove element", () => {
-        component.addTweet(new Tweet(0, 0, "", "", new Date(), "", "", [], []));
+        component.addTweet(new Tweet(0, 0, "", "", new Date().toString(), "", "", [], []));
         component.removeTweet(0);
         fixture.detectChanges();
         expect(component.activeTweets.length).toEqual(0);
     });
 
     it("Remove image", () => {
-        component.addTweet(new Tweet(0, 0, "", "", new Date(), "", "", [{ Id: 1, Url: "image url" }], []));
+        component.addTweet(new Tweet(0, 0, "", "", new Date().toString(), "", "", [{ Id: 1, Url: "image url" }], []));
         component.removeImage(0, 0, 1);
         fixture.detectChanges();
         expect(component.activeTweets[0].MediaList.length).toEqual(0);

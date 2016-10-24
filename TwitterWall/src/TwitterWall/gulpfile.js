@@ -19,6 +19,7 @@ gulp.task('restore', function () {
         'node_modules/jquery/dist/*.js',
         'node_modules/bootstrap/dist/**/*.*',
         'node_modules/phantomjs-prebuilt/**/*.js',
-        'node_modules/d3/**/*.js'
+        'node_modules/d3/**/*.js',
+        'node_modules/moment/**/*.js',
     ], { base: 'node_modules' }).pipe(gulp.dest('./wwwroot/libs'));
 });

@@ -14,17 +14,19 @@ namespace TwitterWall.Models
 
         }
 
-        public Subscription(string value, string type)
+        public Subscription(string value, string type, Event ev)
         {
             this.Value = value;
             this.Type = type;
+            this.Event = ev;
         }
 
-        public Subscription(string value, long twitterId, string type)
+        public Subscription(string value, long twitterId, string type, Event ev)
         {
             this.Value = value;
             this.TwitterId = twitterId;
             this.Type = type;
+            this.Event = ev;
         }
 
         [Key]
@@ -35,5 +37,6 @@ namespace TwitterWall.Models
         public long TwitterId { get; set; }
         [Required]
         public string Type { get; set; }
+        public Event Event { get; set; }
     }
 }

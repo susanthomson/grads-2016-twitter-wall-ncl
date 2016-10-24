@@ -13,21 +13,17 @@ namespace TwitterWall
     {
         public static void Main(string[] args)
         {
-            TwitterStream stream = TwitterStream.Instance();
-            stream.ConfigureStream();
-            stream.Start();
+            StreamManager manager = StreamManager.Instance();
+            manager.SetupManager();
 
-            String portnum = Environment.GetEnvironmentVariable("PORT");
+            String portnum = Environment.GetEnvironmentVariable("PORT") ?? "5000";
             var host = new WebHostBuilder()
                 .UseKestrel()
+                .UseUrls("http://*:" + portnum + "/")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>();
-
-            if (portnum != null)
-            {
-                host.UseUrls("http://*:" + portnum + "/");
-            }
+            
             
             var builtHost = host.Build();
 

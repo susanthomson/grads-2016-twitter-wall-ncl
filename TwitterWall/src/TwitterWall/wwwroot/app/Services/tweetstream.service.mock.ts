@@ -34,11 +34,9 @@ export class TweetStreamMock {
     private errorMessage = new Subject<string>();
     public errorMessageReceived$ = this.errorMessage.asObservable();
 
-
     constructor() {
         this.tweetsQueue = [];
         this.activeTweets = [];
-        
     }
 
     getQueue(): Tweet[] {
@@ -102,7 +100,7 @@ export class TweetStreamMock {
         this.activeQueueChanged.next(this.activeTweets);
     }
 
-    followTrack(keyword: string): void {
+    addTrack(keyword: string): void {
         let keywords = Array<Subscription>();
         keywords.push({ Id: 1, Value: "", Type: "" });
         this.tracks.next(keywords);
@@ -118,22 +116,26 @@ export class TweetStreamMock {
         this.users.next(keywords);
     }
 
-    getUsers(): void {
+    getPriorityUsers(): void {
         this.users.next([]);
     }
 
-    removeSubscription(id: number, type: string): void {
-        if (type === "TRACK") {
-            this.tracks.next([]);
-        }
-        else if (type === "PERSON") {
-            this.users.next([]);
-        }
+    removeTrack(): void {
+        this.tracks.next([]);
     }
 
     isInitialised(): boolean {
         return true;
     }
+
+    setEvent(ev: string) {
+
+    }
+
+    initialise():void {
+
+    }
+
 
     getBannedUsers(): void {
         this.bannedUsers.next([]);

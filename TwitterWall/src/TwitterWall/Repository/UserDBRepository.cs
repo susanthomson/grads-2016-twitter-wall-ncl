@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TwitterWall.Context;
 using TwitterWall.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace TwitterWall.Repository
 {
@@ -39,7 +40,7 @@ namespace TwitterWall.Repository
         {
             using (TweetContext context = GetContext())
             {
-                return context.Users.Where<User>(exp).ToList();
+                return context.Users.Include(u => u.Event).Where<User>(exp).ToList();
             }
         }
 
@@ -47,6 +48,10 @@ namespace TwitterWall.Repository
         {
             using (TweetContext context = GetContext())
             {
+                if (entity.Event != null)
+                {
+                    context.Attach(entity.Event);
+                }
                 context.Users.Add(entity);
                 context.SaveChanges();
             }

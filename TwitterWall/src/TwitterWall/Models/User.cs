@@ -26,5 +26,6 @@ namespace TwitterWall.Models
         public long UserId { get; set; }
         public string Handle { get; set; }
         public string Type { get; set; }
+        public Event Event { get; set; }
     }
 }

@@ -14,15 +14,21 @@ import { Subscriptions } from "./Components/subscriptions.component";
 import { BannedUsers } from "./Components/bannedusers.component";
 import { FormsModule } from "@angular/forms";
 import { TwitterLogin } from "./Services/twitterlogin.service";
+import { EventService } from "./Services/events.service";
+import { MainAdminComponent } from "./Components/mainadmin.component";
+
+import { Component } from "@angular/core";
+import { LocationStrategy, HashLocationStrategy } from "@angular/common";
 
 @NgModule({
     imports: [BrowserModule, FormsModule, HttpModule, RouterModule.forRoot([
-            { path: "", component: BubbleComponent },
-            { path: "admin", component: AdminPanelComponent }
+            { path: "", component: MainAdminComponent },
+            { path: "admin/:id", component: AdminPanelComponent },
+            { path: "events/:id", component: BubbleComponent }
         ])
     ],
-    declarations: [AppComponent, BubbleComponent, TweetDisplay, AdminPanelComponent, BufferTweets, ActiveTweets, Subscriptions, BannedUsers],
-    providers: [TweetStream, TweetStreamMock, TwitterLogin],
+    declarations: [AppComponent, BubbleComponent, TweetDisplay, AdminPanelComponent, BufferTweets, ActiveTweets, Subscriptions, MainAdminComponent, BannedUsers],
+    providers: [TweetStream, TweetStreamMock, TwitterLogin, EventService, { provide: LocationStrategy, useClass: HashLocationStrategy }],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

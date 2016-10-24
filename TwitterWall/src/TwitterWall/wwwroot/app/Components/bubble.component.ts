@@ -3,7 +3,7 @@ import { Vector } from "../Models/vector";
 import { TweetDisplay } from "./tweetdisplay.component";
 import { Tweet } from "../Models/tweet";
 import { TweetStream } from "../Services/tweetstream.service";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute, Params } from "@angular/router";
 import * as d3 from "d3";
 
 import { NodeFunctions } from "../Models/nodefunctions";
@@ -44,11 +44,18 @@ export class BubbleComponent implements OnInit, OnDestroy {
 
     displayCount: number = 0;
 
-    constructor(private tweetStream: TweetStream, private router: Router) {
+    eventName: string;
+
+    constructor(private tweetStream: TweetStream, private router: Router, private route: ActivatedRoute) {
 
     };
 
     ngOnInit(): void {
+        this.route.params.forEach((params: Params) => {
+            this.eventName = params["id"];
+        });
+        this.tweetStream.setEvent(this.eventName);
+
         this.width = window.innerWidth;
         this.height = 900;
         this.displayPoint = new Vector(this.width / 2, this.height / 2);
@@ -79,13 +86,14 @@ export class BubbleComponent implements OnInit, OnDestroy {
     nodeDisplayInterval(): void {
         this.displayTimer = setTimeout(() => {
             this.displayNode();
-            if (this.router.url === "/") {
+            if (this.router.url === "/events/" + this.eventName) {
                 this.nodeDisplayInterval();
             }
         }, TIME_BETWEEN_EXPAND);
     }
 
     activeTweetsChanged(activeTweets): void {
+        if (!activeTweets || !this.nodes) return;
         if (activeTweets.length - this.nodes.length > 1) {
             activeTweets.forEach((tweet) => {
                 this.addNode(0, 0, tweet);
@@ -106,7 +114,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
     }
 
     displayNode(): void {
-        if (this.router.url === "/" && this.nodes.every(n => !n.isDisplayed && !n.isTranslating) && this.nodes && this.nodes.length) {
+        if (this.router.url === "/events/" + this.eventName && this.nodes.every(n => !n.isDisplayed && !n.isTranslating) && this.nodes && this.nodes.length) {
             let i = this.displayCount % this.nodes.length;
             this.points = NodeFunctions.generateTranslation(new Vector(this.nodes[i].x, this.nodes[i].y), this.displayPoint, TRANSLATION_TICKS);
             this.nodes[i].isTranslating = true;
@@ -136,7 +144,8 @@ export class BubbleComponent implements OnInit, OnDestroy {
     };
 
     populateNodes(tweets): void {
-        this.nodes = d3.range(tweets.length).map((d, i) => ({
+        if (tweets) {
+            this.nodes = d3.range(tweets.length).map((d, i) => ({
                 radius: MIN_RADIUS,
                 tweet: tweets[i],
                 isDisplayed: false,
@@ -145,6 +154,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
                 isDecreasing: false,
                 isDeleting: false
             }));
+        }
     };
 
     setupForce(): void {

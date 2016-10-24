@@ -8,19 +8,25 @@ using System.Threading.Tasks;
 
 namespace TwitterWall.Models
 {
-    public class Sticky
+    public class Event
     {
-        public Sticky()
+        public Event()
         {
+
         }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
+        public string Name { get; set; }
         [JsonIgnore]
-        public Tweet Tweet { get; set; }
-
-        public Event Event { get; set; }
+        public ICollection<Tweet> Tweets { get; set; }
+        [JsonIgnore]
+        public ICollection<User> Users { get; set; }
+        [JsonIgnore]
+        public ICollection<Subscription> Subscriptions { get; set; }
+        [JsonIgnore]
+        public ICollection<Sticky> Stickys { get; set; }
     }
 }

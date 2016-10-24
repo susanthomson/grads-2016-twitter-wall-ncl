@@ -15,5 +15,6 @@ namespace TwitterWall.Utility
         }
 
         public static readonly string BanType = "BANNED";
+        public static readonly string TRACK_PROPERTY = "TRACK";
     }
 }

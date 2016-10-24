@@ -6,7 +6,7 @@ import { TweetStream } from "../Services/tweetstream.service";
 @Component({
     selector: "active-tweets",
     template: `
-            <div class="table-responsive">
+        <div class="table-responsive">
             <table class="table table-condensed">
               <tbody>
               <tr>
@@ -42,7 +42,7 @@ import { TweetStream } from "../Services/tweetstream.service";
                     </div>
                 </td>
                 <td>
-                    <input type="checkbox" [attr.checked]="tweet.StickyList.length > 0 ? true : null" (click)=sticky(i,$event)>
+                    <input type="checkbox" [attr.checked]="isSticky(i)" (click)=sticky(i,$event)>
                 </td>
                 <td>
                     <button type="button" class="btn btn-warning" (click)="removeTweet(i)">Remove Tweet</button>
@@ -63,6 +63,13 @@ export class ActiveTweets {
         this.tweetStream.activeQueueEvent$.subscribe((tweets) => {
             this.activeTweets = tweets;
         });
+    }
+
+    isSticky(index: number): boolean {
+        if (this.activeTweets[index].StickyList) {
+            return this.activeTweets[index].StickyList.length > 0;
+        }
+        return false;
     }
 
     removeTweet(index: number): void {

@@ -12,9 +12,9 @@ using System.Net;
 namespace TwitterWall.Test
 {
     public class LoginControllerTests
-    {
+    {  
         [Fact]
-        public void LoginRequestRespondsWithRedirectUrl()
+        public async void LoginRequestRespondsWithRedirectUrl()
         {
             var users = new List<User>()
             {
@@ -28,14 +28,14 @@ namespace TwitterWall.Test
             LoginController lc = new LoginController(repo.Object);
             lc._handler = handler;
 
-            ContentResult result = lc.Get() as ContentResult;
+            ContentResult result = await lc.Get() as ContentResult;
 
             Assert.NotNull(result);
             Assert.Contains("oauth_token", result.Content);
         }
-
+        
         [Fact]
-        public void LoginRequestRespondsWithEmptyStringOnError()
+        public async void LoginRequestRespondsWithEmptyStringOnError()
         {
             var users = new List<User>()
             {
@@ -49,12 +49,12 @@ namespace TwitterWall.Test
             LoginController lc = new LoginController(repo.Object);
             lc._handler = handler;
 
-            StatusCodeResult result = lc.Get() as StatusCodeResult;
+            StatusCodeResult result = await lc.Get() as StatusCodeResult;
 
             Assert.NotNull(result);
             Assert.Equal(400, result.StatusCode);
         }
-
+        
         [Fact]
         public void CallbackReturnsJavascriptToSaveTokenOnSuccess()
         {

@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Http } from "@angular/http";
 import { Subject } from "rxjs/Subject";
+import { Headers, RequestOptions } from '@angular/http';
 
 import "rxjs/add/operator/toPromise";
 
@@ -22,11 +23,11 @@ export class TwitterLogin {
         });
     }
 
-    changeCredentials() {
+    changeCredentials(streamName: string) {
         let token;
         let handle;
         if ((token = window.sessionStorage.getItem("token")) !== null && (handle = window.sessionStorage.getItem("handle")) !== null) {
-            this.http.get("api/login/change?handle=" + handle + "&token=" + token).toPromise().catch((res) => {
+            this.http.post("api/login/change", { Handle: handle, Token: token, Stream: streamName }, new RequestOptions({ headers: new Headers({ 'Content-Type': 'application/json' }) })).toPromise().catch((res) => {
                 this.loginError.next(true);
             });
         }

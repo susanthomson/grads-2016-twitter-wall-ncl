@@ -6,7 +6,7 @@ import { Tweet } from "../Models/tweet";
 import { Vector } from "../Models/vector";
 import { TweetStreamMock } from "../Services/tweetstream.service.mock";
 import { TweetStream } from "../Services/tweetstream.service";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 
 let bubbleComponent;
 let fixture;
@@ -15,12 +15,16 @@ class RouterMock {
     url = "/";
 }
 
+class ActivatedRouteMock {
+    params = ["route"];
+}
+
 describe("d3 bubble component", () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [BubbleComponent, TweetDisplay],
-            providers: [{provide: TweetStream, useClass: TweetStreamMock},
-                {provide: Router, useClass: RouterMock}]
+            providers: [{ provide: TweetStream, useClass: TweetStreamMock },
+                { provide: Router, useClass: RouterMock }, { provide: ActivatedRoute, useClass: ActivatedRouteMock }]
         });
 
         fixture = TestBed.createComponent(BubbleComponent);

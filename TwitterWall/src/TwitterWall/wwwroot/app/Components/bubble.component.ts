@@ -10,7 +10,6 @@ import BezierEasing from "../Helpers/bezier-easing";
 
 const TIME_BETWEEN_EXPAND = 2000;
 const TIME_TO_SHOW = 5000;
-const TRANSLATION_TICKS = 100;
 const GRAVITY = 0.009;
 const DEFAULT_IMAGE = "https://pbs.twimg.com/media/CLIz5A9VAAAcbNe.png";
 const GROW_TIME = 3400;
@@ -151,11 +150,16 @@ export class BubbleComponent implements OnInit, OnDestroy {
 
     displayNode(): void {
         if (this.router.url === "/" && this.nodes.every(n => !n.isDisplayed && !n.isTranslating) && this.nodes && this.nodes.length) {
-            let i = this.displayCount % this.nodes.length;
-            this.nodes[i].isTranslating = true;
-            this.currentTweet = this.nodes[i].tweet;
+            const i = this.displayCount % this.nodes.length;
+            const node = this.nodes[i];
+            node.isTranslating = true;
+            this.currentTweet = node.tweet;
             this.displayCount = (this.displayCount + 1) % this.nodes.length;
-            this.nodes[i].translateStartTime = Date.now();
+            node.translateStartTime = Date.now();
+            node.translateStartPoint = {
+              x: node.x,
+              y: node.y
+            };
         }
     }
 
@@ -208,8 +212,8 @@ export class BubbleComponent implements OnInit, OnDestroy {
     };
 
     translateBubble(node: any): void {
-        const SNAP_DISTANCE = 10;
-        const GROW_ZONE = 600;
+        const SNAP_DISTANCE = 0;
+        const GROW_ZONE = 100;
 
         if (Math.abs(Math.round(node.x - this.displayPoint.x)) <= SNAP_DISTANCE &&
             Math.abs(Math.round(node.y - this.displayPoint.y)) <= SNAP_DISTANCE
@@ -218,11 +222,16 @@ export class BubbleComponent implements OnInit, OnDestroy {
             node.isDisplayed = true;
             node.isIncreasing = true;
             node.isFixed = true;
-            // node.scaleStartTime = Date.now();
         }
         else {
-            let valueX = this.easeOut(Date.now() - node.translateStartTime, node.x, this.displayPoint.x - node.x, TRANSLATE_TIME);
-            let valueY = this.easeOut(Date.now() - node.translateStartTime, node.y, this.displayPoint.y - node.y, TRANSLATE_TIME);
+            let valueX = this.easeOut(
+              Date.now() - node.translateStartTime, node.translateStartPoint.x,
+              this.displayPoint.x - node.translateStartPoint.x, TRANSLATE_TIME
+            );
+            let valueY = this.easeOut(
+              Date.now() - node.translateStartTime, node.translateStartPoint.y,
+              this.displayPoint.y - node.translateStartPoint.y, TRANSLATE_TIME
+            );
 
             node.x = valueX;
             node.y = valueY;

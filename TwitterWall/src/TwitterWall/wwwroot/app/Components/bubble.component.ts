@@ -44,15 +44,14 @@ export class BubbleComponent implements OnInit, OnDestroy {
     showTweet = false;
     currentTweet: Tweet = new Tweet(1, 1, "", "", new Date(), "", "", [], []);
 
-    displayRadius: number = 400;
-    radius: number = 100;
+    displayRadius: number;
+    radius: number;
+    stickyRadius: number;
     exitStartTime: number;
 
     displayCount: number = 0;
 
-    constructor(private tweetStream: TweetStream, private router: Router) {
-
-    };
+    constructor(private tweetStream: TweetStream, private router: Router) { };
 
     ngOnInit(): void {
         let initialTweets = this.tweetStream.getActiveTweets();
@@ -69,6 +68,10 @@ export class BubbleComponent implements OnInit, OnDestroy {
         window.onresize = () => this.onResize();
     };
 
+    getTweetRadius(tweet: Tweet): number {
+      return tweet.isSticky ? this.stickyRadius : this.radius;
+    }
+
     onResize(): void {
         this.width = document.body.offsetWidth;
         this.height = document.body.offsetHeight;
@@ -79,10 +82,12 @@ export class BubbleComponent implements OnInit, OnDestroy {
         this.force.size([this.width, this.height]);
 
         this.displayRadius = this.width < this.height ? this.width * 0.4 : this.height * 0.4;
-        this.radius = this.displayRadius / 4;
+        this.radius = this.displayRadius * 0.25;
+        this.stickyRadius = this.displayRadius * 0.5;
+
         this.nodes.forEach((node) => {
             if (!node.isDisplayed) {
-                node.radius = this.radius;
+                node.radius = this.getTweetRadius(node.tweet);
                 node.opacity = 0;
             }
         });
@@ -128,7 +133,9 @@ export class BubbleComponent implements OnInit, OnDestroy {
         }, TIME_BETWEEN_EXPAND);
     }
 
-    activeTweetsChanged(activeTweets): void {
+    activeTweetsChanged(rawTweets: Tweet[]): void {
+        const activeTweets = rawTweets.map(this.instantiateTweet);
+
         if (activeTweets.length - this.nodes.length > 1) {
             activeTweets.forEach((tweet) => {
                 this.addNode(0, 0, tweet);
@@ -187,8 +194,8 @@ export class BubbleComponent implements OnInit, OnDestroy {
 
     populateNodes(tweets): void {
         this.nodes = d3.range(tweets.length).map((d, i) => ({
-                radius: this.radius,
                 tweet: tweets[i],
+                radius: this.getTweetRadius(tweets[i]),
                 isDisplayed: false,
                 isTranslating: false,
                 isIncreasing: false,
@@ -212,11 +219,11 @@ export class BubbleComponent implements OnInit, OnDestroy {
     };
 
     translateBubble(node: any): void {
-        const SNAP_DISTANCE = 0;
+        const SNAP_DISTANCE = 1;
         const GROW_ZONE = 100;
 
-        if (Math.abs(Math.round(node.x - this.displayPoint.x)) <= SNAP_DISTANCE &&
-            Math.abs(Math.round(node.y - this.displayPoint.y)) <= SNAP_DISTANCE
+        if (Math.abs(node.x - this.displayPoint.x) <= SNAP_DISTANCE &&
+            Math.abs(node.y - this.displayPoint.y) <= SNAP_DISTANCE
         ) {
             node.isTranslating = false;
             node.isDisplayed = true;
@@ -224,11 +231,11 @@ export class BubbleComponent implements OnInit, OnDestroy {
             node.isFixed = true;
         }
         else {
-            let valueX = this.easeOut(
+            const valueX = this.easeOut(
               Date.now() - node.translateStartTime, node.translateStartPoint.x,
               this.displayPoint.x - node.translateStartPoint.x, TRANSLATE_TIME
             );
-            let valueY = this.easeOut(
+            const valueY = this.easeOut(
               Date.now() - node.translateStartTime, node.translateStartPoint.y,
               this.displayPoint.y - node.translateStartPoint.y, TRANSLATE_TIME
             );
@@ -246,6 +253,14 @@ export class BubbleComponent implements OnInit, OnDestroy {
         }
     };
 
+    instantiateTweet(tweet: Tweet) {
+      return new Tweet(
+        tweet.Id, tweet.TweetId, tweet.Body, tweet.Handle,
+        new Date(tweet.Date), tweet.Name, tweet.ProfileImage,
+        tweet.MediaList, tweet.StickyList
+      );
+    }
+
     addNode(x: number = 0, y: number = 0, tweet: Tweet): void {
         if (tweet !== undefined && !this.nodes.find(t => t.tweet.Id === tweet.Id)) {
             tweet.LoadedProfileImage = this.preLoadImage(tweet.ProfileImage);
@@ -253,7 +268,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
                 x: x,
                 y: y,
                 tweet: tweet,
-                radius: this.radius,
+                radius: this.getTweetRadius(tweet),
                 scaleStartTime: 0,
                 translateStartTime: 0,
                 exitStartTime: 0,
@@ -298,20 +313,24 @@ export class BubbleComponent implements OnInit, OnDestroy {
         let d;
         let n = this.nodes.length;
 
+        //----------------//
+        //  ACTUAL PATHS  //
+        //----------------//
         for (i = 0; i < n; ++i) {
             d = this.nodes[i];
+            const radius = this.getTweetRadius(d.tweet);
 
             if (d.isIncreasing) {
-                let value = this.easeOut(Date.now() - d.scaleStartTime, this.radius, this.displayRadius - this.radius, GROW_TIME);
+                let value = this.easeOut(Date.now() - d.scaleStartTime, radius, this.displayRadius - radius, GROW_TIME);
                 let rad = Math.min(value, this.displayRadius);
                 NodeFunctions.increaseRadius(d, this.displayRadius, rad, TIME_TO_SHOW, this);
-                d.opacity = (rad - this.radius) / (this.displayRadius - this.radius);
+                d.opacity = (rad - radius) / (this.displayRadius - radius);
             }
             else if (d.isDecreasing && !d.isTranslating) {
-                let value = this.easeOut(Date.now() - d.scaleStartTime, this.radius, this.displayRadius - this.radius, GROW_TIME);
-                let rad = this.displayRadius + this.radius - Math.max(value, this.radius);
-                NodeFunctions.decreaseRadius(d, this.radius, rad, this);
-                d.opacity = (rad - this.radius) / (this.displayRadius - this.radius);
+                let value = this.easeOut(Date.now() - d.scaleStartTime, radius, this.displayRadius - radius, GROW_TIME);
+                let rad = this.displayRadius + radius - Math.max(value, radius);
+                NodeFunctions.decreaseRadius(d, radius, rad, this);
+                d.opacity = (rad - radius) / (this.displayRadius - radius);
             }
 
             if (d.isTranslating) {
@@ -319,8 +338,8 @@ export class BubbleComponent implements OnInit, OnDestroy {
             }
 
             if (d.isDeleting) {
-                let value = this.easeOut(Date.now() - d.exitStartTime, 0, this.radius, EXIT_TIME);
-                let rad = this.radius - Math.max(value, 0);
+                let value = this.easeOut(Date.now() - d.exitStartTime, 0, radius, EXIT_TIME);
+                let rad = radius - Math.max(value, 0);
                 NodeFunctions.decreaseRadius(d, 1, rad, this);
                 if (d.radius < 1) {
                     d.deleted = true;
@@ -336,6 +355,9 @@ export class BubbleComponent implements OnInit, OnDestroy {
 
         this.context.clearRect(0, 0, this.width, this.height);
 
+        //----------------//
+        //  SHADOW PATHS  //
+        //----------------//
         for (i = 0; i < n; i++) {
             this.context.beginPath();
             d = this.nodes[i];
@@ -357,7 +379,9 @@ export class BubbleComponent implements OnInit, OnDestroy {
             this.context.closePath();
         }
 
-
+        //-----------------------//
+        //  PROFILE IMAGE PATHS  //
+        //-----------------------//
         for (i = 0; i < n; i++) {
             d = this.nodes[i];
             this.context.fillStyle = "rgba(250, 250, 250, " + d.opacity + ")";

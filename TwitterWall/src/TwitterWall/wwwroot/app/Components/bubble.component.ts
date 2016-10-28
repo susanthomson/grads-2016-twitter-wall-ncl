@@ -433,7 +433,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
             if (d.isDeleting) {
                 bubbleHelpers.shrinkBubble(
                     d, d.exitStartTime, EXIT_TIME, 0, initialRadius, 0,
-                    initialRadius / this.displayRadius
+                    initialRadius / this.displayRadius, false
                 );
                 if (d.radius < 1) {
                     d.deleted = true;

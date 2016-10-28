@@ -72,19 +72,33 @@ export class Subscriptions {
     }
 
     addTrack(): void {
-        if (this.inputTrack) {
-            this.tweetStream.addTrack(this.inputTrack);
-            this.inputTrack = "";
-            this.queueRestart();
-        }
+        if (!this.inputTrack) return;
+        const checkIfExists = this.tracks.some((elem, i) => {
+          if(elem.Value == this.inputTrack) return true;
+        });
+        if(checkIfExists) {
+          this.errorMessage = "You are already following that keyword";
+          return;
+        };
+        this.tweetStream.addTrack(this.inputTrack);
+        this.inputTrack = "";
+        this.errorMessage = "";
+        this.queueRestart();
     }
 
     addPriorityUser(): void {
-        if (this.inputUserId) {
-            this.tweetStream.followUser(this.inputUserId);
-            this.inputUserId = "";
-            this.queueRestart();
-        }
+        if (!this.inputUserId) return;
+        const checkIfExists = this.priorityUsers.some((elem, i) => {
+          if(elem.Value == this.inputUserId) return true;
+        });
+        if(checkIfExists) {
+          this.errorMessage = "You are already following that user";
+          return;
+        };
+        this.tweetStream.followUser(this.inputUserId);
+        this.inputUserId = "";
+        this.errorMessage = "";
+        this.queueRestart();
     }
 
     getPriorityUsers(): void {
@@ -103,7 +117,7 @@ export class Subscriptions {
 
     removePriorityUser(index: number): void {
         this.tweetStream.removePriorityUser(this.priorityUsers[index].Id);
-        this.priorityUsers.splice(index, 1);    
+        this.priorityUsers.splice(index, 1);
         this.queueRestart();
     }
 

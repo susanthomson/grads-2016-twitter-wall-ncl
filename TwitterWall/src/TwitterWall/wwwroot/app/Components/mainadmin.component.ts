@@ -7,6 +7,7 @@ import { TwitterLogin } from "../Services/twitterlogin.service";
     selector: "main-admin",
     template: `
         <h2>Main admin page</h2>
+        {{errorMessage}}
         <div *ngIf="!loggedIn">
             <p>You need to login to view this page</p>
             <button (click)="login()">Login</button>
@@ -30,6 +31,7 @@ export class MainAdminComponent {
     inputEventName: string;
     loaded: boolean = false;
     loggedIn: boolean = false;
+    errorMessage: string;
 
     constructor(private eventService: EventService, private twitterLogin: TwitterLogin) {
         eventService.initialise();
@@ -54,7 +56,16 @@ export class MainAdminComponent {
     }
 
     addEvent(): void {
+        if(!this.inputEventName) return;
+        const checkIfExists = this.events.some((elem, i) => {
+          if(elem.Name == this.inputEventName) return true;
+        });
+        if(checkIfExists) {
+          this.errorMessage = "That event name is already taken"
+          return;
+        }
         this.eventService.addEvent(this.inputEventName);
+        this.errorMessage = '';
         this.inputEventName = "";
     }
 

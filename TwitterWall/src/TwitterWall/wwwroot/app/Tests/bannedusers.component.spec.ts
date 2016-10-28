@@ -23,14 +23,14 @@ describe("Admin Panel Banned Users Component", () => {
     });
 
     it("Ban user", () => {
-        const newTweet: Tweet = new Tweet(0, 0, "hello world", "marcusrc", new Date(), "marcus", "", [], []);
+        const newTweet: Tweet = new Tweet(0, 0, "hello world", "marcusrc", new Date().toString(), "marcus", "", [], []);
         component.banUser(newTweet);
         expect(component.bannedUsers.length).toBe(1);
     });
 
     it("Unban user",
         () => {
-            const newTweet: Tweet = new Tweet(0, 0, "hello world", "marcusrc", new Date(), "marcus", "", [], []);
+            const newTweet: Tweet = new Tweet(0, 0, "hello world", "marcusrc", new Date().toString(), "marcus", "", [], []);
             component.banUser(newTweet);
             component.unbanUser(0);
             expect(component.bannedUsers.length).toBe(0);

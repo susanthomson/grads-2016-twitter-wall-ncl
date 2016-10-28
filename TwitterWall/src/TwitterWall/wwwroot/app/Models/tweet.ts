@@ -12,7 +12,6 @@ export class Tweet {
     public StickyList: any[];
     public MediaList: MediaUrl[];
     public LoadedProfileImage: HTMLImageElement;
-    public FormattedDate?: string;
     public isSticky: boolean;
 
     constructor(id: number, tweetid: number, body: string, handle: string, date: string, name: string, profileImage: string, mediaList: MediaUrl[], stickyList: string[]) {

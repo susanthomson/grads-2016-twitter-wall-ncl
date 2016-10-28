@@ -186,7 +186,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
 
     renderTweetContent(tweet) {
         const tweetTime = vagueTime.get({
-          to: tweet.Date.getTime() + (new Date()).getTimezoneOffset() * 60 * 1000,
+          to: new Date(tweet.Date).getTime() + (new Date()).getTimezoneOffset() * 60 * 1000,
         });
         const tweetBody = tweet.Body
             .replace(/[A-Za-z]+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~\?\/.=]+/g, "<span class='url'>$&</span>")
@@ -365,7 +365,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
     instantiateTweet(tweet: Tweet) {
       return new Tweet(
         tweet.Id, tweet.TweetId, tweet.Body, tweet.Handle,
-        new Date(tweet.Date as any), tweet.Name, tweet.ProfileImage,
+        new Date(tweet.Date as any).toString(), tweet.Name, tweet.ProfileImage,
         tweet.MediaList, tweet.StickyList
       );
     }

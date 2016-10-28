@@ -1,7 +1,7 @@
 ﻿import { Component } from "@angular/core";
 import { Tweet } from "../Models/tweet";
 import { TweetStream } from "../Services/tweetstream.service";
-import * as moment from 'moment';
+import * as moment from "moment";
 
 @Component({
     selector: "active-tweets",

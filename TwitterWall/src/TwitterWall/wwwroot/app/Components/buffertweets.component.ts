@@ -2,7 +2,6 @@
 import { Tweet } from "../Models/tweet";
 import { TweetStream } from "../Services/tweetstream.service";
 
-
 @Component({
     selector: "buffer-tweets",
     template: `
@@ -26,7 +25,6 @@ export class BufferTweets {
         this.tweetStream.queueEvent$.subscribe((tweets) => {
             this.bufferTweets = tweets;
         });
-
     }
 
     changeApproval(index: number): void {

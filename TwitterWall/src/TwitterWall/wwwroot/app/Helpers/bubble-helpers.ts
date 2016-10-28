@@ -29,7 +29,8 @@ export function scaleOutEase(t, b, c, d, round = false) {
 }
 
 export function shrinkBubble(
-    node, startTime, shrinkTime, minRadius, maxRadius, minScale, maxScale
+    node, startTime, shrinkTime, minRadius, maxRadius, minScale,
+    maxScale, transformOpacity = true
 ): void {
     let radius = easeOut(
         Date.now() - startTime, minRadius,
@@ -51,7 +52,9 @@ export function shrinkBubble(
     }
     node.radius = newRadius;
     node.scale = newScale;
-    node.opacity = (newRadius - minRadius) / (maxRadius - minRadius);
+    if (transformOpacity) {
+        node.opacity = (newRadius - minRadius) / (maxRadius - minRadius);
+    }
 };
 
 export function growBubble(

@@ -1,30 +1,39 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
+import * as vagueTime from "vague-time";
 import { Vector } from "../Models/vector";
-import { TweetDisplay } from "./tweetdisplay.component";
 import { Tweet } from "../Models/tweet";
 import { TweetStream } from "../Services/tweetstream.service";
 import { Router, ActivatedRoute, Params } from "@angular/router";
 import * as d3 from "d3";
-
-import { NodeFunctions } from "../Models/nodefunctions";
+import * as bubbleHelpers from "../Helpers/bubble-helpers";
 
 const MAX_NODES = 20;
-const MAX_RADIUS = 400;
-const MIN_RADIUS = 100;
-const INCREASE_STEP = 2;
-const IMAGE_SIZE = 200;
+const MAX_RADIUS = 40;
+const MIN_RADIUS = 10;
+const INCREASE_STEP = 0.2;
 const TIME_BETWEEN_EXPAND = 2000;
 const TIME_TO_SHOW = 5000;
 const TRANSLATION_TICKS = 100;
 const GRAVITY = 0.01;
 const DEFAULT_IMAGE = "https://pbs.twimg.com/media/CLIz5A9VAAAcbNe.png";
 
+const GROW_TIME = 3400;
+const TRANSLATE_TIME = 5000;
+const EXIT_TIME = 2000;
+const PAUSE_ON_VISIBILITY_CHANGE = true;
+
 @Component({
     selector: "bubble-canvas",
     template: `
         <div id="bubble-canvas" [class.fullscreen]="fullScreen">
-            <div tweet-display [tweet]="currentTweet" id="tweet-display" class="step" [class.show]="showTweet"></div>
-            <p id="get-involved-text">Get involved using #Bristech2016</p>
+            <div class="bubble-groups">
+              <div class="shadow-group"></div>
+              <div class="content-group"></div>
+            </div>
+            <div id="brand">
+                <img src="/img/bristech-black.png" />
+                <span>#bristech2016</span>
+            <div>
         </div>
     `
 })
@@ -32,23 +41,31 @@ export class BubbleComponent implements OnInit, OnDestroy {
     context: any;
     width: number;
     height: number;
-    nodes: any;
+    nodes: any[] = [];
     root: any;
     force: any;
     displayTimer: any;
-    translationPoint: number = 0;
-    points: Vector[] = [];
     displayPoint: Vector;
     showTweet = false;
-    currentTweet: Tweet = new Tweet(1, 1, "", "", new Date(), "", "", [], []);
+
+    displayRadius: number;
+    radius: number;
+    stickyRadius: number;
+    exitStartTime: number;
+    pauseTime: number;
+
+    resizeListener: EventListenerOrEventListenerObject;
+    visibilitychangeListener: EventListenerOrEventListenerObject;
 
     displayCount: number = 0;
 
     eventName: string;
 
-    constructor(private tweetStream: TweetStream, private router: Router, private route: ActivatedRoute) {
+    constructor(private tweetStream: TweetStream, private router: Router, private route: ActivatedRoute) { }
 
-    };
+    get stickyNodes(): any[] {
+        return this.nodes.filter(n => n.tweet.isSticky);
+    }
 
     ngOnInit(): void {
         this.route.params.forEach((params: Params) => {
@@ -56,31 +73,83 @@ export class BubbleComponent implements OnInit, OnDestroy {
         });
         this.tweetStream.setEvent(this.eventName);
 
-        this.width = window.innerWidth;
-        this.height = 900;
-        this.displayPoint = new Vector(this.width / 2, this.height / 2);
+        let initialTweets = this.tweetStream
+            .getActiveTweets()
+            .map(this.instantiateTweet);
 
-        let initialTweets = this.tweetStream.getActiveTweets();
+        this.onResize();
         this.populateNodes(initialTweets);
-        this.generateCanvas();
         this.setupForce();
+        this.force.size([this.width, this.height]);
+
+        this.force.start();
+        this.updateNodes();
 
         this.tweetStream.activeQueueEvent$.subscribe(this.activeTweetsChanged.bind(this));
 
-        // Center div in canvas
-        let td = document.getElementById("tweet-display-group");
-        let canv = document.getElementsByTagName("canvas")[0];
-        td.style.left = ((canv.offsetLeft + (canv.width / 2)) - (td.offsetWidth / 2)) + "px";
-        td.style.top = (((canv.height / 2)) - (td.offsetHeight / 2)) + "px";
-        this.force.on("tick", this.tick.bind(this));
         this.nodeDisplayInterval();
+
+        this.resizeListener = this.onResize.bind(this);
+        this.visibilitychangeListener = this.onVisibilityChanged.bind(this);
+        window.addEventListener("resize", this.resizeListener);
+        window.addEventListener("visibilitychange", this.resizeListener);
     };
+
+    getTweetRadius(tweet: Tweet): number {
+        return tweet.isSticky ? this.stickyRadius : this.radius;
+    }
+
+    onVisibilityChanged(): void {
+        if (!PAUSE_ON_VISIBILITY_CHANGE) {
+            return;
+        }
+        if (document.hidden) {
+            this.force.stop();
+            this.pauseTime = Date.now();
+        } else {
+            const currentTime = Date.now();
+            const timers = ["scaleStartTime", "translateStartTime", "exitStartTime"];
+            this.force.resume();
+            this.nodes.forEach(node => {
+                timers.forEach(timer => {
+                    if (node[timer]) {
+                        node[timer] += currentTime - this.pauseTime;
+                    }
+                });
+            });
+            this.pauseTime = null;
+        }
+    }
+
+    onResize(): void {
+        this.width = document.body.offsetWidth;
+        this.height = document.body.offsetHeight;
+        this.displayPoint = new Vector(this.width / 2, this.height / 2);
+
+        if (this.force) {
+            this.force.size([this.width, this.height]);
+        }
+
+        this.displayRadius = this.width < this.height ? this.width * 0.35 : this.height * 0.35;
+        this.radius = this.displayRadius * 0.3;
+        this.stickyRadius = this.displayRadius * 0.5;
+
+        this.nodes.forEach((node) => {
+            if (!node.isDisplayed) {
+                node.radius = this.getTweetRadius(node.tweet);
+                node.opacity = 0;
+            }
+        });
+        this.updateNodes();
+    }
 
     ngOnDestroy(): void {
         this.force.stop();
         this.force = null;
         clearTimeout(this.displayTimer);
         this.nodes = null;
+        window.removeEventListener("resize", this.resizeListener);
+        window.removeEventListener("visibilitychange", this.resizeListener);
     }
 
     nodeDisplayInterval(): void {
@@ -92,8 +161,10 @@ export class BubbleComponent implements OnInit, OnDestroy {
         }, TIME_BETWEEN_EXPAND);
     }
 
-    activeTweetsChanged(activeTweets): void {
+    activeTweetsChanged(rawTweets: Tweet[]): void {
+        const activeTweets = rawTweets.map(this.instantiateTweet);
         if (!activeTweets || !this.nodes) return;
+
         if (activeTweets.length - this.nodes.length > 1) {
             activeTweets.forEach((tweet) => {
                 this.addNode(0, 0, tweet);
@@ -113,46 +184,135 @@ export class BubbleComponent implements OnInit, OnDestroy {
         }
     }
 
+    renderTweetContent(tweet) {
+        const tweetTime = vagueTime.get({
+          to: tweet.Date.getTime() + (new Date()).getTimezoneOffset() * 60 * 1000,
+        });
+        const tweetBody = tweet.Body
+            .replace(/[A-Za-z]+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~\?\/.=]+/g, "<span class='url'>$&</span>")
+            .replace(/(@\S+)/g, "<span class='mention'>$&</span>")
+            .replace(/(#\S+)/g, "<span class='hashtag'>$&</span>");
+
+        return `
+          <div class='tweet-header'>
+            <img class="profile-image" src="${tweet.ProfileImage}"/>
+            <div class="names-container">
+              <h2 class="name">${tweet.Name}</h2>
+              <h3 class="username">@${tweet.Handle}</h3>
+            </div>
+            <img class="twitter-logo" src="../../img/Twitter_Social_Icon_Blue.png">
+          </div>
+          <div class="tweet-body">${tweetBody}</div>
+          <div class="attached-images">
+            ${
+              tweet.MediaList.slice(0, 1).map(img => `<img src=${img.Url} />`).join("")
+            }
+          </div>
+          <span class="timestamp">${tweetTime}</span>
+        `;
+    }
+
+    updateNodes() {
+        const shadowSelection: any = d3
+            .select(".shadow-group")
+            .selectAll(".bubble-shadow")
+            .data<any>(this.nodes, (node) => node.tweet.Id);
+
+        const bubbleSelection: any = d3
+            .select(".content-group")
+            .selectAll(".bubble-content")
+            .data<any>(this.nodes, (node) => node.tweet.Id);
+
+        const positionSelection = (selection) => {
+          selection
+              .style("transform", node => "translate3d(" +
+                  ((node.fixed ? this.displayPoint.x : node.x) - node.radius) + "px, " +
+                  ((node.fixed ? this.displayPoint.y : node.y) - node.radius) + "px, 0)"
+              )
+              .style("width", node => `${node.radius * 2}px`)
+              .style("height", node => `${node.radius * 2}px`);
+        };
+
+        // Silky codez using translate3d(x, y, z) to force browser to use
+        // hardware accelaration on bubbles
+        shadowSelection
+            .enter()
+            .append("div")
+            .attr("class", "bubble-shadow bubble")
+            .style("box-shadow", node => {
+                const offset = node.radius * 0.2;
+                const blur = node.radius * 0.45;
+                const spread = 0;
+                const colour = "rgba(0, 0, 0, 0.25)";
+                return `-${offset}px ${offset}px ${blur}px ${spread} ${colour}`;
+            });
+
+        const bubble = bubbleSelection
+            .enter()
+            .append("div")
+            .attr("class", "bubble-content bubble");
+
+        bubble
+            .append("div")
+            .attr("class", "bubble-image")
+            .style("background-image", node => `url(${node.tweet.ProfileImage})`);
+
+        const self = this;
+
+        bubble
+            .append("div")
+            .attr("class", "bubble-tweet")
+            .append("div")
+            .attr("class", "tweet-content")
+            .style("width", `${this.displayRadius * 2}px`)
+            .style("height", `${this.displayRadius * 2}px`)
+            .each(function(data, i) {
+                this.innerHTML = self.renderTweetContent(data.tweet);
+            });
+
+        bubbleSelection
+            .selectAll(".bubble-tweet")
+            .style("opacity", node => node.tweet.isSticky ? 1 : node.opacity);
+
+        bubbleSelection
+            .selectAll(".tweet-content")
+            .style("transform", (node) => `scale(${isNaN(node.scale) ? 1 : node.scale}`);
+
+        positionSelection(shadowSelection);
+        positionSelection(bubbleSelection);
+
+        shadowSelection.exit().remove();
+        bubbleSelection.exit().remove();
+    }
+
     displayNode(): void {
         if (this.router.url === "/events/" + this.eventName && this.nodes.every(n => !n.isDisplayed && !n.isTranslating) && this.nodes && this.nodes.length) {
-            let i = this.displayCount % this.nodes.length;
-            this.points = NodeFunctions.generateTranslation(new Vector(this.nodes[i].x, this.nodes[i].y), this.displayPoint, TRANSLATION_TICKS);
-            this.nodes[i].isTranslating = true;
-            this.currentTweet = this.nodes[i].tweet;
+            const i = this.displayCount % this.nodes.length;
+            const node = this.nodes[i];
+            node.isTranslating = true;
             this.displayCount = (this.displayCount + 1) % this.nodes.length;
+            node.translateStartTime = Date.now();
+            node.translateStartPoint = {
+                x: node.x,
+                y: node.y
+            };
         }
     }
 
-    preLoadImage(url: string): HTMLImageElement {
-        let img = new Image();
-        img.onerror = () => {
-            img.src = DEFAULT_IMAGE;
-            return img;
-        };
-        img.src = url;
-        return img;
-    };
-
-    generateCanvas(): void {
-        const canvas = d3.select("#bubble-canvas").insert("canvas", ":first-child")
-                        .attr("width", this.width)
-                        .attr("height", this.height)
-                        .attr("id", "canv")
-                        .attr("style", "background: rgba(0,0,0,0);");
-
-        this.context = (canvas as any).node().getContext("2d");
-    };
-
     populateNodes(tweets): void {
         if (tweets) {
-            this.nodes = d3.range(tweets.length).map((d, i) => ({
-                radius: MIN_RADIUS,
+        this.nodes = d3
+            .range(tweets.length)
+            .map((d, i) => ({
                 tweet: tweets[i],
+                radius: this.getTweetRadius(tweets[i]),
+                scale: this.getTweetRadius(tweets[i]) / this.displayRadius,
                 isDisplayed: false,
                 isTranslating: false,
                 isIncreasing: false,
                 isDecreasing: false,
-                isDeleting: false
+                isDeleting: false,
+                opacity: 0
             }));
         }
     };
@@ -160,40 +320,81 @@ export class BubbleComponent implements OnInit, OnDestroy {
     setupForce(): void {
         this.force = d3.layout.force()
             .gravity(GRAVITY)
+            .friction(0.85)
+            .charge(-80)
             .nodes(this.nodes)
             .size([this.width, this.height]);
-        this.force.start();
+        this.force.on("tick", this.tick.bind(this));
     };
 
     translateBubble(node: any): void {
-        if (this.translationPoint === this.points.length) {
-            this.translationPoint = 0;
-            this.points = [];
+        const GROW_ZONE = 100;
+
+        if (bubbleHelpers.almostEqual(node.x, this.displayPoint.x) &&
+            bubbleHelpers.almostEqual(node.y, this.displayPoint.y)
+        ) {
             node.isTranslating = false;
+            node.isDisplayed = true;
             node.isIncreasing = true;
+            node.fixed = true;
         }
         else {
-            node.x = this.points[this.translationPoint].x;
-            node.y = this.points[this.translationPoint].y;
-            this.translationPoint++;
+            const valueX = bubbleHelpers.easeOut(
+              Date.now() - node.translateStartTime, node.translateStartPoint.x,
+              this.displayPoint.x - node.translateStartPoint.x, TRANSLATE_TIME
+            );
+            const valueY = bubbleHelpers.easeOut(
+              Date.now() - node.translateStartTime, node.translateStartPoint.y,
+              this.displayPoint.y - node.translateStartPoint.y, TRANSLATE_TIME
+            );
+
+            node.x = valueX;
+            node.y = valueY;
+        }
+
+        if (!node.isIncreasing &&
+            bubbleHelpers.almostEqual(node.x, this.displayPoint.x, GROW_ZONE) &&
+            bubbleHelpers.almostEqual(node.y, this.displayPoint.y, GROW_ZONE)
+        ) {
+            node.isDisplayed = true;
+            node.isIncreasing = true;
+            node.scaleStartTime = Date.now();
         }
     };
 
+    instantiateTweet(tweet: Tweet) {
+      return new Tweet(
+        tweet.Id, tweet.TweetId, tweet.Body, tweet.Handle,
+        new Date(tweet.Date as any), tweet.Name, tweet.ProfileImage,
+        tweet.MediaList, tweet.StickyList
+      );
+    }
+
     addNode(x: number = 0, y: number = 0, tweet: Tweet): void {
-        if (this.nodes.length < MAX_NODES && tweet !== undefined && !this.nodes.find(t => t.tweet.Id === tweet.Id)) {
-            tweet.LoadedProfileImage = this.preLoadImage(tweet.ProfileImage);
-            this.nodes.push({x: x, y: y, tweet: tweet, radius: MIN_RADIUS});
+        if (tweet !== undefined && !this.nodes.find(t => t.tweet.Id === tweet.Id)) {
+            this.nodes.push({
+                x: x,
+                y: y,
+                tweet: tweet,
+                radius: this.getTweetRadius(tweet),
+                scale: this.getTweetRadius(tweet) / this.displayRadius,
+                opacity: 0
+            });
             this.force.start();
         }
     };
 
     removeNode(index: number): void {
-        if (index >= 0 && index < this.nodes.length) {
-            if (!this.nodes[index].isDisplayed) {
-                this.nodes[index].isDeleting = true;
+        const node = this.nodes[index];
+        if (node && !node.isDeleting) {
+            if (!node.isDisplayed && !node.isTranslating) {
+                node.exitStartTime = Date.now();
+                node.isDeleting = true;
+                node.toBeDeleted = false;
             }
             else {
-                this.nodes[index].toBeDeleted = true;
+                node.toBeDeleted = true;
+                node.isDeleting = false;
             }
         }
     };
@@ -210,12 +411,19 @@ export class BubbleComponent implements OnInit, OnDestroy {
 
         for (i = 0; i < n; ++i) {
             d = this.nodes[i];
+            const initialRadius = this.getTweetRadius(d.tweet);
 
-            if (d.isIncreasing && !d.isTranslating) {
-                NodeFunctions.increaseRadius(d, MAX_RADIUS, INCREASE_STEP, TIME_TO_SHOW, this);
+            if (d.isIncreasing) {
+                bubbleHelpers.growBubble(
+                    d, TIME_TO_SHOW, GROW_TIME, initialRadius,
+                    this.displayRadius, this
+                );
             }
             else if (d.isDecreasing && !d.isTranslating) {
-                NodeFunctions.decreaseRadius(d, MIN_RADIUS, INCREASE_STEP, this);
+                bubbleHelpers.shrinkBubble(
+                    d, d.scaleStartTime, GROW_TIME, initialRadius, this.displayRadius,
+                    initialRadius / this.displayRadius, 1
+                );
             }
 
             if (d.isTranslating) {
@@ -223,46 +431,20 @@ export class BubbleComponent implements OnInit, OnDestroy {
             }
 
             if (d.isDeleting) {
-                NodeFunctions.decreaseRadius(d, 0, INCREASE_STEP, this);
+                bubbleHelpers.shrinkBubble(
+                    d, d.exitStartTime, EXIT_TIME, 0, initialRadius, 0,
+                    initialRadius / this.displayRadius
+                );
                 if (d.radius < 1) {
                     d.deleted = true;
                 }
             }
 
             if (d.toBeDeleted && !d.isDisplayed) {
-                d.isDeleting = true;
+                this.removeNode(d.index);
             }
 
-            NodeFunctions.collide(this.nodes);
-        }
-
-        this.context.clearRect(0, 0, this.width, this.height);
-        this.context.fillStyle = "white";
-
-        for (i = 0; i < n; i++) {
-            this.context.beginPath();
-            d = this.nodes[i];
-            if (d.radius < 5) {
-                continue;
-            }
-            if (d.isFixed) {
-                d.x = this.displayPoint.x;
-                d.y = this.displayPoint.y;
-            }
-
-            this.context.moveTo(d.x, d.y);
-            this.context.arc(d.x, d.y, d.radius - 4, 0, 2 * Math.PI);
-            this.context.fill();
-            this.context.save();
-            this.context.arc(d.x, d.y, d.radius - 2, 0, Math.PI * 2, false);
-            this.context.clip();
-            try {
-                this.context.drawImage(d.tweet.LoadedProfileImage, d.x - d.radius, d.y - d.radius, d.radius * 2, d.radius * 2);
-            } catch (err) {
-                d.tweet.LoadedProfileImage = this.preLoadImage(d.tweet.ProfileImage);
-            }
-            this.context.restore();
-            this.context.closePath();
+            bubbleHelpers.collide(this.nodes);
         }
 
         for (i = 0; i < n; i++) {
@@ -272,6 +454,11 @@ export class BubbleComponent implements OnInit, OnDestroy {
             }
         }
 
+        this.updateNodes();
         this.force.resume();
     };
+
+    end() {
+        this.force.start();
+    }
 };

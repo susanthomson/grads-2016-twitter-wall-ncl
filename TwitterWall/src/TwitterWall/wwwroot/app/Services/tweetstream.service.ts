@@ -3,7 +3,7 @@ import { Http, Response } from "@angular/http";
 import { Subject } from "rxjs/Subject";
 import { Tweet } from "../Models/tweet";
 import { Queue } from "../Models/queue";
-import { Router, ActivatedRoute, Params } from '@angular/router'
+import { Router, ActivatedRoute, Params } from "@angular/router";
 
 import "rxjs/add/operator/toPromise";
 
@@ -108,10 +108,10 @@ export class TweetStream {
 
         this.conn.client.userBanned = (users: any) => {
             for (const tweet of this.activeTweets) {
-                if (tweet.Handle === users[users.length-1].Handle) this.removeActiveTweet(tweet);
+                if (tweet.Handle === users[users.length - 1].Handle) this.removeActiveTweet(tweet);
             }
             for (const tweet of this.tweetsQueue) {
-                if (tweet.Handle === users[users.length-1].Handle) this.removeTweet(tweet);
+                if (tweet.Handle === users[users.length - 1].Handle) this.removeTweet(tweet);
             }
             this.bannedUsers.next(users);
         };
@@ -147,8 +147,8 @@ export class TweetStream {
     setEvent(event: string): void {
         this.stopHubConnection();
         this.http.get("api/events?name=" + event).toPromise().then((res) => {
-            if (res.status == 200) {
-                var responseJson = JSON.parse((res as any)._body);
+            if (res.status === 200) {
+                const responseJson = JSON.parse((res as any)._body);
                 // If there is an element in response, subscribe to a group
                 if (responseJson.length > 0) {
                     this.initialise();

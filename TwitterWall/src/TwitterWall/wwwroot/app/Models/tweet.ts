@@ -9,9 +9,10 @@ export class Tweet {
     public Date: Date;
     public Name: string;
     public ProfileImage: string;
-    public StickyList: string[];
+    public StickyList: any[];
     public MediaList: MediaUrl[];
     public LoadedProfileImage: HTMLImageElement;
+    public isSticky: boolean;
 
     constructor(id: number, tweetid: number, body: string, handle: string, date: Date, name: string, profileImage: string, mediaList: MediaUrl[], stickyList: string[]) {
         this.Id = id;
@@ -23,5 +24,6 @@ export class Tweet {
         this.ProfileImage = profileImage;
         this.MediaList = mediaList;
         this.StickyList = stickyList;
+        this.isSticky = stickyList.some(Boolean);
     }
 }

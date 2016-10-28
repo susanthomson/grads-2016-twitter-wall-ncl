@@ -1,6 +1,5 @@
 import { AppComponent } from "../Components/app.component";
 import { BubbleComponent } from "../Components/bubble.component";
-import { TweetDisplay } from "../Components/tweetdisplay.component";
 import { TestBed } from "@angular/core/testing";
 import { Tweet } from "../Models/tweet";
 import { Vector } from "../Models/vector";
@@ -22,18 +21,13 @@ class ActivatedRouteMock {
 describe("d3 bubble component", () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [BubbleComponent, TweetDisplay],
+            declarations: [BubbleComponent],
             providers: [{ provide: TweetStream, useClass: TweetStreamMock },
                 { provide: Router, useClass: RouterMock }, { provide: ActivatedRoute, useClass: ActivatedRouteMock }]
         });
 
         fixture = TestBed.createComponent(BubbleComponent);
         bubbleComponent = fixture.componentInstance;
-    });
-
-    it("sets up context correctly", () => {
-        fixture.detectChanges();
-        expect(bubbleComponent.context).toBeDefined();
     });
 
     it("sets up nodes correctly", () => {

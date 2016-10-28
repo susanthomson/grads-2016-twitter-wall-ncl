@@ -3,7 +3,6 @@ import { BrowserModule } from "@angular/platform-browser";
 import { AppComponent }   from "./Components/app.component";
 import { TweetStream } from "./Services/tweetstream.service";
 import { BubbleComponent } from "./Components/bubble.component";
-import { TweetDisplay } from "./Components/tweetdisplay.component";
 import { TweetStreamMock } from "./Services/tweetstream.service.mock";
 import { HttpModule } from "@angular/http";
 import { AdminPanelComponent } from "./Components/panel.component";
@@ -27,7 +26,7 @@ import { LocationStrategy, HashLocationStrategy } from "@angular/common";
             { path: "events/:id", component: BubbleComponent }
         ])
     ],
-    declarations: [AppComponent, BubbleComponent, TweetDisplay, AdminPanelComponent, BufferTweets, ActiveTweets, Subscriptions, MainAdminComponent, BannedUsers],
+    declarations: [AppComponent, BubbleComponent, AdminPanelComponent, BufferTweets, ActiveTweets, Subscriptions, MainAdminComponent, BannedUsers],
     providers: [TweetStream, TweetStreamMock, TwitterLogin, EventService, { provide: LocationStrategy, useClass: HashLocationStrategy }],
     bootstrap: [AppComponent]
 })

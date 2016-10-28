@@ -78,7 +78,7 @@ namespace TwitterWall.Twitter
                 // Invoke receiveTweet method on client side
                 if (TweetsController._connectionManager != null)
                 {
-                    TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.Group(streamEvent.Name).receiveTweet(_tweetRepo.Find(t => t.TweetId == newTweet.TweetId && t.Event.Id == streamEvent.Id));
+                    TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.Group(streamEvent.Name).receiveTweet(_tweetRepo.Find(t => t.TweetId == newTweet.TweetId && t.Event.Id == streamEvent.Id).SingleOrDefault());
                 }
             };
 

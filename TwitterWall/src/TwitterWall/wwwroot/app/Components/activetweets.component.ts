@@ -42,7 +42,7 @@ import { TweetStream } from "../Services/tweetstream.service";
                     </div>
                 </td>
                 <td>
-                    <input type="checkbox" [attr.checked]="isSticky(i)" (click)=sticky(i,$event)>
+                    <input type="checkbox" [attr.checked]="isSticky(i) ? true : null" (click)=sticky(i,$event)>
                 </td>
                 <td>
                     <button type="button" class="btn btn-warning" (click)="removeTweet(i)">Remove Tweet</button>

@@ -267,6 +267,7 @@ Config.json
 TwitterWall/src/TwitterWall/typings/
 TwitterWall/src/TwitterWall/lib
 TwitterWall/src/TwitterWall/wwwroot/libs/
+TwitterWall/src/TwitterWall/Client/libs/
 docker-build.sh
 docker-cleanup.sh
 *.stackdump
@@ -274,3 +275,6 @@ docker-cleanup.sh
 TwitterWall/src/TwitterWall/wwwroot/app/*.js
 TwitterWall/src/TwitterWall/wwwroot/app/*.map
 TwitterWall/src/TwitterWall/wwwroot/css/
+TwitterWall/src/TwitterWall/Client/app/*.js
+TwitterWall/src/TwitterWall/Client/app/*.map
+TwitterWall/src/TwitterWall/Client/css/

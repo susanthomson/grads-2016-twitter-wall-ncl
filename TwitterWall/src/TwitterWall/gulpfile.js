@@ -21,13 +21,13 @@ gulp.task('restore', function () {
         'node_modules/bootstrap/dist/**/*.*',
         'node_modules/phantomjs-prebuilt/**/*.js',
         'node_modules/d3/**/*.js'
-    ], { base: 'node_modules' }).pipe(gulp.dest('./wwwroot/libs'));
+    ], { base: 'node_modules' }).pipe(gulp.dest('./Client/libs'));
 });
 
 gulp.task('less', function () {
-  return gulp.src('./wwwroot/app/Less/*.less')
+  return gulp.src('./Client/app/Less/*.less')
     .pipe(less({
       paths: [ path.join(__dirname, 'less', 'includes') ]
     }))
-    .pipe(gulp.dest('./wwwroot/css'));
+    .pipe(gulp.dest('./Client/css'));
 });

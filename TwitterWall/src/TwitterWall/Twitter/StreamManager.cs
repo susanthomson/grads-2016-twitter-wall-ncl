@@ -117,8 +117,12 @@ namespace TwitterWall.Twitter
         {
             Event ev = new Event();
             ev.Name = name;
-            _eventRepo.Add(ev);
-            SetupStream(ev);
+            var eventExists = _eventRepo.Find(e => e.Name == ev.Name).SingleOrDefault();
+            if (eventExists == null)
+            {
+                _eventRepo.Add(ev);
+                SetupStream(ev);
+            }
         }
 
         public void RemoveEvent(int eventId)

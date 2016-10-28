@@ -130,7 +130,11 @@ namespace TwitterWall.Twitter
 
         public void AddTrack(String keyword)
         {
-            _subRepo.Add(new Subscription(keyword, Common.TRACK_PROPERTY, streamEvent));
+            var track = _subRepo.Find(t => (t.Value == keyword) && (t.Type == Common.SubType.TRACK.ToString()) && (t.Event.Id == streamEvent.Id)).SingleOrDefault();
+            if (track == null)
+            {
+                _subRepo.Add(new Subscription(keyword, Common.SubType.TRACK.ToString(), streamEvent));
+            }
         }
 
         public Boolean AddPriorityUser(string handle)
@@ -138,7 +142,11 @@ namespace TwitterWall.Twitter
             var user = Tweetinvi.User.GetUserFromScreenName(handle);
             if (user != null)
             {
-                _subRepo.Add(new Subscription(handle, user.Id, Common.SubType.PERSON.ToString(), this.streamEvent));
+                var userExist = _subRepo.Find(t => (t.Value == handle) && (t.Type == Common.SubType.PERSON.ToString()) && (t.Event.Id == streamEvent.Id)).SingleOrDefault();
+                if (userExist == null)
+                {
+                    _subRepo.Add(new Subscription(handle, user.Id, Common.SubType.PERSON.ToString(), this.streamEvent));  
+                }
                 return true;
             }
             return false;

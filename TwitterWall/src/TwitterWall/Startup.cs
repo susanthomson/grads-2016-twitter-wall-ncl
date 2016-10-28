@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -45,6 +46,7 @@ namespace TwitterWall
             services.AddSignalR(options =>
             {
                 options.Hubs.EnableDetailedErrors = true;
+                options.Transports.TransportConnectTimeout = TimeSpan.FromSeconds(30);
             });
 
             // Add framework services.
@@ -55,6 +57,7 @@ namespace TwitterWall
             services.AddDbContext<TweetContext>();
             services.AddScoped<TweetDBRepository>();
             services.AddScoped<UserDBRepository>();
+            services.AddScoped<EventDBRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

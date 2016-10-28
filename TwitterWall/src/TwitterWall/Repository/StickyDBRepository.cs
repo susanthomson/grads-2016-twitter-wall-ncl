@@ -78,16 +78,18 @@ namespace TwitterWall.Repository
             }
         }
 
-        public void Add(long tweetId)
+        public void Add(long tweetId, int eventId)
         {
             using (TweetContext context = GetContext())
             {
                 Tweet tweet = context.Tweets.Where(t => t.Id == tweetId).SingleOrDefault();
+                Event ev = context.Events.Where(e => e.Id == eventId).SingleOrDefault();
                 Sticky duplicateCheck = context.Sticky.Include(s => s.Tweet).Where(s => s.Tweet.Id == tweetId).SingleOrDefault();
-                if (tweet != null && duplicateCheck == null)
+                if (tweet != null && duplicateCheck == null && ev != null)
                 {
                     Sticky sticky = new Sticky();
                     sticky.Tweet = tweet;
+                    sticky.Event = ev;
                     context.Sticky.Add(sticky);
                     context.SaveChanges();
                 }

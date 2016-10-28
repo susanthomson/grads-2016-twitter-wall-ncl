@@ -127,7 +127,7 @@ namespace TwitterWall.Test
             // Arrange
             SubscriptionDBRepository repo = new SubscriptionDBRepository(mockContext.Object);
             // Act
-            var result = repo.Find(s => s.Type == Common.SubType.TRACK.ToString());
+            var result = repo.GetAll();
 
 
             // Assert

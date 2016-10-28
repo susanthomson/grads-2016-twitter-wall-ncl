@@ -66,11 +66,11 @@ namespace TwitterWall.Repository
             }
         }
 
-        public void AddFromTweet(Tweetinvi.Models.ITweet tweet)
+        public void AddFromTweet(Tweetinvi.Models.ITweet tweet, Event ev)
         {
             using (TweetContext context = GetContext())
             {
-                Tweet result = context.Tweets.Where(t => t.TweetId == tweet.Id).SingleOrDefault();
+                Tweet result = context.Tweets.Where(t => t.TweetId == tweet.Id && t.Event.Id == ev.Id).SingleOrDefault();
                 if (result != null)
                 {
                     List<Tweetinvi.Models.Entities.IMediaEntity> mediaEntities = tweet.Media.Where(e => e.MediaType.Equals("photo")).ToList();

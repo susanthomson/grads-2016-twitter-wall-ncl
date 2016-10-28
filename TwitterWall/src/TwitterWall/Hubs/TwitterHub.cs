@@ -13,124 +13,213 @@ namespace TwitterWall.Hubs
     public class TwitterHub : Hub
     {
         StickyDBRepository _stickyRepo = new StickyDBRepository();
-        TwitterStream stream = TwitterStream.Instance();
+        EventDBRepository _eventRepo = new EventDBRepository();
+        StreamManager streamManager = StreamManager.Instance();
 
-        public void AddStickyTweet(long tweetId)
+        public Task JoinGroup(string groupName)
         {
-            _stickyRepo.Add(tweetId);
-            TweetUpdate(stream._tweetRepo.Find(t => t.Id == tweetId).SingleOrDefault());
+            return Groups.Add(Context.ConnectionId, groupName);
         }
 
-        public void RemoveStickyTweet(long tweetId)
+        public void AddStickyTweet(long tweetId, string streamName)
         {
-            _stickyRepo.RemoveByTweetId(tweetId);
-            TweetUpdate(stream._tweetRepo.Find(t => t.Id == tweetId).SingleOrDefault());
-        }
-
-        public void FollowTrack(string keyword)
-        {
-            stream.AddTrack(keyword);
-            GetTracks();
-        }
-
-        public void FollowUser(string handle)
-        {
-            if (!stream.AddPriorityUser(handle))
+            TwitterStream ts = streamManager.GetStream(streamName);
+            Event streamEvent = _eventRepo.Find(e => e.Name == streamName).SingleOrDefault();
+            if (ts != null && streamEvent != null)
             {
-                Clients.Caller.invalidUser("That user does not exist!");
-            }
-            else
-            {
-                GetPriorityUsers();
+                _stickyRepo.Add(tweetId, streamEvent.Id);
+                TweetUpdate(ts._tweetRepo.Find(t => t.Id == tweetId).SingleOrDefault(), streamName);
             }
         }
 
-        public void RemoveSubscription(int id, string type)
+        public void RemoveStickyTweet(long tweetId, string streamName)
         {
-            Subscription subscription = stream._subRepo.Find(sub => sub.Id == id).First();
-            if (subscription != null)
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
             {
-                stream.RemoveSubscription(id);
-                if (subscription.Type == Common.SubType.TRACK.ToString())
+                _stickyRepo.RemoveByTweetId(tweetId);
+                TweetUpdate(ts._tweetRepo.Find(t => t.Id == tweetId).SingleOrDefault(), streamName);
+            }
+        }
+
+        public void AddTrack(string keyword, string streamName)
+        {
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
+            {
+                ts.AddTrack(keyword);
+                GetTracks(streamName);
+            }
+        }
+
+        public void RemoveTrack(int id, string streamName)
+        {
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
+            {
+                ts.RemoveTrack(id);
+                GetTracks(streamName);
+            }
+        }
+
+        public void FollowUser(string handle, string streamName)
+        {
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
+            {
+                if (!ts.AddPriorityUser(handle))
                 {
-                    GetTracks();
+                    Clients.Caller.invalidUser("That user does not exist!");
                 }
-                else if (subscription.Type == Common.SubType.PERSON.ToString())
+                else
                 {
-                    GetPriorityUsers();
-                }
-            }
-
-        }
-
-        public void RemoveTweet(long id)
-        {
-            stream._tweetRepo.Remove(id);
-            Clients.All.tweetRemoved(id);
-        }
-
-        public void GetTracks()
-        {
-            Clients.All.receiveTracks(stream.GetTracks());
-        }
-
-        public void GetPriorityUsers()
-        {
-            Clients.All.receiveUsers(stream.GetPriorityUsers());
-        }
-
-        public void GetBannedUsers()
-        {
-            Clients.All.receiveBannedUsers(stream.GetBannedUsers());
-        }
-
-        public void RestartStream()
-        {
-            stream.Restart();
-        }
-
-        public void RemoveTweetImage(long imageId)
-        {
-            MediaUrl media = stream._mediaRepo.Find(m => m.Id == imageId).SingleOrDefault();
-            if (media != null)
-            {
-                stream._mediaRepo.Remove(imageId);
-                Tweet tweet = stream._tweetRepo.Find(t => t.Id == media.Tweet.Id).SingleOrDefault();
-                if (tweet != null)
-                {
-                    TweetUpdate(tweet);
+                    GetPriorityUsers(streamName);
                 }
             }
         }
 
-        public void TweetUpdate(Tweet tweet)
+        public void RemovePriorityUser(int id, string streamName)
+        {
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
+            {
+                Subscription subscription = ts._subRepo.Find(sub => sub.Id == id && streamName == sub.Event.Name).First();
+                if (subscription != null)
+                {
+                    ts.RemoveSubscription(id);
+                    GetPriorityUsers(streamName);
+                }
+            }
+        }
+
+        public void RemoveTweet(long id, string streamName)
+        {
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
+            {
+                ts._tweetRepo.Remove(id);
+                Clients.Group(streamName).tweetRemoved(id);
+            }
+        }
+
+        public void GetTracks(string streamName)
+        {
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
+            {
+                List<Subscription> l = ts.GetTracks();
+                Clients.Group(streamName).receiveTracks(ts.GetTracks());
+            }
+        }
+
+        public void GetPriorityUsers(string streamName)
+        {
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
+            {
+                Clients.Group(streamName).receiveUsers(ts.GetPriorityUsers());
+            }
+        }
+
+        public void GetBannedUsers(string streamName)
+        {
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
+            {
+                Clients.Group(streamName).receiveBannedUsers(ts.GetBannedUsers());
+            }
+        }
+
+        public void RestartStream(string streamName)
+        {
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
+            {
+                ts.Restart();
+            }
+        }
+
+        public void RemoveTweetImage(long imageId, string streamName)
+        {
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
+            {
+                MediaUrl media = ts._mediaRepo.Find(m => m.Id == imageId).SingleOrDefault();
+                if (media != null)
+                {
+                    ts._mediaRepo.Remove(imageId);
+                    Tweet tweet = ts._tweetRepo.Find(t => t.Id == media.Tweet.Id).SingleOrDefault();
+                    if (tweet != null)
+                    {
+                        TweetUpdate(tweet, streamName);
+                    }
+                }
+            }
+        }
+
+        public void TweetUpdate(Tweet tweet, string streamName)
         {
             if (tweet != null)
             {
-                Clients.All.tweetChanged(tweet);
+                Clients.Group(streamName).tweetChanged(tweet);
             }
         }
 
-        public void BanUser(Tweet tweet)
+        public void GetStreamStatus(string streamName)
         {
-            Tweet serverTweet = stream._tweetRepo.Get(tweet.Id);
-            User alreadyBanned = stream._userRepo.Find(user => user.UserId == serverTweet.UserId).SingleOrDefault();
-            if (alreadyBanned == null)
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
             {
-                User newUser = new User(serverTweet.UserId, serverTweet.Handle);
-                newUser.Type = Common.BanType;
-                stream._userRepo.Add(newUser);
-                Clients.All.userBanned(stream.GetBannedUsers());
+                Clients.Caller.streamStatusChanged(ts.StreamStatus().ToString());
             }
         }
 
-        public void RemoveBannedUser(int bannedUserId)
+        public void AddEvent(string name)
         {
-            User bannedUser = stream._userRepo.Get(bannedUserId);
-            if (bannedUser != null)
+            streamManager.AddEvent(name);
+            SendEvents();
+        }
+
+        public void RemoveEvent(int eventId)
+        {
+            streamManager.RemoveEvent(eventId);
+            SendEvents();
+        }
+
+        private void SendEvents()
+        {
+            Clients.Caller.receiveEvents(_eventRepo.GetAll());
+        }
+
+        public void BanUser(Tweet tweet, string streamName)
+        {
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
             {
-                stream._userRepo.Remove(bannedUserId);
-                GetBannedUsers();
+                Tweet serverTweet = ts._tweetRepo.Find(t => t.Id == tweet.Id && t.Event.Name == streamName).SingleOrDefault();
+                User alreadyBanned = ts._userRepo.Find(user => user.UserId == serverTweet.UserId && user.Event.Name == streamName).SingleOrDefault();
+                if (alreadyBanned == null && serverTweet != null)
+                {
+                    User newUser = new User(serverTweet.UserId, serverTweet.Handle);
+                    newUser.Type = Common.BanType;
+                    newUser.Event = ts.getStreamEvent();
+                    ts._userRepo.Add(newUser);
+                    Clients.Group(streamName).userBanned(ts.GetBannedUsers());
+                }
+            }
+        }
+
+        public void RemoveBannedUser(int bannedUserId, string streamName)
+        {
+            TwitterStream ts = streamManager.GetStream(streamName);
+            if (ts != null)
+            {
+                User bannedUser = ts._userRepo.Find(u => u.Id == bannedUserId && u.Event.Name == streamName).SingleOrDefault();
+                if (bannedUser != null)
+                {
+                    ts._userRepo.Remove(bannedUserId);
+                    GetBannedUsers(streamName);
+                }
             }
         }
     }

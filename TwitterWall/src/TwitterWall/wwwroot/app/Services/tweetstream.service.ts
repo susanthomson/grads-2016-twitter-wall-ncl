@@ -3,6 +3,7 @@ import { Http, Response } from "@angular/http";
 import { Subject } from "rxjs/Subject";
 import { Tweet } from "../Models/tweet";
 import { Queue } from "../Models/queue";
+import { Router, ActivatedRoute, Params } from '@angular/router'
 
 import "rxjs/add/operator/toPromise";
 
@@ -13,8 +14,8 @@ const DELETION_INTERVAL = 10000;
 @Injectable()
 export class TweetStream {
     private conn: any;
-    private tweetsQueue: Tweet[];
-    private activeTweets: Tweet[];
+    private tweetsQueue: Tweet[] = [];
+    private activeTweets: Tweet[] = [];
     private queueChanged = new Subject<Tweet[]>();
     public queueEvent$ = this.queueChanged.asObservable();
     private activeQueueChanged = new Subject<Tweet[]>();
@@ -37,7 +38,20 @@ export class TweetStream {
     private init = new Subject<boolean>();
     public initialisationChanged$ = this.init.asObservable();
     private initialised: boolean = false;
+
+    private streamEvent: { Id: number, Name: string };
+    private eventChange = new Subject<{Id: number, Name: string}>();
+    public eventChanged$ = this.eventChange.asObservable();
+
+    private streamStatus = new Subject<string>();
+    public streamStatusChanged$ = this.streamStatus.asObservable();
+
+
     constructor(private http: Http) {
+
+    }
+
+    private initialise(): void {
         this.tweetsQueue = [];
         this.activeTweets = [];
         this.conn = $.connection.twitterHub;
@@ -56,6 +70,10 @@ export class TweetStream {
 
         this.conn.client.receiveBannedUsers = (bannedUsers) => {
             this.bannedUsers.next(bannedUsers);
+        };
+
+        this.conn.client.streamStatusChanged = (status) => {
+            this.streamStatus.next(status);
         };
 
         this.conn.client.tweetChanged = (newTweet: Tweet) => {
@@ -103,15 +121,9 @@ export class TweetStream {
             this.initialised = true;
         });
 
-        this.getLatestTweets().then((tweets) => {
-            this.activeTweets = tweets.slice(-this.activeQueueSize);
-            this.activeQueueChanged.next(this.activeTweets);
-        });
-
         setInterval(() => {
             if (this.activeTweets.length < this.activeQueueSize && this.tweetsQueue.length > 0) {
                 this.addActiveTweet(this.popNextTweet());
-
             }
             else if (this.tweetsQueue.length > 0) {
                 this.activeTweets.some((tweet) => {
@@ -127,8 +139,66 @@ export class TweetStream {
         }, DELETION_INTERVAL);
     }
 
+    stopHubConnection(): void {
+        $.connection.hub.stop();
+        this.initialised = false;
+    }
+
+    setEvent(event: string): void {
+        this.stopHubConnection();
+        this.http.get("api/events?name=" + event).toPromise().then((res) => {
+            if (res.status == 200) {
+                var responseJson = JSON.parse((res as any)._body);
+                // If there is an element in response, subscribe to a group
+                if (responseJson.length > 0) {
+                    this.initialise();
+
+                    let event = responseJson[0];
+                    this.streamEvent = event;
+                    this.eventChange.next(event);
+
+                    if (this.initialised) {
+                        this.conn.server.joinGroup(event.Name);
+                    }
+                    else {
+                        this.initialisationChanged$.subscribe((init) => {
+                            if (init) {
+                                this.conn.server.joinGroup(event.Name);
+                            }
+                        });
+                    }
+                    this.getLatestTweets().then((tweets) => {
+                       this.activeTweets = tweets;
+                       this.activeQueueChanged.next(this.activeTweets);
+                   });
+
+                    setInterval(() => {
+                        if (this.activeTweets.length < this.activeQueueSize && this.tweetsQueue.length > 0) {
+                            this.addActiveTweet(this.popNextTweet());
+
+                        }
+                        else if (this.tweetsQueue.length > 0) {
+                            this.activeTweets.some((tweet) => {
+                                // If a tweet has been stickied, then the StickyList array length will be one element
+                                if (tweet.StickyList.length === 0) {
+                                    this.removeActiveTweet(tweet);
+                                    this.addActiveTweet(this.popNextTweet());
+                                    return true;
+                                }
+                                return false;
+                            });
+                        }
+                    }, DELETION_INTERVAL);
+                }
+                else {
+                    // Event not found
+                }
+            }
+        });
+    }
+
     getLatestTweets(): Promise<any[]> {
-        return this.http.get("api/tweets?latest=" + this.activeQueueSize).toPromise().then((res) => {
+        return this.http.get("api/tweets?latest=" + this.activeQueueSize + "&eventName=" + this.streamEvent.Name).toPromise().then((res) => {
             return JSON.parse((res as any)._body);
         });
     }
@@ -188,34 +258,40 @@ export class TweetStream {
         }
     }
 
-   followTrack(keyword: string): void {
+    addTrack(keyword: string): void {
         if (keyword.length < 60) {
-            this.conn.server.followTrack(keyword);
+            this.conn.server.addTrack(keyword, this.streamEvent.Name);
         }
     }
 
     getTracks(): void {
-        this.conn.server.getTracks();
+        if (this.streamEvent) {
+            this.conn.server.getTracks(this.streamEvent.Name);
+        }
     }
 
-   followUser(handle: string): void {
-        this.conn.server.followUser(handle);
+    followUser(handle: string): void {
+        this.conn.server.followUser(handle, this.streamEvent.Name);
     }
 
-    getUsers(): void {
-        this.conn.server.getPriorityUsers();
+    getPriorityUsers(): void {
+        this.conn.server.getPriorityUsers(this.streamEvent.Name);
    }
 
     getBannedUsers(): void {
-        this.conn.server.getBannedUsers();
+        this.conn.server.getBannedUsers(this.streamEvent.Name);
     }
 
-    removeSubscription(id: number, type: string): void {
-        this.conn.server.removeSubscription(id, type);
+    removeTrack(trackId: number): void {
+        this.conn.server.removeTrack(trackId, this.streamEvent.Name);
+    }
+
+    removePriorityUser(userId: number): void {
+        this.conn.server.removePriorityUser(userId, this.streamEvent.Name);
     }
 
     restartStream(): void {
-        this.conn.server.restartStream();
+        this.conn.server.restartStream(this.streamEvent.Name);
     }
 
     isInitialised(): boolean {
@@ -223,27 +299,33 @@ export class TweetStream {
     }
 
     addSticky(tweetId: number): void {
-        this.conn.server.addStickyTweet(tweetId);
+        this.conn.server.addStickyTweet(tweetId, this.streamEvent.Name);
     }
 
     removeSticky(tweetId: number): void {
-        this.conn.server.removeStickyTweet(tweetId);
+        this.conn.server.removeStickyTweet(tweetId, this.streamEvent.Name);
     }
 
     removeTweetImage(tweetIndex: number, imageIndex: number, imageId: number): void {
-        this.conn.server.removeTweetImage(imageId);
+        this.conn.server.removeTweetImage(imageId, this.streamEvent.Name);
         this.activeTweets[tweetIndex].MediaList.splice(imageIndex, 1);
     }
 
     removeActiveTweetFromDB(tweet: Tweet): void {
-        this.conn.server.removeTweet(tweet.Id);
+        this.conn.server.removeTweet(tweet.Id, this.streamEvent.Name);
+    }
+
+    getStreamStatus(): void {
+        if (this.initialised) {
+            this.conn.server.getStreamStatus(this.streamEvent.Name);
+        }
     }
 
     banUser(tweet: Tweet): void {
-        this.conn.server.banUser(tweet);
+        this.conn.server.banUser(tweet, this.streamEvent.Name);
     }
 
     removeBannedUser(userId: number) {
-        this.conn.server.removeBannedUser(userId);
+        this.conn.server.removeBannedUser(userId, this.streamEvent.Name);
     }
 }

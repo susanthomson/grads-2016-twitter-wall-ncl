@@ -29,5 +29,6 @@ namespace TwitterWall.Context
         public virtual DbSet<Sticky> Sticky { get; set; }
         public virtual DbSet<Subscription> Subscriptions { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Event> Events { get; set; }
     }
 }

@@ -25,15 +25,15 @@ namespace TwitterWall.Controllers
 
         // GET api/values
         [HttpGet]
-        public IEnumerable<Tweet> Get(string latest)
+        public IEnumerable<Tweet> Get(string latest, string eventName)
         {            
-            if (!String.IsNullOrEmpty(latest))
+            if (!String.IsNullOrEmpty(latest) && !String.IsNullOrEmpty(eventName))
             {
                 int limitNumber;
                 bool result = Int32.TryParse(latest, out limitNumber);
                 if (result && limitNumber >= 0)
                 {
-                    return _tweetRepo.GetLatest(limitNumber);
+                    return _tweetRepo.GetLatest(limitNumber, eventName);
                 }
                 return null;
             }

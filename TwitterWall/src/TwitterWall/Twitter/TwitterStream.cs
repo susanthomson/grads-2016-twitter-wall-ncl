@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,31 +12,30 @@ using TwitterWall.Utility;
 
 namespace TwitterWall.Twitter
 {
-    class TwitterStream
+    public class TwitterStream
     {
-        private static TwitterStream _instance;
         public MediaDBRepository _mediaRepo = new MediaDBRepository();
         public TweetDBRepository _tweetRepo = new TweetDBRepository();
         public SubscriptionDBRepository _subRepo = new SubscriptionDBRepository();
         public UserDBRepository _userRepo = new UserDBRepository();
 
-        private const string CONSUMER_KEY = "CONSUMER_KEY";
-        private const string CONSUMER_SECRET = "CONSUMER_SECRET";
-        private const string ACCESS_TOKEN = "ACCESS_TOKEN";
-        private const string ACCESS_TOKEN_SECRET = "ACCESS_TOKEN_SECRET";
-        private const string CREDENTIALS_PROPERTY = "TwitterCredentials";
-
         public string ConsumerKey { get; set; }
         public string ConsumerSecret { get; set; }
         public string AccessToken { get; set; }
         public string AccessTokenSecret { get; set; }
-        public List<UserCredential> Users = new List<UserCredential>();
+
+        Event streamEvent;
 
         Tweetinvi.Streaming.IFilteredStream stream;
 
-        protected TwitterStream()
+        public TwitterStream(Event ev, string ConsumerKey, string ConsumerSecret, string AccessToken, string AccessTokenSecret)
         {
-            SetCredentials();
+            this.streamEvent = ev;
+            this.ConsumerKey = ConsumerKey;
+            this.ConsumerSecret = ConsumerSecret;
+            this.AccessToken = AccessToken;
+            this.AccessTokenSecret = AccessTokenSecret;
+            UpdateCredentials();
             stream = Stream.CreateFilteredStream();
         }
 
@@ -46,7 +44,7 @@ namespace TwitterWall.Twitter
             stream.ClearFollows();
             stream.ClearTracks();
 
-            foreach(Subscription s in _subRepo.GetAll())
+            foreach (Subscription s in _subRepo.Find(s => s.Event.Id == streamEvent.Id))
             {
                 if (s.Type == Common.SubType.TRACK.ToString())
                 {
@@ -54,7 +52,7 @@ namespace TwitterWall.Twitter
                 }
                 else if(s.Type == Common.SubType.PERSON.ToString())
                 {
-                     stream.AddFollow(s.TwitterId);       
+                     stream.AddFollow(s.TwitterId);
                 }
             }
 
@@ -66,10 +64,8 @@ namespace TwitterWall.Twitter
                     return;
                 }
 
-                Models.Tweet newTweet = new Models.Tweet(args.Tweet.Id, args.Tweet.FullText,
-                    args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt, args.Tweet.CreatedBy.Name,
-                    args.Tweet.CreatedBy.ProfileImageUrlFullSize, args.Tweet.CreatedBy.Id);
-                Models.Tweet result = _tweetRepo.Find(obj => obj.TweetId == newTweet.TweetId).SingleOrDefault();
+                Models.Tweet newTweet = new Models.Tweet(args.Tweet.Id, args.Tweet.FullText, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt, args.Tweet.CreatedBy.Name, args.Tweet.CreatedBy.ProfileImageUrlFullSize, streamEvent, args.Tweet.CreatedBy.Id);
+                TwitterWall.Models.Tweet result = _tweetRepo.Find(obj => obj.TweetId == newTweet.TweetId && obj.Event.Id == streamEvent.Id).SingleOrDefault();
 
                 if (result != null)
                 {
@@ -77,54 +73,28 @@ namespace TwitterWall.Twitter
                 }
 
                 _tweetRepo.Add(newTweet);
-                _mediaRepo.AddFromTweet(args.Tweet);
+                _mediaRepo.AddFromTweet(args.Tweet, streamEvent);
+
+                // Invoke receiveTweet method on client side
                 if (TweetsController._connectionManager != null)
                 {
-                    TweetsController._connectionManager.GetHubContext<TwitterHub>()
-                        .Clients.All.receiveTweet(_tweetRepo.Find(t => t.TweetId == newTweet.TweetId).SingleOrDefault());
+                    TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.Group(streamEvent.Name).receiveTweet(_tweetRepo.Find(t => t.TweetId == newTweet.TweetId && t.Event.Id == streamEvent.Id));
+                }
+            };
+
+            stream.StreamStopped += (sender, args) =>
+            {
+                var exceptionThatCausedTheStreamToStop = args.Exception;
+                var twitterDisconnectMessage = args.DisconnectMessage;
+                if (TweetsController._connectionManager != null)
+                {
+                    TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.All.streamStatusChanged("Stopped: " + args.Exception + ". " + args.DisconnectMessage);
                 }
             };
         }
 
-        public void AddUserCredentials(UserCredential user)
+        public void UpdateCredentials()
         {
-            UserCredential uc;
-            if ((uc = Users.Find(u => u.Handle == user.Handle)) != null)
-            {
-                Users.Remove(uc);
-            }
-            Users.Add(user);
-        }
-
-        public bool ChangeUserCredentials(string handle, string hash)
-        {
-            UserCredential uc;
-            if ((uc = Users.Find(u =>u.Handle == handle)) != null && uc.VerifyHash(hash))
-            {
-                AccessToken = uc.GetAccessToken();
-                AccessTokenSecret = uc.GetAccessSecret();
-                Auth.SetUserCredentials(ConsumerKey, ConsumerSecret, AccessToken, AccessTokenSecret);
-                return true;
-            }
-            return false;
-        }
-
-        private void SetCredentials()
-        {
-            ConsumerKey = Environment.GetEnvironmentVariable(CONSUMER_KEY);
-            ConsumerSecret = Environment.GetEnvironmentVariable(CONSUMER_SECRET);
-            AccessToken = Environment.GetEnvironmentVariable(ACCESS_TOKEN);
-            AccessTokenSecret = Environment.GetEnvironmentVariable(ACCESS_TOKEN_SECRET);
-
-            if (String.IsNullOrEmpty(ConsumerKey) || String.IsNullOrEmpty(ConsumerSecret) || String.IsNullOrEmpty(AccessToken) || String.IsNullOrEmpty(AccessTokenSecret))
-            {
-                dynamic result = JObject.Parse(JsonParser.GetConfig()[CREDENTIALS_PROPERTY].ToString());
-                ConsumerKey = result[CONSUMER_KEY];
-                ConsumerSecret = result[CONSUMER_SECRET];
-                AccessToken = result[ACCESS_TOKEN];
-                AccessTokenSecret = result[ACCESS_TOKEN_SECRET];
-            }
-
             Auth.SetUserCredentials(ConsumerKey, ConsumerSecret, AccessToken, AccessTokenSecret);
         }
 
@@ -140,7 +110,10 @@ namespace TwitterWall.Twitter
 
         public void Restart()
         {
-            Stop();
+            if (stream.StreamState == Tweetinvi.Models.StreamState.Running)
+            {
+                Stop();
+            }
             ConfigureStream();
             Start();
         }
@@ -155,18 +128,9 @@ namespace TwitterWall.Twitter
             return stream;
         }
 
-        public static TwitterStream Instance()
-        {
-            if (_instance == null)
-            {
-                _instance = new TwitterStream();
-            }
-            return _instance;
-        }
-
         public void AddTrack(String keyword)
         {
-            _subRepo.Add(new Subscription(keyword, Common.SubType.TRACK.ToString()));
+            _subRepo.Add(new Subscription(keyword, Common.TRACK_PROPERTY, streamEvent));
         }
 
         public Boolean AddPriorityUser(string handle)
@@ -174,7 +138,7 @@ namespace TwitterWall.Twitter
             var user = Tweetinvi.User.GetUserFromScreenName(handle);
             if (user != null)
             {
-                _subRepo.Add(new Subscription(handle, user.Id, Common.SubType.PERSON.ToString()));
+                _subRepo.Add(new Subscription(handle, user.Id, Common.SubType.PERSON.ToString(), this.streamEvent));
                 return true;
             }
             return false;
@@ -182,17 +146,22 @@ namespace TwitterWall.Twitter
 
         public List<Subscription> GetTracks()
         {
-            return _subRepo.Find(s => s.Type == Common.SubType.TRACK.ToString()).ToList();
+            return _subRepo.Find(s => s.Event.Id == streamEvent.Id && s.Type == Common.SubType.TRACK.ToString()).ToList();
+        }
+
+        public void RemoveTrack(int id)
+        {
+            _subRepo.Remove(id);
         }
 
         public List<Subscription> GetPriorityUsers()
         {
-            return _subRepo.Find(s => s.Type == Common.SubType.PERSON.ToString()).ToList();
+            return _subRepo.Find(s => s.Type == Common.SubType.PERSON.ToString() && s.Event.Id == this.streamEvent.Id).ToList();
         }
 
         public List<Models.User> GetBannedUsers()
         {
-            return _userRepo.Find(u => u.Type == Common.BanType).ToList();
+            return _userRepo.Find(u => u.Type == Common.BanType && u.Event.Id == this.streamEvent.Id).ToList();
         }
 
         public void RemoveSubscription(int id)
@@ -200,6 +169,9 @@ namespace TwitterWall.Twitter
             _subRepo.Remove(id);
         }
 
-
+        public Event getStreamEvent()
+        {
+            return this.streamEvent;
+        }
     }
 }

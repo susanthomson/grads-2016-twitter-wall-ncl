@@ -34,21 +34,27 @@ namespace TwitterWall.Repository
             }
         }
 
-        public IEnumerable<Tweet> GetLatest(int limit)
+        public IEnumerable<Tweet> GetLatest(int limit, string eventName)
         {
             using (TweetContext context = GetContext())
             {
-                List<Tweet> result = new List<Tweet>();
-                result.AddRange(context.Tweets.Where(t => t.StickyList.Count > 0).Include(t => t.StickyList).Include(t=>t.MediaList));
-                int fill = limit - result.Count;
-                if (fill > 0)
+                Event ev = context.Events.Where(e => e.Name == eventName).SingleOrDefault();
+                if (ev != null)
                 {
-                    List<Tweet> latestNonStickyTweets = new List<Tweet>();
-                    latestNonStickyTweets.AddRange(context.Tweets.OrderByDescending(t => t.Date).Include(t => t.StickyList).Include(t=>t.MediaList).Where(t => t.StickyList.Count == 0).Take(fill));
-                    latestNonStickyTweets.Reverse();
-                    result.AddRange(latestNonStickyTweets);
+                    List<Tweet> result = new List<Tweet>();
+                    // Prioritise stickies
+                    result.AddRange(context.Tweets.Where(t => t.StickyList.Count > 0 && t.Event.Name == ev.Name).Include(t => t.StickyList).Include(t => t.MediaList));
+                    int fill = limit - result.Count;
+                    if (fill > 0)
+                    {
+                        List<Tweet> latestNonStickyTweets = new List<Tweet>();
+                        latestNonStickyTweets.AddRange(context.Tweets.OrderByDescending(t => t.Date).Include(t => t.StickyList).Include(t => t.MediaList).Where(t => t.StickyList.Count == 0 && t.Event.Name == ev.Name).Take(fill));
+                        latestNonStickyTweets.Reverse();
+                        result.AddRange(latestNonStickyTweets);
+                    }
+                    return result;
                 }
-                return result;
+                return null;
             }
         }
 
@@ -56,7 +62,7 @@ namespace TwitterWall.Repository
         {
             using (TweetContext context = GetContext())
             {
-                return context.Tweets.Include(t => t.MediaList).Include(t=>t.StickyList).Where<Tweet>(exp).ToList();
+                return context.Tweets.Include(t => t.MediaList).Include(t=>t.StickyList).Include(t=>t.Event).Where<Tweet>(exp).ToList();
             }
         }
 
@@ -64,6 +70,7 @@ namespace TwitterWall.Repository
         {
             using (TweetContext context = GetContext())
             {
+                context.Attach(entity.Event);
                 context.Tweets.Add(entity);
                 context.SaveChanges();
             }

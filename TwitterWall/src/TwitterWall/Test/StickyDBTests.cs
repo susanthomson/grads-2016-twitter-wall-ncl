@@ -129,6 +129,6 @@ namespace TwitterWall.Test
 
             // Assert
             Assert.Null(result);
-        }        
+        }
     }
 }

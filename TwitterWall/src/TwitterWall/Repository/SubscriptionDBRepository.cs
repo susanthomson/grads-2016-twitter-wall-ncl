@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TwitterWall.Context;
 using TwitterWall.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace TwitterWall.Repository
 {
@@ -35,12 +36,11 @@ namespace TwitterWall.Repository
             }
         }
 
-
         public override IEnumerable<Subscription> Find(Func<Subscription, bool> exp)
         {
             using (TweetContext context = GetContext())
             {
-                return context.Subscriptions.Where<Subscription>(exp).ToList();
+                return context.Subscriptions.Include(s=>s.Event).Where<Subscription>(exp).ToList();
             }
         }
 
@@ -48,6 +48,7 @@ namespace TwitterWall.Repository
         {
             using (TweetContext context = GetContext())
             {
+                context.Attach(entity.Event);
                 context.Subscriptions.Add(entity);
                 context.SaveChanges();
             }

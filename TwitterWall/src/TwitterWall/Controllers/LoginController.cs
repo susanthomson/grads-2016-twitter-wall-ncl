@@ -23,16 +23,20 @@ namespace TwitterWall.Controllers
         private const string API_REQUEST_TOKEN = "https://api.twitter.com/oauth/request_token";
         private const string API_ACCESS_TOKEN = "https://api.twitter.com/oauth/access_token";
 
+        private StreamManager streamManager = StreamManager.Instance();
+
+        private string CONSUMER_KEY = StreamManager.Instance().ConsumerKey;
+        private string CONSUMER_SECRET = StreamManager.Instance().ConsumerSecret;
+
         public LoginController(UserDBRepository repo)
         {
             _userRepo = repo;
         }
 
         [HttpGet]
-        public ActionResult Get()
-        {
-            Login().Wait();
-            string responseString = Login().Result;
+        public async Task<ActionResult> Get()
+        {            
+            string responseString = await Login();
 
             if (String.IsNullOrEmpty(responseString))
             {
@@ -47,13 +51,12 @@ namespace TwitterWall.Controllers
         }
 
         async private Task<String> Login()
-        {
-            TwitterStream ts = TwitterStream.Instance();
+        {            
             using (HttpClient client = _handler == null ?  new HttpClient() : new HttpClient(_handler))
             {
                 Random rand = new Random();
                 TwitterAuth auth = new TwitterAuthBuilder(rand)
-                            .SetConsumerKeys(ts.ConsumerKey, ts.ConsumerSecret)
+                            .SetConsumerKeys(CONSUMER_KEY, CONSUMER_SECRET)
                             .SetSignatureMethod("HMAC-SHA1")
                             .SetVersion("1.0")
                             .SetUrl(API_REQUEST_TOKEN)
@@ -84,11 +87,11 @@ namespace TwitterWall.Controllers
             task.Wait();
             if (task.Result != null)
             {
-                return Content("<script language='javascript' type='text/javascript'>window.sessionStorage.setItem('token', '" + task.Result.GetHash() + "'); window.sessionStorage.setItem('handle', '" + task.Result.Handle + "'); window.location.href = '/admin';</script>", "text/html");
+                return Content("<script language='javascript' type='text/javascript'>window.sessionStorage.setItem('token', '" + task.Result.GetHash() + "'); window.sessionStorage.setItem('handle', '" + task.Result.Handle + "'); window.location.href = '/#';</script>", "text/html");
             }
             else
             {
-                return Content("<script language='javascript' type='text/javascript'>window.location.href = '/admin';</script>", "text/html");
+                return Content("<script language='javascript' type='text/javascript'>window.location.href = '/#';</script>", "text/html");
             }
 
         }
@@ -97,10 +100,9 @@ namespace TwitterWall.Controllers
         {
             using (HttpClient client = _handler == null ? new HttpClient() : new HttpClient(_handler))
             {
-                TwitterStream ts = TwitterStream.Instance();
                 Random rand = new Random();
                 TwitterAuth auth = new TwitterAuthBuilder(rand)
-                    .SetConsumerKeys(ts.ConsumerKey, ts.ConsumerSecret)
+                    .SetConsumerKeys(CONSUMER_KEY, CONSUMER_SECRET)
                     .SetSignatureMethod("HMAC-SHA1")
                     .SetUrl(API_ACCESS_TOKEN)
                     .SetVersion("1.0")
@@ -131,7 +133,7 @@ namespace TwitterWall.Controllers
                 {
                     UserCredential uc = new UserCredential(screenName, accessToken, accessSecret);
                     uc.GenerateHash();
-                    ts.AddUserCredentials(uc);
+                    streamManager.AddUserCredentials(uc);
                     return uc;
                 }
 
@@ -140,16 +142,19 @@ namespace TwitterWall.Controllers
         }
 
         [Route("change")]
-        [HttpGet]
-        public bool Get([FromQuery]string handle, [FromQuery]string token)
+        [HttpPost]
+        public bool Get([FromBody]LoginData data)
         {
-            TwitterStream ts = TwitterStream.Instance();
-            if (ts.ChangeUserCredentials(handle, token))
+            TwitterStream ts = streamManager.GetStream(data.Stream);
+            if (ts != null)
             {
-                ts.Restart();
-                return true;
+                bool res = streamManager.ChangeUserCredentials(data.Handle, data.Token, data.Stream);
+                if (res)
+                {
+                    ts.Restart();
+                    return true;
+                }
             }
-
             return false;
         }
     }

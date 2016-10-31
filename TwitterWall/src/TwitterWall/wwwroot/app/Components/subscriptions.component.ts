@@ -6,47 +6,45 @@ import { Subscription } from "../Models/subscription";
 @Component({
     selector: "subscriptions",
     template: `
-       <div class="col-sm-12">
-            {{this.errorMessage}}
+        <div class="alert alert-danger" *ngIf="errorMessage">{{errorMessage}}</div>
+        <div class="col-md-6">
             <div class="panel panel-warning">
                 <div class="panel-heading">Follow a keyword</div>
-                <form class="form-inline">
-                        <input type="text" class="form-control" name="inputKeyword" maxlength="60" placeholder="Enter keyword to follow" [(ngModel)]="inputTrack" />
-                        <button class="btn btn-success btn-sm" type="button" (click)="addTrack()"><span class="glyphicon glyphicon-font" aria-hidden="true"></span> Follow Keyword</button>
+                <form>
+                    <input type="text" class="form-control form-group" name="inputKeyword" maxlength="60" placeholder="Enter keyword to follow" [(ngModel)]="inputTrack" />
+                    <button class="btn btn-success btn-block" type="button" (click)="addTrack()"><span class="glyphicon glyphicon-font" aria-hidden="true"></span> Follow Keyword</button>
                 </form>
                 <ul class="list-group">
                     <li class="list-group-item" *ngIf="tracks.length === 0">You are currently following no keywords.</li>
-                    <li class="list-group-item" *ngFor="let track of tracks; let i=index">
+                    <li class="list-group-item keyword-follow" *ngFor="let track of tracks; let i=index">
                         {{ track.Value }}
-                        <span class="glyphicon glyphicon-minus" aria-hidden="true" (click)="removeTrack(i)"></span>
+                        <span class="glyphicon glyphicon-remove text-danger delete" aria-hidden="true" (click)="removeTrack(i)"></span>
                     </li>
                 </ul>
             </div>
+        </div>
+        <div class="col-md-6">
             <div class="panel panel-success">
-            <div class="panel-heading">Follow a user</div>
-            <form class="form-inline">
-            <div class="form-group">
-                <div class="input-group">
-                    <input type="text" name="inputUser" class="form-control" placeholder="Username" [(ngModel)]="inputUserId" />
-                </div>
+                <div class="panel-heading">Follow a user</div>
+                <form>
+                    <div class="form-group">
+                        <input type="text" name="inputUser" class="form-control form-group" placeholder="Username" [(ngModel)]="inputUserId" />
+                    </div>
+                    <button class="btn btn-primary btn-block" type="button" (click)="addPriorityUser()"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Follow User</button>
+                </form>
+                <ul class="list-group">
+                    <li class="list-group-item" *ngIf="priorityUsers.length === 0">You are currently following no users.</li>
+                    <li class="list-group-item user-follow" *ngFor="let user of priorityUsers; let i=index">
+                        {{ user.Value }}
+                        <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true" (click)="removePriorityUser(i)"></span>
+                    </li>
+                </ul>
             </div>
-            <button class="btn btn-primary btn-sm" type="button" (click)="addPriorityUser()"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Follow User</button>
-            </form>
-            <ul class="list-group">
-                <li class="list-group-item" *ngIf="priorityUsers.length === 0">You are currently following no users.</li>
-                <li class="list-group-item" *ngFor="let user of priorityUsers; let i=index">
-
-                      <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                      {{ user.Value }}
-                      <span class="badge"><span class="glyphicon glyphicon-minus" aria-hidden="true" (click)="removePriorityUser(i)"></span></span>
-                </li>
-            </ul>
-            </div>
-            <div *ngIf="streamRestart">
-                <p>For changes to take place, you must save your changes:</p>
-                <button type="button" class="btn btn-danger" (click)="restartStream()">Save changes</button>
-            </div>
-       </div>
+        </div>
+        <div *ngIf="streamRestart">
+            <p>For changes to take place, you must save your changes:</p>
+            <button type="button" class="btn btn-danger" (click)="restartStream()">Save changes</button>
+        </div>
         `
 })
 export class Subscriptions {

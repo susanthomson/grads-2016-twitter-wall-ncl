@@ -204,6 +204,11 @@ namespace TwitterWall.Hubs
                     newUser.Type = Common.BanType;
                     newUser.Event = ts.getStreamEvent();
                     ts._userRepo.Add(newUser);
+                    List<Tweet> tweetsToDelete = ts._tweetRepo.Find(t => (t.UserId == serverTweet.UserId) && (t.Event.Name == streamName)).ToList();
+                    foreach(Tweet aTweet in tweetsToDelete)
+                    {
+                        ts._tweetRepo.Remove(aTweet.Id);
+                    }
                     Clients.Group(streamName).userBanned(ts.GetBannedUsers());
                 }
             }

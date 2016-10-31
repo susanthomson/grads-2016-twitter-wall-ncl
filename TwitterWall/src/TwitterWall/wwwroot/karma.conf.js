@@ -37,6 +37,7 @@ module.exports = function (config) {
 
           // d3
           'libs/d3/d3.min.js',
+          'libs/moment/moment.js',
           'libs/vague-time/src/vagueTime.js',
 
           // RxJs

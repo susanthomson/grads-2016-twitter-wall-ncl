@@ -10,12 +10,12 @@ namespace TwitterWall.Models
 {
     public class Tweet
     {
-        public Tweet ()
+        public Tweet()
         {
-
+        
         }
 
-        public Tweet(long tweetId, string body, string handle, DateTime date, string name, string profileImage, Event ev, long userId)
+        public Tweet(long tweetId, string body, string handle, DateTimeOffset date, string name, string profileImage, Event ev, long userId)
         {
             this.TweetId = tweetId;
             this.Body = body;
@@ -33,7 +33,7 @@ namespace TwitterWall.Models
         public long TweetId { get; set; }
         public string Body { get; set; }
         public string Handle { get; set; }
-        public DateTime Date { get; set; }
+        public DateTimeOffset Date { get; set; }
         public string Name { get; set; }
         public string ProfileImage { get; set; }
         public Event Event { get; set; }

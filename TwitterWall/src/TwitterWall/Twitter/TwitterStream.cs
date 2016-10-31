@@ -64,7 +64,7 @@ namespace TwitterWall.Twitter
                     return;
                 }
 
-                Models.Tweet newTweet = new Models.Tweet(args.Tweet.Id, args.Tweet.FullText, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt, args.Tweet.CreatedBy.Name, args.Tweet.CreatedBy.ProfileImageUrlFullSize, streamEvent, args.Tweet.CreatedBy.Id);
+                Models.Tweet newTweet = new Models.Tweet(args.Tweet.Id, args.Tweet.FullText, args.Tweet.CreatedBy.ScreenName, args.Tweet.CreatedAt.ToUniversalTime(), args.Tweet.CreatedBy.Name, args.Tweet.CreatedBy.ProfileImageUrlFullSize, streamEvent, args.Tweet.CreatedBy.Id);
                 TwitterWall.Models.Tweet result = _tweetRepo.Find(obj => obj.TweetId == newTweet.TweetId && obj.Event.Id == streamEvent.Id).SingleOrDefault();
 
                 if (result != null)

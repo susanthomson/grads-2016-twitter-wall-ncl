@@ -8,9 +8,10 @@ using TwitterWall.Context;
 namespace TwitterWall.Migrations
 {
     [DbContext(typeof(TweetContext))]
-    partial class TweetContextModelSnapshot : ModelSnapshot
+    [Migration("20161024130241_ChangedDateTime")]
+    partial class ChangedDateTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1");

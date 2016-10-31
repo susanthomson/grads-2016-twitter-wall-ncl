@@ -20,7 +20,8 @@
             // other libraries
             'rxjs': 'npm:rxjs',
             'vague-time': 'npm:vague-time/src/vagueTime.js',
-            'd3': 'npm:d3/d3.min.js'
+            'd3': 'npm:d3/d3.min.js',
+            'moment': 'npm:moment/moment.js'
         },
         // packages tells the System loader how to load when no filename and/or no extension
         packages: {

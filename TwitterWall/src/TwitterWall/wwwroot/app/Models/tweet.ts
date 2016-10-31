@@ -6,7 +6,7 @@ export class Tweet {
     public TweetId: number;
     public Body: string;
     public Handle: string;
-    public Date: Date;
+    public Date: string;
     public Name: string;
     public ProfileImage: string;
     public StickyList: any[];
@@ -14,7 +14,7 @@ export class Tweet {
     public LoadedProfileImage: HTMLImageElement;
     public isSticky: boolean;
 
-    constructor(id: number, tweetid: number, body: string, handle: string, date: Date, name: string, profileImage: string, mediaList: MediaUrl[], stickyList: string[]) {
+    constructor(id: number, tweetid: number, body: string, handle: string, date: string, name: string, profileImage: string, mediaList: MediaUrl[], stickyList: string[]) {
         this.Id = id;
         this.TweetId = tweetid;
         this.Body = body;

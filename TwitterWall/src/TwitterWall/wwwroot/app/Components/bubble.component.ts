@@ -86,6 +86,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
         this.updateNodes();
 
         this.tweetStream.activeQueueEvent$.subscribe(this.activeTweetsChanged.bind(this));
+        this.tweetStream.deleteFromActiveQueueEvent$.subscribe(this.activeTweetDeleted.bind(this));
 
         this.nodeDisplayInterval();
 
@@ -172,16 +173,28 @@ export class BubbleComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (activeTweets.length >= this.nodes.length) {
+        rawTweets.forEach((tweet, i) => {
+            this.nodes.forEach(n => {
+                if (n.tweet.TweetId === tweet.TweetId) {
+                    n.tweet.isSticky = tweet.StickyList.length > 0;
+                    if (!n.isDisplayed) {
+                        n.radius = this.getTweetRadius(n.tweet);
+                    }
+                }
+            });
+        });
+
+        if (activeTweets.length > this.nodes.length) {
             this.addNode(0, 0, activeTweets[activeTweets.length - 1]);
         }
-        else {
-            let toDelete = this.nodes.filter((node) => {
-                return !activeTweets.filter(tweet => node.tweet.Id === tweet.Id).length;
-            });
+    }
 
-            this.removeNode(this.nodes.indexOf(toDelete[0]));
-        }
+    activeTweetDeleted(tweet) {
+        let toDelete = this.nodes.filter((node) => {
+            return node.tweet.TweetId === tweet.TweetId;
+        });
+
+        this.removeNode(this.nodes.indexOf(toDelete[0]));
     }
 
     renderTweetContent(tweet) {

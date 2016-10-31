@@ -17,6 +17,7 @@
             '@angular/http': 'npm:@angular/http/bundles/http.umd.js',
             '@angular/router': 'npm:@angular/router/bundles/router.umd.js',
             '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
+            'zonejs': 'npm:zone.js/dist/zone.js',
             // other libraries
             'rxjs': 'npm:rxjs',
             'vague-time': 'npm:vague-time/src/vagueTime.js',

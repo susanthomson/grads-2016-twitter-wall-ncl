@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.0.min.js"></script>
@@ -14,16 +14,9 @@
     <!-- 1. Load libraries -->
     <!-- Polyfill(s) for older browsers -->
     <script src="libs/core-js/client/shim.js"></script>
-    <script src="libs/zone.js/dist/zone.js"></script>
     <script src="libs/reflect-metadata/reflect.js"></script>
-    <script src="libs/systemjs/dist/system.src.js"></script>
     <script src="libs/bootstrap/dist/js/bootstrap.min.js"></script>
-    <!-- 2. Configure SystemJS -->
-    <script src="systemjs.config.js"></script>
-    <script>
-        System.import('app')
-            .catch(function (err) { console.error(err); });
-    </script>
+
 </head>
 <base href="/">
 <!-- 3. Display the application -->
@@ -33,5 +26,6 @@
         <div class="spinner spinner-lg"></div>
       </div>
     </my-app>
+    <script src="staticBundle.js"></script>
 </body>
 </html>

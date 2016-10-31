@@ -20,6 +20,10 @@ export class TweetStream {
     public queueEvent$ = this.queueChanged.asObservable();
     private activeQueueChanged = new Subject<Tweet[]>();
     public activeQueueEvent$ = this.activeQueueChanged.asObservable();
+
+    private deleteFromActiveQueue = new Subject<Tweet>();
+    public deleteFromActiveQueueEvent$ = this.deleteFromActiveQueue.asObservable();
+
     activeQueueSize: number = 15;
 
     private tracks = new Subject<any[]>();
@@ -90,15 +94,16 @@ export class TweetStream {
         };
 
         this.conn.client.tweetRemoved = (id: number) => {
+            let tweetToDelete = null;
             let success = this.activeTweets.some((tweet, i) => {
                 if (tweet.Id === id) {
-                    this.activeTweets.splice(i, 1);
+                    tweetToDelete = this.activeTweets.splice(i, 1)[0];
                     return true;
                 }
                 return false;
             });
             if (success) {
-                this.activeQueueChanged.next(this.activeTweets);
+                this.deleteFromActiveQueue.next(tweetToDelete);
             }
         };
 
@@ -120,23 +125,6 @@ export class TweetStream {
             this.init.next(true);
             this.initialised = true;
         });
-
-        setInterval(() => {
-            if (this.activeTweets.length < this.activeQueueSize && this.tweetsQueue.length > 0) {
-                this.addActiveTweet(this.popNextTweet());
-            }
-            else if (this.tweetsQueue.length > 0) {
-                this.activeTweets.some((tweet) => {
-                    // If a tweet has been stickied, then the StickyList array length will be one element
-                    if (tweet.StickyList.length === 0) {
-                        this.removeActiveTweet(tweet);
-                        this.addActiveTweet(this.popNextTweet());
-                        return true;
-                    }
-                    return false;
-                });
-            }
-        }, DELETION_INTERVAL);
     }
 
     stopHubConnection(): void {
@@ -223,8 +211,8 @@ export class TweetStream {
     removeActiveTweet(tweet: Tweet): boolean {
         let index = this.activeTweets.indexOf(tweet);
         if (index !== -1) {
-            this.activeTweets.splice(index, 1);
-            this.activeQueueChanged.next(this.activeTweets);
+            const tweet = this.activeTweets.splice(index, 1)[0];
+            this.deleteFromActiveQueue.next(tweet);
             return true;
         }
         return false;

@@ -31,6 +31,9 @@ export class TweetStreamMock {
     private bannedUsers = new Subject<any[]>();
     public bannedUsersReceived$ = this.bannedUsers.asObservable();
 
+    private deleteFromActiveQueue = new Subject<Tweet>();
+    public deleteFromActiveQueueEvent$ = this.deleteFromActiveQueue.asObservable();
+
     private errorMessage = new Subject<string>();
     public errorMessageReceived$ = this.errorMessage.asObservable();
 
@@ -60,7 +63,7 @@ export class TweetStreamMock {
         let index = this.activeTweets.indexOf(tweet);
         if (index !== -1) {
             this.activeTweets.splice(index, 1);
-            this.activeQueueChanged.next(this.activeTweets);
+            this.deleteFromActiveQueue.next(tweet);
             return true;
         }
         return false;

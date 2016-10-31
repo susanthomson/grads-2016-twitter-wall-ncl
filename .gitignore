@@ -268,7 +268,8 @@ TwitterWall/src/TwitterWall/typings/globals
 TwitterWall/src/TwitterWall/typings/modules
 TwitterWall/src/TwitterWall/typings/*.*
 TwitterWall/src/TwitterWall/lib
-TwitterWall/src/TwitterWall/wwwroot/libs/
+TwitterWall/src/TwitterWall/wwwroot/
+TwitterWall/src/TwitterWall/Client/libs/
 docker-build.sh
 docker-cleanup.sh
 *.stackdump

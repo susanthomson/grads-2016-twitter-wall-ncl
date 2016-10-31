@@ -8,50 +8,43 @@ import * as moment from "moment";
     template: `
         <div class="table-responsive">
             <table class="table table-condensed">
-              <tbody>
-              <tr>
-                <th>Body</th>
-                <th>Name</th>
-                <th>Handle</th>
-                <th>Date</th>
-                <th>Profile Image</th>
-                <th>Attached Images</th>
-                <th>Sticky</th>
-                <th>Remove</th>
-                <th>Ban User</th>
-              </tr>
-              <tr *ngFor="let tweet of activeTweets; let i=index">
-                <td class="body-row">
-                    {{tweet.Body}}
-                </td>
-                <td>
-                    {{tweet.Name}}
-                </td>
-                <td>
-                    {{tweet.Handle}}
-                </td>
-                <td>
+                <tbody>
+                    <tr>
+                      <th>Body</th>
+                      <th>User</th>
+                      <th>Date</th>
+                      <th>Profile Image</th>
+                      <th>Attached Images</th>
+                      <th>Sticky</th>
+                    </tr>
+                    <tr *ngFor="let tweet of activeTweets; let i=index">
+                        <td>
+                            {{tweet.Body}}
+                        </td>
+                        <td>
+                            <div>{{tweet.Name}}</div>
+                            <div>@{{tweet.Handle}}</div>
+                        </td>
+                        <td>
                     {{tweet.FormattedDate}}
-                </td>
-                <td>
-                    <img class="profile-image" src="{{tweet.ProfileImage}}"/>
-                </td>
-                <td>
-                    <div class="images-container">
-                        <img (click)="removeImage(i, imgIndex, img.Id)" class="small-img" *ngFor="let img of tweet.MediaList; let imgIndex=index" src="{{img.Url}}"/>
-                    </div>
-                </td>
-                <td>
-                    <input type="checkbox" [attr.checked]="isSticky(i) ? true : null" (click)=sticky(i,$event)>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-warning" (click)="removeTweet(i)">Remove Tweet</button>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger" (click)="this.banUser(tweet)">Ban user</button>
-                </td>
-              </tr>
-              </tbody>
+                        </td>
+                        <td>
+                            <img class="profile-image" src="{{tweet.ProfileImage}}"/>
+                        </td>
+                        <td>
+                            <div class="images-container">
+                                <img (click)="removeImage(i, imgIndex, img.Id)" class="small-img" *ngFor="let img of tweet.MediaList; let imgIndex=index" src="{{img.Url}}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="checkbox" [attr.checked]="isSticky(i) ? true : null" (click)=sticky(i,$event)>
+                        </td>
+                        <td>
+                            <a class="text-warning" (click)="removeTweet(i)">Remove Tweet</a>&nbsp;
+                            <a class="text-danger" (click)="this.banUser(tweet)">Ban user</a>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
         `

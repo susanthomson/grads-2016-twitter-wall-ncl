@@ -10,34 +10,35 @@ import { Router, ActivatedRoute, Params } from "@angular/router";
 @Component({
     selector: "admin-panel",
     template: `
-        <div class="container-fluid">
-            <div class="row">
-                <div *ngIf="!loggedIn">
-                    <p>You need to login to view this page</p>
-                    <button (click)="login()">Login</button>
-                    <span *ngIf="loginError">Error</span>
+        <div class="admin-panel container-fluid">
+            <div class="container" *ngIf="!loggedIn">
+                <p>You need to login to view this page</p>
+                <button (click)="login()">Login</button>
+                <span *ngIf="loginError">Error</span>
+            </div>
+            <div class="initial-loader" *ngIf="loading && loggedIn">
+                <h3 class="text-center">Loading Admin Panel</h3>
+                <div class="spinner spinner-lg"></div>
+            </div>
+            <div *ngIf="!loading && loggedIn">
+                <div class="stream-status">
+                    <button (click)="changeCredentials()">Change Credentials</button>
+                    <p>STREAM STATUS: {{streamStatus}}</p>
                 </div>
-                <span *ngIf="loading && loggedIn"><div class="loader"></div><h3 class="text-center">Loading Admin Panel, please wait...</h3></span>
-                <div *ngIf="!loading && loggedIn">
-                    <div class="col-sm-6">
-                        <button (click)="changeCredentials()">Change Credentials</button>
-                        <p>STREAM STATUS: {{streamStatus}} </p>
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><p class="panel-title">Live tweets</p></div>
-                            <div class="panel-body">
-                                <active-tweets></active-tweets>
-                            </div>
-                        </div>
-                        <div class="panel panel-default">
-                            <div class="panel-body">
-                                <buffer-tweets></buffer-tweets>
-                                <button type="button" (click)="consumeTweet()">Display next</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
+                <div class="stream-panels clearfix row">
+                    <div class="col-md-8 row">
                         <subscriptions></subscriptions>
+                    </div>
+                    <div class="col-md-4">
                         <banned-users></banned-users>
+                    </div>
+                </div>
+                <div class="live-tweets">
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><p class="panel-title">Live tweets</p></div>
+                        <div class="panel-body">
+                            <active-tweets></active-tweets>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -57,8 +58,7 @@ export class AdminPanelComponent {
 
     constructor(private twitterLogin: TwitterLogin, private tweetStream: TweetStream, private router: Router, private route: ActivatedRoute) {
         this.route.params.forEach((params: Params) => {
-            var streamName = params["id"];
-            this.tweetStream.setEvent(streamName);
+            this.tweetStream.setEvent(params["id"]);
         });
         this.loading = !tweetStream.isInitialised();
         this.tweetStream.initialisationChanged$.subscribe((initialised) => {

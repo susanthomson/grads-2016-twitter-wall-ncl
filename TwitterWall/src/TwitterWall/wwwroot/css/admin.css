@@ -19,9 +19,6 @@
 .small-img:hover {
   border: 3px solid red;
 }
-.body-row {
-  max-width: 600px;
-}
 .profile-image {
   height: 70px;
   width: 70px;
@@ -29,4 +26,97 @@
 .images-container {
   max-height: 300px;
   max-width: 210px;
+}
+
+.main-admin {
+  max-width: 600px;
+  padding-top: 50px;
+}
+.main-admin h1 {
+  margin-bottom: 40px;
+}
+.main-admin .btn.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+}
+.main-admin .btn.login img {
+  width: 30px;
+  margin-left: -30px;
+}
+
+.main-admin .events-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+.main-admin .events {
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #eee;
+}
+.main-admin .event {
+  display: flex;
+  flex-wrap: wrap;
+}
+.main-admin .event-name {
+  flex-grow: 0;
+  font-size: 20px;
+}
+.main-admin .event-actions {
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.main-admin .event-actions a {
+  display: flex;
+  justify-content: flex-end;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.admin-panel .initial-loader {
+  position: absolute;
+  top: 0; bottom: 0;
+  right: 0; left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.admin-panel .initial-loader .spinner {
+  margin-top: 50px;
+}
+.admin-panel .user-follow,
+.admin-panel .keyword-follow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.admin-panel .user-follow .delete,
+.admin-panel .keyword-follow .delete {
+  cursor: pointer;
+}
+subscriptions form {
+  padding: 15px;
+}
+td {
+  white-space: normal !important;
+}
+
+h1 {
+  padding-bottom: 25px;
+}
+h2, h3 {
+  padding-bottom: 20px;
+}
+h1, h2, h3 {
+  border-bottom: 1px solid #eee;
+}
+
+body {
+  overflow-x: hidden;
 }

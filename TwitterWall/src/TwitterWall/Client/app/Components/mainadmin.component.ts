@@ -1,4 +1,4 @@
-﻿import { Component } from "@angular/core";
+﻿import { Component, NgZone } from "@angular/core";
 import { EventService } from "../Services/events.service";
 import { FormsModule } from "@angular/forms";
 import { TwitterLogin } from "../Services/twitterlogin.service";
@@ -76,13 +76,14 @@ export class MainAdminComponent {
     loggingIn: boolean = false;
     errorMessage: string;
 
-    constructor(private eventService: EventService, private twitterLogin: TwitterLogin) {
+    constructor(private eventService: EventService, private twitterLogin: TwitterLogin, private _ngZone: NgZone) {
         eventService.initialise();
 
         eventService.getEvents().subscribe(ev => this.events = ev);
         this.loaded = this.eventService.isLoaded();
         this.eventService.initialisationChanged$.subscribe((init) => {
-            this.loaded = init;
+            this._ngZone.run(() => this.loaded = init);
+            //this.loaded = init;
         });
 
         this.eventService.eventsChanged$.subscribe((eventsArray) => {

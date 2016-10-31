@@ -104,6 +104,7 @@ export class TweetStream {
             });
             if (success) {
                 this.deleteFromActiveQueue.next(tweetToDelete);
+                this.activeQueueChanged.next(this.activeTweets);
             }
         };
 

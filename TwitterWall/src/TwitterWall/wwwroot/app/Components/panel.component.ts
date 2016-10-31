@@ -22,7 +22,7 @@ import { Router, ActivatedRoute, Params } from "@angular/router";
             </div>
             <div *ngIf="!loading && loggedIn">
                 <div class="stream-status">
-                    <button (click)="changeCredentials()">Change Credentials</button>
+                    <button (click)="changeCredentials()">Start Stream</button>
                     <p>STREAM STATUS: {{streamStatus}}</p>
                 </div>
                 <div class="stream-panels clearfix row">

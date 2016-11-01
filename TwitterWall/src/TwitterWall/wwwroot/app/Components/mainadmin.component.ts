@@ -100,16 +100,21 @@ export class MainAdminComponent {
     }
 
     addEvent(): void {
-        if(!this.inputEventName) return;
+        if (!this.inputEventName)
+            return;
+
         const checkIfExists = this.events.some((elem, i) => {
-          if(elem.Name == this.inputEventName) return true;
+            if (elem.Name === this.inputEventName)
+                return true;
         });
-        if(checkIfExists) {
-          this.errorMessage = "That event name is already taken"
-          return;
+
+        if (checkIfExists) {
+            this.errorMessage = "That event name is already taken";
+            return;
         }
+
         this.eventService.addEvent(this.inputEventName);
-        this.errorMessage = '';
+        this.errorMessage = "";
         this.inputEventName = "";
     }
 

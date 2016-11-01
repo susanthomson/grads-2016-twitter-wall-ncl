@@ -179,9 +179,6 @@ export class TweetStream {
                         }
                     }, DELETION_INTERVAL);
                 }
-                else {
-                    // Event not found
-                }
             }
         });
     }

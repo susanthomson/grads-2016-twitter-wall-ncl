@@ -135,7 +135,7 @@ export class TweetStreamMock {
 
     }
 
-    initialise():void {
+    initialise(): void {
 
     }
 

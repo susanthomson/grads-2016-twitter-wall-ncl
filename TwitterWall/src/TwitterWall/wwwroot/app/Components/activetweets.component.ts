@@ -66,10 +66,7 @@ export class ActiveTweets {
     }
 
     isSticky(index: number): boolean {
-        if (this.activeTweets[index].StickyList) {
-            return this.activeTweets[index].StickyList.length > 0;
-        }
-        return false;
+        return this.activeTweets[index].Sticky;
     }
 
     removeTweet(index: number): void {
@@ -81,12 +78,7 @@ export class ActiveTweets {
     }
 
     sticky(index: number, event: any): void {
-        if (event.target.checked) {
-            this.tweetStream.addSticky(this.activeTweets[index].Id);
-        }
-        else {
-            this.tweetStream.removeSticky(this.activeTweets[index].Id);
-        }
+        this.tweetStream.toggleSticky(this.activeTweets[index].Id);
     }
 
     removeImage(tweetIndex: number, imageIndex: number, imageId: number): void {

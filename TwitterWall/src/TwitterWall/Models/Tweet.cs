@@ -38,8 +38,8 @@ namespace TwitterWall.Models
         public string ProfileImage { get; set; }
         public Event Event { get; set; }
         public long UserId { get; set; }
+        public bool Sticky { get; set; }
 
         public ICollection<MediaUrl> MediaList { get; set; }
-        public ICollection<Sticky> StickyList { get; set; }
     }
 }

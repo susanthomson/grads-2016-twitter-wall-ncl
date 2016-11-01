@@ -15,6 +15,19 @@ namespace TwitterWall.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1");
 
+            modelBuilder.Entity("TwitterWall.Models.Event", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Events");
+                });
+
             modelBuilder.Entity("TwitterWall.Models.MediaUrl", b =>
                 {
                     b.Property<int>("Id")
@@ -33,25 +46,12 @@ namespace TwitterWall.Migrations
                     b.ToTable("MediaUrls");
                 });
 
-            modelBuilder.Entity("TwitterWall.Models.Sticky", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("TweetId")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TweetId");
-
-                    b.ToTable("Sticky");
-                });
-
             modelBuilder.Entity("TwitterWall.Models.Subscription", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("EventId");
 
                     b.Property<long>("TwitterId");
 
@@ -62,6 +62,8 @@ namespace TwitterWall.Migrations
                         .IsRequired();
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EventId");
 
                     b.ToTable("Subscriptions");
                 });
@@ -75,17 +77,23 @@ namespace TwitterWall.Migrations
 
                     b.Property<DateTimeOffset>("Date");
 
+                    b.Property<int?>("EventId");
+
                     b.Property<string>("Handle");
 
                     b.Property<string>("Name");
 
                     b.Property<string>("ProfileImage");
 
+                    b.Property<bool>("Sticky");
+
                     b.Property<long>("TweetId");
 
                     b.Property<long>("UserId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EventId");
 
                     b.ToTable("Tweets");
                 });
@@ -95,6 +103,8 @@ namespace TwitterWall.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("EventId");
+
                     b.Property<string>("Handle");
 
                     b.Property<string>("Type");
@@ -102,6 +112,8 @@ namespace TwitterWall.Migrations
                     b.Property<long>("UserId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EventId");
 
                     b.ToTable("Users");
                 });
@@ -114,12 +126,25 @@ namespace TwitterWall.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("TwitterWall.Models.Sticky", b =>
+            modelBuilder.Entity("TwitterWall.Models.Subscription", b =>
                 {
-                    b.HasOne("TwitterWall.Models.Tweet", "Tweet")
-                        .WithMany("StickyList")
-                        .HasForeignKey("TweetId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("TwitterWall.Models.Event", "Event")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("EventId");
+                });
+
+            modelBuilder.Entity("TwitterWall.Models.Tweet", b =>
+                {
+                    b.HasOne("TwitterWall.Models.Event", "Event")
+                        .WithMany("Tweets")
+                        .HasForeignKey("EventId");
+                });
+
+            modelBuilder.Entity("TwitterWall.Models.User", b =>
+                {
+                    b.HasOne("TwitterWall.Models.Event", "Event")
+                        .WithMany("Users")
+                        .HasForeignKey("EventId");
                 });
         }
     }

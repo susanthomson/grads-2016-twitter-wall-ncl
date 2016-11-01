@@ -268,12 +268,8 @@ export class TweetStream {
         return this.initialised;
     }
 
-    addSticky(tweetId: number): void {
-        this.conn.server.addStickyTweet(tweetId, this.streamEvent.Name);
-    }
-
-    removeSticky(tweetId: number): void {
-        this.conn.server.removeStickyTweet(tweetId, this.streamEvent.Name);
+    toggleSticky(tweetId: number): void {
+        this.conn.server.toggleSticky(tweetId, this.streamEvent.Name);
     }
 
     removeTweetImage(tweetIndex: number, imageIndex: number, imageId: number): void {

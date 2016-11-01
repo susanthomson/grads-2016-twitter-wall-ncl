@@ -64,7 +64,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
     constructor(private tweetStream: TweetStream, private router: Router, private route: ActivatedRoute) { }
 
     get stickyNodes(): any[] {
-        return this.nodes.filter(n => n.tweet.isSticky);
+        return this.nodes.filter(n => n.tweet.Sticky);
     }
 
     ngOnInit(): void {
@@ -97,7 +97,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
     };
 
     getTweetRadius(tweet: Tweet): number {
-        return tweet.isSticky ? this.stickyRadius : this.radius;
+        return tweet.Sticky ? this.stickyRadius : this.radius;
     }
 
     onVisibilityChanged(): void {
@@ -176,7 +176,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
         rawTweets.forEach((tweet, i) => {
             this.nodes.forEach(n => {
                 if (n.tweet.TweetId === tweet.TweetId) {
-                    n.tweet.isSticky = tweet.StickyList.some((e) => e.Event.Name === this.eventName);
+                    n.tweet.Sticky = tweet.Sticky;
                     if (!n.isDisplayed) {
                         n.radius = this.getTweetRadius(n.tweet);
                     }
@@ -285,7 +285,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
 
         bubbleSelection
             .selectAll(".bubble-tweet")
-            .style("opacity", node => node.tweet.isSticky ? 1 : node.opacity);
+            .style("opacity", node => node.tweet.Sticky ? 1 : node.opacity);
 
         bubbleSelection
             .selectAll(".tweet-content")
@@ -383,7 +383,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
       return new Tweet(
         tweet.Id, tweet.TweetId, tweet.Body, tweet.Handle,
         new Date(tweet.Date as any).toString(), tweet.Name, tweet.ProfileImage,
-        tweet.MediaList, tweet.StickyList
+        tweet.MediaList, tweet.Sticky
       );
     }
 

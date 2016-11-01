@@ -26,7 +26,5 @@ namespace TwitterWall.Models
         public ICollection<User> Users { get; set; }
         [JsonIgnore]
         public ICollection<Subscription> Subscriptions { get; set; }
-        [JsonIgnore]
-        public ICollection<Sticky> Stickys { get; set; }
     }
 }

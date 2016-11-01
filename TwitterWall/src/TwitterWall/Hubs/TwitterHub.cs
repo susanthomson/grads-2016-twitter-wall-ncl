@@ -12,7 +12,6 @@ namespace TwitterWall.Hubs
 {
     public class TwitterHub : Hub
     {
-        StickyDBRepository _stickyRepo = new StickyDBRepository();
         EventDBRepository _eventRepo = new EventDBRepository();
         StreamManager streamManager = StreamManager.Instance();
 
@@ -21,26 +20,14 @@ namespace TwitterWall.Hubs
             return Groups.Add(Context.ConnectionId, groupName);
         }
 
-        public void AddStickyTweet(long tweetId, string streamName)
-        {
-            TwitterStream ts = streamManager.GetStream(streamName);
-            Event streamEvent = _eventRepo.Find(e => e.Name == streamName).SingleOrDefault();
-            if (ts != null && streamEvent != null)
-            {
-                _stickyRepo.Add(tweetId, streamEvent.Id);
-                ts.UpdateTweet(tweetId);
-                TweetUpdate(ts._tweetRepo.Find(t => t.Id == tweetId).SingleOrDefault(), streamName);
-            }
-        }
-
-        public void RemoveStickyTweet(long tweetId, string streamName)
+        public void ToggleSticky(long tweetId, string streamName)
         {
             TwitterStream ts = streamManager.GetStream(streamName);
             if (ts != null)
             {
-                _stickyRepo.RemoveByTweetId(tweetId);
+                ts._tweetRepo.ToggleSticky(tweetId);
                 ts.UpdateTweet(tweetId);
-                TweetUpdate(ts._tweetRepo.Find(t => t.Id == tweetId).SingleOrDefault(), streamName);
+                TweetUpdate(ts._tweetRepo.Find(t => t.Id == tweetId && t.Event.Name == streamName).SingleOrDefault(), streamName);
             }
         }
 

@@ -73,7 +73,7 @@ namespace TwitterWall.Twitter
                 // Find first non sticky tweet and replace it
                 for (int i = 0; i < this.displayedTweets.Count; i++)
                 {
-                    if (this.displayedTweets[i].StickyList.Count == 0)
+                    if (!this.displayedTweets[i].Sticky)
                     {
                         Models.Tweet oldTweet = displayedTweets[i];
                         this.displayedTweets.RemoveAt(i);

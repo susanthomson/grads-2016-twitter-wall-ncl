@@ -60,12 +60,10 @@ namespace TwitterWall.Repository
                     List<Tweet> tweets = context.Tweets.Where(t => t.Event.Id == e.Id).ToList();
                     List<User> users = context.Users.Where(u => u.Event.Id == e.Id).ToList();
                     List<Subscription> subs = context.Subscriptions.Where(s => s.Event.Id == e.Id).ToList();
-                    List<Sticky> stickies = context.Sticky.Where(s => s.Event.Id == e.Id).ToList();
 
                     context.Tweets.RemoveRange(tweets);
                     context.Users.RemoveRange(users);
                     context.Subscriptions.RemoveRange(subs);
-                    context.Sticky.RemoveRange(stickies);
 
                     context.Attach(e);
                     context.Events.Remove(e);

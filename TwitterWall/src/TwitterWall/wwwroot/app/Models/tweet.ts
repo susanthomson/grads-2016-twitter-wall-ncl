@@ -9,12 +9,11 @@ export class Tweet {
     public Date: string;
     public Name: string;
     public ProfileImage: string;
-    public StickyList: any[];
+    public Sticky: boolean;
     public MediaList: MediaUrl[];
     public LoadedProfileImage: HTMLImageElement;
-    public isSticky: boolean;
 
-    constructor(id: number, tweetid: number, body: string, handle: string, date: string, name: string, profileImage: string, mediaList: MediaUrl[], stickyList: string[]) {
+    constructor(id: number, tweetid: number, body: string, handle: string, date: string, name: string, profileImage: string, mediaList: MediaUrl[], sticky: boolean) {
         this.Id = id;
         this.TweetId = tweetid;
         this.Body = body;
@@ -23,7 +22,6 @@ export class Tweet {
         this.Name = name;
         this.ProfileImage = profileImage;
         this.MediaList = mediaList;
-        this.StickyList = stickyList;
-        this.isSticky = stickyList.some(Boolean);
+        this.Sticky = sticky;
     }
 }

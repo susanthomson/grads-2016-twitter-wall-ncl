@@ -37,8 +37,11 @@ export class TwitterLogin {
                 headers: new Headers({ "Content-Type": "application/json" })
             }))
             .toPromise()
-            .catch((res) => {
-                this.loginError.next(true);
+            .then(res => {
+                if ((res as any)._body === "false") {
+                    window.sessionStorage.removeItem("token");
+                    window.location.reload();
+                }
             });
         }
     }

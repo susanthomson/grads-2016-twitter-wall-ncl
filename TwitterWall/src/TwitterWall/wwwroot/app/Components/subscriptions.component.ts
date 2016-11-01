@@ -70,14 +70,19 @@ export class Subscriptions {
     }
 
     addTrack(): void {
-        if (!this.inputTrack) return;
+        if (!this.inputTrack)
+            return;
+
         const checkIfExists = this.tracks.some((elem, i) => {
-          if(elem.Value == this.inputTrack) return true;
+            if (elem.Value === this.inputTrack)
+                return true;
         });
-        if(checkIfExists) {
+
+        if (checkIfExists) {
           this.errorMessage = "You are already following that keyword";
           return;
         };
+
         this.tweetStream.addTrack(this.inputTrack);
         this.inputTrack = "";
         this.errorMessage = "";
@@ -85,14 +90,19 @@ export class Subscriptions {
     }
 
     addPriorityUser(): void {
-        if (!this.inputUserId) return;
+        if (!this.inputUserId)
+            return;
+
         const checkIfExists = this.priorityUsers.some((elem, i) => {
-          if(elem.Value == this.inputUserId) return true;
+            if (elem.Value === this.inputUserId)
+                return true;
         });
-        if(checkIfExists) {
+
+        if (checkIfExists) {
           this.errorMessage = "You are already following that user";
           return;
         };
+
         this.tweetStream.followUser(this.inputUserId);
         this.inputUserId = "";
         this.errorMessage = "";

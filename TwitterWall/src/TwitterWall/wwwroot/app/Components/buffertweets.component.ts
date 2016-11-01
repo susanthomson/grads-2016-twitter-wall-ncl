@@ -46,7 +46,7 @@ export class BufferTweets {
         }
         return null;
     }
- 
+
     removeTweet(index: number): void {
         this.tweetStream.removeTweet(this.bufferTweets[index]);
     }

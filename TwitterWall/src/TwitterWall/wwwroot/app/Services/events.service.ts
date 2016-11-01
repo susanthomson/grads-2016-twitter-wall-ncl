@@ -3,7 +3,7 @@ import { Http } from "@angular/http";
 import { Subject } from "rxjs/Subject";
 
 import "rxjs/add/operator/toPromise";
-import 'rxjs/add/operator/map';
+import "rxjs/add/operator/map";
 
 declare var $: any;
 @Injectable()
@@ -47,7 +47,7 @@ export class EventService {
     }
 
     getEvents(): any {
-        return this.http.get("api/events").map(response => response.json());        
+        return this.http.get("api/events").map(response => response.json());
     }
 
     removeEvent(eventId: number): void {

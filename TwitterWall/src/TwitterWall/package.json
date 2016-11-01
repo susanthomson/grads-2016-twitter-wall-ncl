@@ -10,7 +10,7 @@
     "tsc": "tsc",
     "tsc:w": "tsc -w",
     "typings": "typings",
-    "lint": "tslint -c tslint.json wwwroot/app/*.ts"
+    "lint": "tslint -c tslint.json wwwroot/app/**/*.ts"
   },
   "license": "ISC",
   "dependencies": {

@@ -61,7 +61,7 @@ export class ActiveTweets {
     mapTweet(tweet: Tweet): Tweet {
         return Object.assign(tweet,
         {
-            FormattedDate: moment(tweet.Date).format('Do MMM, h:mm a')
+            FormattedDate: moment(tweet.Date).format("Do MMM, h:mm a")
         });
     }
 

@@ -176,7 +176,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
         rawTweets.forEach((tweet, i) => {
             this.nodes.forEach(n => {
                 if (n.tweet.TweetId === tweet.TweetId) {
-                    n.tweet.isSticky = tweet.StickyList.length > 0;
+                    n.tweet.isSticky = tweet.StickyList.some((e) => e.Event.Name === this.eventName);
                     if (!n.isDisplayed) {
                         n.radius = this.getTweetRadius(n.tweet);
                     }
@@ -299,7 +299,11 @@ export class BubbleComponent implements OnInit, OnDestroy {
     }
 
     displayNode(): void {
-        if (this.router.url === "/events/" + this.eventName && this.nodes.every(n => !n.isDisplayed && !n.isTranslating) && this.nodes && this.nodes.length) {
+        if (this.router.url === "/events/" + this.eventName &&
+            this.nodes.every(n => !n.isDisplayed && !n.isTranslating) &&
+            this.nodes &&
+            this.nodes.length
+        ) {
             const i = this.displayCount % this.nodes.length;
             const node = this.nodes[i];
             node.isTranslating = true;

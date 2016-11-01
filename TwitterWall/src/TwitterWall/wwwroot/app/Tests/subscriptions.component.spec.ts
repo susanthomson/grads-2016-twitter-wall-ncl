@@ -2,7 +2,7 @@
 import { TestBed, ComponentFixture } from "@angular/core/testing";
 import { TweetStreamMock } from "../Services/tweetstream.service.mock";
 import { TweetStream } from "../Services/tweetstream.service";
-import { FormsModule } from '@angular/forms';
+import { FormsModule } from "@angular/forms";
 
 let component: Subscriptions;
 let fixture: ComponentFixture<Subscriptions>;

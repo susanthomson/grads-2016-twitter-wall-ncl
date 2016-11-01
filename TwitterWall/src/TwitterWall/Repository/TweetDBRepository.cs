@@ -89,5 +89,17 @@ namespace TwitterWall.Repository
                 }
             }
         }
+
+        public Tweet GetLastTweet()
+        {
+            using (TweetContext context = GetContext())
+            {
+                return context.Tweets
+                    .Include(t=>t.StickyList)
+                    .Include(t=>t.MediaList)
+                    .Include(t=>t.Event)
+                    .FirstOrDefault(t => t.Date == context.Tweets.Max(x => x.Date));
+            }
+        }
     }
 }

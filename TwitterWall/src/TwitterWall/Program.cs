@@ -24,7 +24,6 @@ namespace TwitterWall
                 .UseIISIntegration()
                 .UseStartup<Startup>();
             
-            
             var builtHost = host.Build();
 
             builtHost.Run();

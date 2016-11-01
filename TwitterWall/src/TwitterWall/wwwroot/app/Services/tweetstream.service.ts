@@ -9,8 +9,6 @@ import "rxjs/add/operator/toPromise";
 
 declare var $: any;
 
-const DELETION_INTERVAL = 10000;
-
 @Injectable()
 export class TweetStream {
     private conn: any;
@@ -23,8 +21,6 @@ export class TweetStream {
 
     private deleteFromActiveQueue = new Subject<Tweet>();
     public deleteFromActiveQueueEvent$ = this.deleteFromActiveQueue.asObservable();
-
-    activeQueueSize: number = 15;
 
     private tracks = new Subject<any[]>();
     public tracksReceived$ = this.tracks.asObservable();
@@ -50,7 +46,6 @@ export class TweetStream {
     private streamStatus = new Subject<string>();
     public streamStatusChanged$ = this.streamStatus.asObservable();
 
-
     constructor(private http: Http) {
 
     }
@@ -59,8 +54,13 @@ export class TweetStream {
         this.tweetsQueue = [];
         this.activeTweets = [];
         this.conn = $.connection.twitterHub;
-        this.conn.client.receiveTweet = (tweet) => {
-            this.addTweet(tweet);
+        this.conn.client.receiveTweet = (tweet: Tweet, action: string) => {
+            if (action === "ADD") {
+                this.addActiveTweet(tweet);
+            }
+            else if (action === "REMOVE") {
+                this.removeActiveTweet(tweet);
+            }
         };
 
         this.conn.client.receiveTracks = (tracks) => {
@@ -160,31 +160,13 @@ export class TweetStream {
                        this.activeTweets = tweets;
                        this.activeQueueChanged.next(this.activeTweets);
                    });
-
-                    setInterval(() => {
-                        if (this.activeTweets.length < this.activeQueueSize && this.tweetsQueue.length > 0) {
-                            this.addActiveTweet(this.popNextTweet());
-
-                        }
-                        else if (this.tweetsQueue.length > 0) {
-                            this.activeTweets.some((tweet) => {
-                                // If a tweet has been stickied, then the StickyList array length will be one element
-                                if (tweet.StickyList.length === 0) {
-                                    this.removeActiveTweet(tweet);
-                                    this.addActiveTweet(this.popNextTweet());
-                                    return true;
-                                }
-                                return false;
-                            });
-                        }
-                    }, DELETION_INTERVAL);
                 }
             }
         });
     }
 
     getLatestTweets(): Promise<any[]> {
-        return this.http.get("api/tweets?latest=" + this.activeQueueSize + "&eventName=" + this.streamEvent.Name).toPromise().then((res) => {
+        return this.http.get("api/tweets?eventName=" + this.streamEvent.Name).toPromise().then((res) => {
             return JSON.parse((res as any)._body);
         });
     }
@@ -198,7 +180,7 @@ export class TweetStream {
     }
 
     addActiveTweet(tweet: Tweet): boolean {
-        if (tweet && this.activeTweets.length < this.activeQueueSize) {
+        if (tweet) {
             this.activeTweets.push(tweet);
             this.activeQueueChanged.next(this.activeTweets);
             return true;
@@ -207,13 +189,16 @@ export class TweetStream {
     }
 
     removeActiveTweet(tweet: Tweet): boolean {
-        let index = this.activeTweets.indexOf(tweet);
-        if (index !== -1) {
-            const tweet = this.activeTweets.splice(index, 1)[0];
-            this.deleteFromActiveQueue.next(tweet);
-            return true;
-        }
-        return false;
+        let result = this.activeTweets.some((elem, i) => {
+            if (tweet.Id === elem.Id) {
+                this.deleteFromActiveQueue.next(this.activeTweets[i]);
+                this.activeTweets.splice(i, 1);
+                this.activeQueueChanged.next(this.activeTweets);
+                return true;
+            }
+            return false;
+        });
+        return result;
     }
 
     popNextTweet(): Tweet {
@@ -227,7 +212,6 @@ export class TweetStream {
     }
 
     addTweet(tweet: Tweet): void {
-
         let priority = this.priorityUsers.some((el, index) => {
                 return el.Value === tweet.Handle;
             }

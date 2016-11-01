@@ -139,5 +139,10 @@ namespace TwitterWall.Twitter
                 }
             }
         }
+
+        public List<Tweet> GetEventTweets(string eventName)
+        {
+            return GetStream(eventName).GetDisplayTweets();
+        }
     }
 }

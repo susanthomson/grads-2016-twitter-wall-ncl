@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Tweetinvi;
 using TwitterWall.Controllers;
@@ -26,6 +27,12 @@ namespace TwitterWall.Twitter
 
         Event streamEvent;
 
+        private List<Models.Tweet> displayedTweets = new List<Models.Tweet>();
+        private int tweetsLimit = 15;
+
+        private Timer updateTimer;
+        private const int UPDATE_INTERVAL = 15000;
+
         Tweetinvi.Streaming.IFilteredStream stream;
 
         public TwitterStream(Event ev, string ConsumerKey, string ConsumerSecret, string AccessToken, string AccessTokenSecret)
@@ -37,6 +44,55 @@ namespace TwitterWall.Twitter
             this.AccessTokenSecret = AccessTokenSecret;
             UpdateCredentials();
             stream = Stream.CreateFilteredStream();
+
+            this.displayedTweets =_tweetRepo.GetLatest(tweetsLimit, streamEvent.Name).ToList();
+
+            updateTimer = new Timer(new TimerCallback(MaintainTweets), null, 0, UPDATE_INTERVAL);
+        }
+
+        private void MaintainTweets(object obj)
+        {
+            // Get the last tweet from DB
+            Models.Tweet newTweet = _tweetRepo.GetLastTweet();
+            if (newTweet == null)
+            {
+                return;
+            }       
+            if (displayedTweets.Exists(t => t.Id == newTweet.Id))
+            {
+                return;
+            }
+            
+            if (this.displayedTweets.Count < this.tweetsLimit)
+            {
+                displayedTweets.Add(newTweet);
+                BroadcastTweet(newTweet, Common.TweetAction.ADD);
+            }
+            else
+            {
+                // Find first non sticky tweet and replace it
+                for (int i = 0; i < this.displayedTweets.Count; i++)
+                {
+                    if (this.displayedTweets[i].StickyList.Count == 0)
+                    {
+                        Models.Tweet oldTweet = displayedTweets[i];
+                        this.displayedTweets.RemoveAt(i);
+                        this.displayedTweets.Add(newTweet);
+                        BroadcastTweet(newTweet, Common.TweetAction.ADD);
+                        BroadcastTweet(oldTweet, Common.TweetAction.REMOVE);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void BroadcastTweet(Models.Tweet tweet, Common.TweetAction action)
+        {
+            // Invoke receiveTweet method on client side
+            if (TweetsController._connectionManager != null)
+            {
+                TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.Group(streamEvent.Name).receiveTweet(tweet, action.ToString());
+            }
         }
 
         public void ConfigureStream()
@@ -74,12 +130,6 @@ namespace TwitterWall.Twitter
 
                 _tweetRepo.Add(newTweet);
                 _mediaRepo.AddFromTweet(args.Tweet, streamEvent);
-
-                // Invoke receiveTweet method on client side
-                if (TweetsController._connectionManager != null)
-                {
-                    TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.Group(streamEvent.Name).receiveTweet(_tweetRepo.Find(t => t.TweetId == newTweet.TweetId && t.Event.Id == streamEvent.Id).SingleOrDefault());
-                }
             };
 
             stream.StreamStopped += (sender, args) =>
@@ -91,6 +141,11 @@ namespace TwitterWall.Twitter
                     TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.All.streamStatusChanged("Stopped: " + args.Exception + ". " + args.DisconnectMessage);
                 }
             };
+        }
+
+        public List<Models.Tweet> GetDisplayTweets()
+        {
+            return this.displayedTweets;
         }
 
         public void UpdateCredentials()
@@ -137,6 +192,17 @@ namespace TwitterWall.Twitter
             }
         }
 
+        public void RemoveTweetsByHandle(string handle)
+        {
+            for (int i = 0; i < displayedTweets.Count; i++)
+            {
+                if (displayedTweets[i].Handle == handle)
+                {
+                    displayedTweets.RemoveAt(i);
+                }
+            }
+        }
+
         public Boolean AddPriorityUser(string handle)
         {
             var user = Tweetinvi.User.GetUserFromScreenName(handle);
@@ -177,9 +243,33 @@ namespace TwitterWall.Twitter
             _subRepo.Remove(id);
         }
 
-        public Event getStreamEvent()
+        public Event GetStreamEvent()
         {
             return this.streamEvent;
+        }
+
+        public void RemoveTweet(long tweetId)
+        {
+            for (int i = 0; i < displayedTweets.Count; i++)
+            {
+                if (displayedTweets[i].Id == tweetId)
+                {
+                    displayedTweets.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+
+        public void UpdateTweet(long tweetId)
+        {
+            for (int i = 0; i < displayedTweets.Count; i++)
+            {
+                if (displayedTweets[i].Id == tweetId)
+                {
+                    displayedTweets[i] = _tweetRepo.Find(t => t.Id == tweetId && t.Event.Id == streamEvent.Id).SingleOrDefault();
+                    break;
+                }
+            }
         }
     }
 }

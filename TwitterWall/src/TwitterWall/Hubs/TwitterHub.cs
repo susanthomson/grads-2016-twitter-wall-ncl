@@ -28,6 +28,7 @@ namespace TwitterWall.Hubs
             if (ts != null && streamEvent != null)
             {
                 _stickyRepo.Add(tweetId, streamEvent.Id);
+                ts.UpdateTweet(tweetId);
                 TweetUpdate(ts._tweetRepo.Find(t => t.Id == tweetId).SingleOrDefault(), streamName);
             }
         }
@@ -38,6 +39,7 @@ namespace TwitterWall.Hubs
             if (ts != null)
             {
                 _stickyRepo.RemoveByTweetId(tweetId);
+                ts.UpdateTweet(tweetId);
                 TweetUpdate(ts._tweetRepo.Find(t => t.Id == tweetId).SingleOrDefault(), streamName);
             }
         }
@@ -98,6 +100,7 @@ namespace TwitterWall.Hubs
             if (ts != null)
             {
                 ts._tweetRepo.Remove(id);
+                ts.RemoveTweet(id);
                 Clients.Group(streamName).tweetRemoved(id);
             }
         }
@@ -151,6 +154,7 @@ namespace TwitterWall.Hubs
                     Tweet tweet = ts._tweetRepo.Find(t => t.Id == media.Tweet.Id).SingleOrDefault();
                     if (tweet != null)
                     {
+                        ts.UpdateTweet(media.Tweet.Id);
                         TweetUpdate(tweet, streamName);
                     }
                 }
@@ -202,7 +206,7 @@ namespace TwitterWall.Hubs
                 {
                     User newUser = new User(serverTweet.UserId, serverTweet.Handle);
                     newUser.Type = Common.BanType;
-                    newUser.Event = ts.getStreamEvent();
+                    newUser.Event = ts.GetStreamEvent();
                     ts._userRepo.Add(newUser);
                     List<Tweet> tweetsToDelete = ts._tweetRepo.Find(t => (t.UserId == serverTweet.UserId) && (t.Event.Name == streamName)).ToList();
                     foreach(Tweet aTweet in tweetsToDelete)
@@ -210,6 +214,7 @@ namespace TwitterWall.Hubs
                         RemoveTweet(aTweet.Id, streamName);
                     }
                     Clients.Group(streamName).userBanned(ts.GetBannedUsers());
+                    ts.RemoveTweetsByHandle(newUser.Handle);
                 }
             }
         }

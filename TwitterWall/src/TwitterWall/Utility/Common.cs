@@ -15,5 +15,11 @@ namespace TwitterWall.Utility
         }
 
         public static readonly string BanType = "BANNED";
+
+        public enum TweetAction
+        {
+            ADD,
+            REMOVE
+        }
     }
 }

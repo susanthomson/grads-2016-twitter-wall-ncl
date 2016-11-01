@@ -16,6 +16,7 @@ namespace TwitterWall.Controllers
         public static IConnectionManager _connectionManager { get; set; }
 
         private TweetDBRepository _tweetRepo;
+        StreamManager streamManager = StreamManager.Instance();
 
         public TweetsController(IConnectionManager connectionManager, TweetDBRepository repo)
         {
@@ -25,17 +26,11 @@ namespace TwitterWall.Controllers
 
         // GET api/values
         [HttpGet]
-        public IEnumerable<Tweet> Get(string latest, string eventName)
+        public IEnumerable<Tweet> Get(string eventName)
         {            
-            if (!String.IsNullOrEmpty(latest) && !String.IsNullOrEmpty(eventName))
+            if (!String.IsNullOrEmpty(eventName))
             {
-                int limitNumber;
-                bool result = Int32.TryParse(latest, out limitNumber);
-                if (result && limitNumber >= 0)
-                {
-                    return _tweetRepo.GetLatest(limitNumber, eventName);
-                }
-                return null;
+                return streamManager.GetEventTweets(eventName);
             }
             else
             {

@@ -13,15 +13,13 @@ namespace TwitterWall.Controllers
     [Route("api/[controller]")]
     public class TweetsController : Controller
     {
-        public static IConnectionManager _connectionManager { get; set; }
-
         private TweetDBRepository _tweetRepo;
-        StreamManager streamManager = StreamManager.Instance();
+        private StreamManager streamManager;
 
-        public TweetsController(IConnectionManager connectionManager, TweetDBRepository repo)
+        public TweetsController(TweetDBRepository repo, StreamManager manager)
         {
-            _connectionManager = connectionManager;
             _tweetRepo = repo;
+            streamManager = manager;
         }
 
         // GET api/values

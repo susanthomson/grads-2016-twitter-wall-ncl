@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using TwitterWall.Context;
 using Newtonsoft.Json.Serialization;
 using TwitterWall.Utility;
+using TwitterWall.Twitter;
 
 namespace TwitterWall
 {
@@ -58,6 +59,7 @@ namespace TwitterWall
             services.AddScoped<TweetDBRepository>();
             services.AddScoped<UserDBRepository>();
             services.AddScoped<EventDBRepository>();
+            services.AddSingleton<StreamManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

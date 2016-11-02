@@ -89,10 +89,7 @@ namespace TwitterWall.Twitter
         private void BroadcastTweet(Models.Tweet tweet, Common.TweetAction action)
         {
             // Invoke receiveTweet method on client side
-            if (TweetsController._connectionManager != null)
-            {
-                TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.Group(streamEvent.Name).receiveTweet(tweet, action.ToString());
-            }
+            StreamManager.ConnectionManager.GetHubContext<TwitterHub>().Clients.Group(streamEvent.Name).receiveTweet(tweet, action.ToString());
         }
 
         public void ConfigureStream()
@@ -136,10 +133,7 @@ namespace TwitterWall.Twitter
             {
                 var exceptionThatCausedTheStreamToStop = args.Exception;
                 var twitterDisconnectMessage = args.DisconnectMessage;
-                if (TweetsController._connectionManager != null)
-                {
-                    TweetsController._connectionManager.GetHubContext<TwitterHub>().Clients.All.streamStatusChanged("Stopped: " + args.Exception + ". " + args.DisconnectMessage);
-                }
+                StreamManager.ConnectionManager.GetHubContext<TwitterHub>().Clients.All.streamStatusChanged("Stopped: " + args.Exception + ". " + args.DisconnectMessage);
             };
         }
 

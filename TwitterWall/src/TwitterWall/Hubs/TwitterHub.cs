@@ -13,7 +13,12 @@ namespace TwitterWall.Hubs
     public class TwitterHub : Hub
     {
         EventDBRepository _eventRepo = new EventDBRepository();
-        StreamManager streamManager = StreamManager.Instance();
+        StreamManager streamManager;
+
+        public TwitterHub(StreamManager manager)
+        {
+            streamManager = manager;
+        }
 
         public Task JoinGroup(string groupName)
         {

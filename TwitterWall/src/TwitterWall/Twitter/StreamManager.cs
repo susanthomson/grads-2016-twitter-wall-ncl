@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.AspNetCore.SignalR.Infrastructure;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +10,12 @@ using TwitterWall.Utility;
 
 namespace TwitterWall.Twitter
 {
-    class StreamManager
+    public class StreamManager
     {
-        private static StreamManager _instance;
-
-        private EventDBRepository _eventRepo = new EventDBRepository();
-
+        private EventDBRepository _eventRepo;// = new EventDBRepository();
         private Dictionary<string, TwitterStream> streams = new Dictionary<string, TwitterStream>();
-
         public List<UserCredential> Users = new List<UserCredential>();
+        public static IConnectionManager ConnectionManager;
 
         private const string CONSUMER_KEY = "CONSUMER_KEY";
         private const string CONSUMER_SECRET = "CONSUMER_SECRET";
@@ -25,17 +23,20 @@ namespace TwitterWall.Twitter
         private const string ACCESS_TOKEN_SECRET = "ACCESS_TOKEN_SECRET";
         private const string CREDENTIALS_PROPERTY = "TwitterCredentials";
 
-        public string ConsumerKey { get; set; }
-        public string ConsumerSecret { get; set; }
-        public string AccessToken { get; set; }
-        public string AccessTokenSecret { get; set; }
+        public virtual string ConsumerKey { get; set; }
+        public virtual string ConsumerSecret { get; set; }
+        public virtual string AccessToken { get; set; }
+        public virtual string AccessTokenSecret { get; set; }
 
-        protected StreamManager()
+        public StreamManager(IConnectionManager connManager, EventDBRepository evRepo)
         {
+            SetupManager();
             RetrieveCredentials();
+            ConnectionManager = connManager;
+            _eventRepo = evRepo;
         }
 
-        public void SetupManager()
+        public virtual void SetupManager()
         {
             foreach (Event ev in _eventRepo.GetAll())
             {
@@ -61,14 +62,7 @@ namespace TwitterWall.Twitter
             return null;
         }
 
-        private static readonly Lazy<StreamManager> instance = new Lazy<StreamManager>(() => new StreamManager());
-
-        public static StreamManager Instance()
-        {
-            return instance.Value;
-        }
-
-        public void AddUserCredentials(UserCredential user)
+        public virtual void AddUserCredentials(UserCredential user)
         {
             UserCredential uc;
             if ((uc = Users.Find(u => u.Handle == user.Handle)) == null)
@@ -82,7 +76,7 @@ namespace TwitterWall.Twitter
             }
         }
 
-        private void RetrieveCredentials()
+        public virtual void RetrieveCredentials()
         {
             this.ConsumerKey = Environment.GetEnvironmentVariable(CONSUMER_KEY);
             this.ConsumerSecret = Environment.GetEnvironmentVariable(CONSUMER_SECRET);

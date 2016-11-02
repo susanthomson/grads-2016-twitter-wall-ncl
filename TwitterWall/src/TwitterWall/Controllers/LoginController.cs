@@ -23,14 +23,17 @@ namespace TwitterWall.Controllers
         private const string API_REQUEST_TOKEN = "https://api.twitter.com/oauth/request_token";
         private const string API_ACCESS_TOKEN = "https://api.twitter.com/oauth/access_token";
 
-        private StreamManager streamManager = StreamManager.Instance();
+        private StreamManager streamManager;
 
-        private string CONSUMER_KEY = StreamManager.Instance().ConsumerKey;
-        private string CONSUMER_SECRET = StreamManager.Instance().ConsumerSecret;
+        private string CONSUMER_KEY;
+        private string CONSUMER_SECRET;
 
-        public LoginController(UserDBRepository repo)
+        public LoginController(UserDBRepository repo, StreamManager manager)
         {
             _userRepo = repo;
+            streamManager = manager;
+            CONSUMER_KEY = manager.ConsumerKey;
+            CONSUMER_SECRET = manager.ConsumerSecret;
         }
 
         [HttpGet]

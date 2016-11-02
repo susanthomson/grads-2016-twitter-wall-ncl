@@ -13,9 +13,6 @@ namespace TwitterWall
     {
         public static void Main(string[] args)
         {
-            StreamManager manager = StreamManager.Instance();
-            manager.SetupManager();
-
             String portnum = Environment.GetEnvironmentVariable("PORT") ?? "5000";
             var host = new WebHostBuilder()
                 .UseKestrel()

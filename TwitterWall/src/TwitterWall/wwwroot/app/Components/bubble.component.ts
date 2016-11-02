@@ -190,11 +190,10 @@ export class BubbleComponent implements OnInit, OnDestroy {
     }
 
     activeTweetDeleted(tweet) {
-        let toDelete = this.nodes.filter((node) => {
-            return node.tweet.TweetId === tweet.TweetId;
-        });
-
-        this.removeNode(this.nodes.indexOf(toDelete[0]));
+        const toDelete = this.nodes.find((node) => (node.tweet.Id === tweet.Id));
+        if (toDelete) {
+            this.removeNode(toDelete.tweet.Id);
+        }
     }
 
     renderTweetContent(tweet) {
@@ -401,8 +400,8 @@ export class BubbleComponent implements OnInit, OnDestroy {
         }
     };
 
-    removeNode(index: number): void {
-        const node = this.nodes[index];
+    removeNode(id: number): void {
+        const node = this.nodes.find((node) => (node.tweet.Id === id));
         if (node && !node.isDeleting) {
             if (!node.isDisplayed && !node.isTranslating) {
                 node.exitStartTime = Date.now();
@@ -458,7 +457,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
             }
 
             if (d.toBeDeleted && !d.isDisplayed) {
-                this.removeNode(d.index);
+                this.removeNode(d.tweet.Id);
             }
 
             bubbleHelpers.collide(this.nodes);

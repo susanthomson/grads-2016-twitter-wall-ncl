@@ -61,8 +61,8 @@ describe("d3 bubble component", () => {
     it("remove node deletes a node from the list of nodes", () => {
         fixture.detectChanges();
         let numOfNodes = bubbleComponent.nodes.length;
-        bubbleComponent.addNode(0, 0, new Tweet(6, 676, "", "", new Date().toString(), "", "egg.png", [], false));
-        bubbleComponent.addNode(0, 0, new Tweet(7, 5675, "", "", new Date().toString(), "", "egg.png", [], false));
+        bubbleComponent.addNode(0, 0, new Tweet(0, 0, "", "", new Date().toString(), "", "egg.png", [], false));
+        bubbleComponent.addNode(1, 1, new Tweet(1, 1, "", "", new Date().toString(), "", "egg.png", [], false));
         bubbleComponent.removeNode(0);
 
         // Animation reduces node radius to zero

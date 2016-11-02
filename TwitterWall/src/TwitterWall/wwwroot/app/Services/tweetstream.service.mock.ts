@@ -90,10 +90,10 @@ export class TweetStreamMock {
         }
     }
 
-    removeActiveTweetFromDB(tweet: Tweet): void {
-        let index = this.activeTweets.indexOf(tweet);
-        if (index !== -1) {
-            this.activeTweets.splice(index, 1);
+    removeActiveTweetFromDB(id: number): void {
+        let tweet = this.activeTweets.find(t => t.Id === id);
+        if (tweet) {
+            this.activeTweets.splice(this.activeTweets.indexOf(tweet), 1);
             this.activeQueueChanged.next(this.activeTweets);
         }
     }

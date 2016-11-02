@@ -61,7 +61,7 @@ import { TwitterLogin } from "../Services/twitterlogin.service";
                     <button
                         class="btn btn-primary btn-block btn-lg"
                         (click)="addEvent()">
-                        CreateEvent
+                        Create Event
                     </button>
                 </div>
             </div>

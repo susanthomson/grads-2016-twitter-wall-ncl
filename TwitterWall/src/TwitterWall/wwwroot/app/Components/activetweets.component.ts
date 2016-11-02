@@ -40,7 +40,7 @@ import * as moment from "moment";
                             <input type="checkbox" [attr.checked]="isSticky(i) ? true : null" (click)=sticky(i,$event)>
                         </td>
                         <td>
-                            <a class="text-warning" (click)="removeTweet(i)">Remove Tweet</a>&nbsp;
+                            <a class="text-warning" (click)="removeTweet(tweet.Id)">Remove Tweet</a>&nbsp;
                             <a class="text-danger" (click)="this.banUser(tweet)">Ban user</a>
                         </td>
                     </tr>
@@ -69,8 +69,8 @@ export class ActiveTweets {
         return this.activeTweets[index].Sticky;
     }
 
-    removeTweet(index: number): void {
-        this.tweetStream.removeActiveTweetFromDB(this.activeTweets[index]);
+    removeTweet(id: number): void {
+        this.tweetStream.removeActiveTweetFromDB(id);
     }
 
     addTweet(tweet: Tweet): void {

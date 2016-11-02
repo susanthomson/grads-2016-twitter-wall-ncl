@@ -97,14 +97,13 @@ export class TweetStream {
             let tweetToDelete = null;
             let success = this.activeTweets.some((tweet, i) => {
                 if (tweet.Id === id) {
-                    tweetToDelete = this.activeTweets.splice(i, 1)[0];
+                    tweetToDelete = tweet;
                     return true;
                 }
                 return false;
             });
             if (success) {
-                this.deleteFromActiveQueue.next(tweetToDelete);
-                this.activeQueueChanged.next(this.activeTweets);
+                this.removeActiveTweet(tweetToDelete);
             }
         };
 
@@ -277,8 +276,8 @@ export class TweetStream {
         this.activeTweets[tweetIndex].MediaList.splice(imageIndex, 1);
     }
 
-    removeActiveTweetFromDB(tweet: Tweet): void {
-        this.conn.server.removeTweet(tweet.Id, this.streamEvent.Name);
+    removeActiveTweetFromDB(id: number): void {
+        this.conn.server.removeTweet(id, this.streamEvent.Name);
     }
 
     getStreamStatus(): void {

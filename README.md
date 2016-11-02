@@ -1,5 +1,7 @@
 # Twitter Wall ~ Newcastle Graduates 2016
-This project is a TwitterWall created by the Newcastle 2016 graduates. See a live version at: http://twitter-wall-ncl.herokuapp.com
+This project is a TwitterWall created by the Newcastle 2016 graduates.  
+  
+See a live version at: http://twitter-wall-ncl.herokuapp.com
 
 ## Technologies:
 Backend: .NET Core 1.0.  

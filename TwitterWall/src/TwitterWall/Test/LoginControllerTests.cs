@@ -125,7 +125,7 @@ namespace TwitterWall.Test
 
         private Mock<StreamManager> MockStreamManager()
         {
-            Mock<StreamManager> sm = new Mock<StreamManager>(null, null);
+            Mock<StreamManager> sm = new Mock<StreamManager>(null);
             sm.Setup(s => s.ConsumerKey).Returns("");
             sm.Setup(s => s.ConsumerSecret).Returns("");
             sm.Setup(s => s.AddUserCredentials(It.IsAny<UserCredential>()));

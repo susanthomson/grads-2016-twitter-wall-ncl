@@ -176,6 +176,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
         rawTweets.forEach((tweet, i) => {
             this.nodes.forEach(n => {
                 if (n.tweet.TweetId === tweet.TweetId) {
+                    n.tweet.MediaList = tweet.MediaList;
                     n.tweet.Sticky = tweet.Sticky;
                     if (!n.isDisplayed) {
                         n.radius = this.getTweetRadius(n.tweet);
@@ -278,7 +279,10 @@ export class BubbleComponent implements OnInit, OnDestroy {
             .append("div")
             .attr("class", "tweet-content")
             .style("width", `${this.displayRadius * 2}px`)
-            .style("height", `${this.displayRadius * 2}px`)
+            .style("height", `${this.displayRadius * 2}px`);
+
+        bubbleSelection
+            .selectAll(".tweet-content")
             .each(function(data, i) {
                 this.innerHTML = self.renderTweetContent(data.tweet);
             });

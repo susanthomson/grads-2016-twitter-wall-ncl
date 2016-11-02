@@ -12,11 +12,10 @@ namespace TwitterWall.Twitter
 {
     public class StreamManager
     {
-        private EventDBRepository _eventRepo = new EventDBRepository();
+        private EventDBRepository _eventRepo;// = new EventDBRepository();
         private Dictionary<string, TwitterStream> streams = new Dictionary<string, TwitterStream>();
         public List<UserCredential> Users = new List<UserCredential>();
         public static IConnectionManager ConnectionManager;
-
 
         private const string CONSUMER_KEY = "CONSUMER_KEY";
         private const string CONSUMER_SECRET = "CONSUMER_SECRET";
@@ -29,14 +28,15 @@ namespace TwitterWall.Twitter
         public virtual string AccessToken { get; set; }
         public virtual string AccessTokenSecret { get; set; }
 
-        public StreamManager(IConnectionManager connManager)
+        public StreamManager(IConnectionManager connManager, EventDBRepository evRepo)
         {
             SetupManager();
             RetrieveCredentials();
             ConnectionManager = connManager;
+            _eventRepo = evRepo;
         }
 
-        public void SetupManager()
+        public virtual void SetupManager()
         {
             foreach (Event ev in _eventRepo.GetAll())
             {
@@ -76,7 +76,7 @@ namespace TwitterWall.Twitter
             }
         }
 
-        private void RetrieveCredentials()
+        public virtual void RetrieveCredentials()
         {
             this.ConsumerKey = Environment.GetEnvironmentVariable(CONSUMER_KEY);
             this.ConsumerSecret = Environment.GetEnvironmentVariable(CONSUMER_SECRET);

@@ -96,7 +96,6 @@ namespace TwitterWall.Twitter
         {
             stream.ClearFollows();
             stream.ClearTracks();
-
             foreach (Subscription s in _subRepo.Find(s => s.Event.Id == streamEvent.Id))
             {
                 if (s.Type == Common.SubType.TRACK.ToString())

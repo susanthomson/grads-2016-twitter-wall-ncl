@@ -24,9 +24,7 @@ namespace TwitterWall.Test
             };
             MockMessageHandler handler = new MockMessageHandler(HttpStatusCode.OK, "oauth_token=TOKEN&oauth_token_secret=SECRET&oauth_callback_confirmed=true");
             Mock<UserDBRepository> repo = new Mock<UserDBRepository>();
-            Mock<StreamManager> sm = new Mock<StreamManager>(null);
-            sm.Setup(s => s.ConsumerKey).Returns("");
-            sm.Setup(s => s.ConsumerSecret).Returns("");
+            Mock<StreamManager> sm = MockStreamManager();
 
             repo.Setup(r => r.Find(It.IsAny<Func<User, bool>>())).Returns(users);
 
@@ -48,9 +46,7 @@ namespace TwitterWall.Test
             };
             MockMessageHandler handler = new MockMessageHandler(HttpStatusCode.BadRequest, "");
             Mock<UserDBRepository> repo = new Mock<UserDBRepository>();
-            Mock<StreamManager> sm = new Mock<StreamManager>(null);
-            sm.Setup(s => s.ConsumerKey).Returns("");
-            sm.Setup(s => s.ConsumerSecret).Returns("");
+            Mock<StreamManager> sm = MockStreamManager();
 
             repo.Setup(r => r.Find(It.IsAny<Func<User, bool>>())).Returns(users);
 
@@ -72,9 +68,7 @@ namespace TwitterWall.Test
             };
             MockMessageHandler handler = new MockMessageHandler(HttpStatusCode.OK, "oauth_token=TOKEN&oauth_token_secret=SECRET&field=thisvalue&screenname=bob&oauth_callback_confirmed=true");
             Mock<UserDBRepository> repo = new Mock<UserDBRepository>();
-            Mock<StreamManager> sm = new Mock<StreamManager>(null);
-            sm.Setup(s => s.ConsumerKey).Returns("");
-            sm.Setup(s => s.ConsumerSecret).Returns("");
+            Mock<StreamManager> sm = MockStreamManager();
 
             repo.Setup(r => r.Find(It.IsAny<Func<User, bool>>())).Returns(users);
 
@@ -95,9 +89,7 @@ namespace TwitterWall.Test
             };
             MockMessageHandler handler = new MockMessageHandler(HttpStatusCode.Forbidden, "");
             Mock<UserDBRepository> repo = new Mock<UserDBRepository>();
-            Mock<StreamManager> sm = new Mock<StreamManager>(null);
-            sm.Setup(s => s.ConsumerKey).Returns("");
-            sm.Setup(s => s.ConsumerSecret).Returns("");
+            Mock<StreamManager> sm = MockStreamManager();
 
             repo.Setup(r => r.Find(It.IsAny<Func<User, bool>>())).Returns(users);
 
@@ -121,10 +113,7 @@ namespace TwitterWall.Test
 
             repo.Setup(r => r.Find(It.IsAny<Func<User, bool>>())).Returns(new List<User>());
 
-            Mock<StreamManager> sm = new Mock<StreamManager>(null);
-            sm.Setup(s => s.ConsumerKey).Returns("");
-            sm.Setup(s => s.ConsumerSecret).Returns("");
-            sm.Setup(s => s.AddUserCredentials(It.IsAny<UserCredential>()));
+            Mock<StreamManager> sm = MockStreamManager();
 
             LoginController lc = new LoginController(repo.Object, sm.Object);
             lc._handler = handler;
@@ -133,6 +122,17 @@ namespace TwitterWall.Test
             Assert.NotNull(content);
             Assert.DoesNotContain("window.session", content.Content);
         }
-        
+
+        private Mock<StreamManager> MockStreamManager()
+        {
+            Mock<StreamManager> sm = new Mock<StreamManager>(null, null);
+            sm.Setup(s => s.ConsumerKey).Returns("");
+            sm.Setup(s => s.ConsumerSecret).Returns("");
+            sm.Setup(s => s.AddUserCredentials(It.IsAny<UserCredential>()));
+            sm.Setup(s => s.SetupManager());
+            sm.Setup(s => s.RetrieveCredentials());
+            return sm;
+        }
+
     }
 }

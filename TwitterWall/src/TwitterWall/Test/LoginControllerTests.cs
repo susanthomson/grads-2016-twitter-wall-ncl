@@ -1,20 +1,19 @@
-﻿using Moq;
+﻿using Microsoft.AspNetCore.Mvc;
+using Moq;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using TwitterWall.Controllers;
 using TwitterWall.Models;
 using TwitterWall.Repository;
+using TwitterWall.Twitter;
 using TwitterWall.Utility;
 using Xunit;
-using TwitterWall.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using TwitterWall.Twitter;
 
 namespace TwitterWall.Test
 {
     public class LoginControllerTests
-    {  
-        
+    {
         [Fact]
         public async void LoginRequestRespondsWithRedirectUrl()
         {
@@ -36,7 +35,7 @@ namespace TwitterWall.Test
             Assert.NotNull(result);
             Assert.Contains("oauth_token", result.Content);
         }
-        
+
         [Fact]
         public async void LoginRequestRespondsWithEmptyStringOnError()
         {
@@ -58,7 +57,7 @@ namespace TwitterWall.Test
             Assert.NotNull(result);
             Assert.Equal(400, result.StatusCode);
         }
-        
+
         [Fact]
         public void CallbackReturnsJavascriptToSaveTokenOnSuccess()
         {
@@ -133,6 +132,5 @@ namespace TwitterWall.Test
             sm.Setup(s => s.RetrieveCredentials());
             return sm;
         }
-
     }
 }

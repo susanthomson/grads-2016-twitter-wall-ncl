@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TwitterWall.Context;
 using TwitterWall.Models;
 using TwitterWall.Repository;
@@ -30,7 +28,7 @@ namespace TwitterWall.Test
         [Fact]
         public void TestAdd()
         {
-            //Setup            
+            //Setup
             var urls = new List<MediaUrl>()
             {
             };
@@ -53,12 +51,12 @@ namespace TwitterWall.Test
             // Asert
             Assert.NotNull(mediaResult);
         }
-        
+
         [Fact]
         public void TestRemove()
         {
             MediaUrl url = new MediaUrl() { Id = 1, Tweet = new Tweet() { Id = 0 } };
-            //Setup            
+            //Setup
             var urls = new List<MediaUrl>()
             {
                 url
@@ -80,12 +78,12 @@ namespace TwitterWall.Test
             // Asert
             Assert.Null(repo.Get(1));
         }
-        
+
         [Fact]
         public void TestGet()
         {
             MediaUrl url = new MediaUrl() { Id = 1, Tweet = new Tweet() { Id = 0 } };
-            //Setup            
+            //Setup
             var urls = new List<MediaUrl>()
             {
                 url
@@ -107,12 +105,12 @@ namespace TwitterWall.Test
             // Asert
             Assert.Equal(url, result);
         }
-        
+
         [Fact]
         public void GetNonExistantItem()
         {
             MediaUrl url = new MediaUrl() { Id = 1, Tweet = new Tweet() { Id = 0 } };
-            //Setup            
+            //Setup
             var urls = new List<MediaUrl>()
             {
                 url
@@ -134,6 +132,5 @@ namespace TwitterWall.Test
             // Asert
             Assert.Null(result);
         }
-        
     }
 }

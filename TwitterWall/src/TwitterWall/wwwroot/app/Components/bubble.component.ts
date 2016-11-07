@@ -199,7 +199,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
 
     renderTweetContent(tweet) {
         const tweetTime = vagueTime.get({
-          to: new Date(tweet.Date).getTime() + (new Date()).getTimezoneOffset() * 60 * 1000,
+            to: new Date(tweet.Date).getTime() + (new Date()).getTimezoneOffset() * 60 * 1000,
         });
         const tweetBody = tweet.Body
             .replace(/[A-Za-z]+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~\?\/.=]+/g, "<span class='url'>$&</span>")
@@ -218,7 +218,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
           <div class="tweet-body">${tweetBody}</div>
           <div class="attached-images">
             ${
-              tweet.MediaList.slice(0, 1).map(img => `<img src=${img.Url} />`).join("")
+            tweet.MediaList.slice(0, 1).map(img => `<img src=${img.Url} />`).join("")
             }
           </div>
           <span class="timestamp">${tweetTime}</span>
@@ -237,13 +237,13 @@ export class BubbleComponent implements OnInit, OnDestroy {
             .data<any>(this.nodes, (node) => node.tweet.Id);
 
         const positionSelection = (selection) => {
-          selection
-              .style("transform", node => "translate3d(" +
-                  ((node.fixed ? this.displayPoint.x : node.x) - node.radius) + "px, " +
-                  ((node.fixed ? this.displayPoint.y : node.y) - node.radius) + "px, 0)"
-              )
-              .style("width", node => `${node.radius * 2}px`)
-              .style("height", node => `${node.radius * 2}px`);
+            selection
+                .style("transform", node => "translate3d(" +
+                    ((node.fixed ? this.displayPoint.x : node.x) - node.radius) + "px, " +
+                    ((node.fixed ? this.displayPoint.y : node.y) - node.radius) + "px, 0)"
+                )
+                .style("width", node => `${node.radius * 2}px`)
+                .style("height", node => `${node.radius * 2}px`);
         };
 
         // Silky codez using translate3d(x, y, z) to force browser to use
@@ -282,7 +282,7 @@ export class BubbleComponent implements OnInit, OnDestroy {
 
         bubbleSelection
             .selectAll(".tweet-content")
-            .each(function(data, i) {
+            .each(function (data, i) {
                 this.innerHTML = self.renderTweetContent(data.tweet);
             });
 
@@ -321,19 +321,19 @@ export class BubbleComponent implements OnInit, OnDestroy {
 
     populateNodes(tweets): void {
         if (tweets) {
-        this.nodes = d3
-            .range(tweets.length)
-            .map((d, i) => ({
-                tweet: tweets[i],
-                radius: this.getTweetRadius(tweets[i]),
-                scale: this.getTweetRadius(tweets[i]) / this.displayRadius,
-                isDisplayed: false,
-                isTranslating: false,
-                isIncreasing: false,
-                isDecreasing: false,
-                isDeleting: false,
-                opacity: 0
-            }));
+            this.nodes = d3
+                .range(tweets.length)
+                .map((d, i) => ({
+                    tweet: tweets[i],
+                    radius: this.getTweetRadius(tweets[i]),
+                    scale: this.getTweetRadius(tweets[i]) / this.displayRadius,
+                    isDisplayed: false,
+                    isTranslating: false,
+                    isIncreasing: false,
+                    isDecreasing: false,
+                    isDeleting: false,
+                    opacity: 0
+                }));
         }
     };
 
@@ -360,12 +360,12 @@ export class BubbleComponent implements OnInit, OnDestroy {
         }
         else {
             const valueX = bubbleHelpers.easeOut(
-              Date.now() - node.translateStartTime, node.translateStartPoint.x,
-              this.displayPoint.x - node.translateStartPoint.x, TRANSLATE_TIME
+                Date.now() - node.translateStartTime, node.translateStartPoint.x,
+                this.displayPoint.x - node.translateStartPoint.x, TRANSLATE_TIME
             );
             const valueY = bubbleHelpers.easeOut(
-              Date.now() - node.translateStartTime, node.translateStartPoint.y,
-              this.displayPoint.y - node.translateStartPoint.y, TRANSLATE_TIME
+                Date.now() - node.translateStartTime, node.translateStartPoint.y,
+                this.displayPoint.y - node.translateStartPoint.y, TRANSLATE_TIME
             );
 
             node.x = valueX;
@@ -383,11 +383,11 @@ export class BubbleComponent implements OnInit, OnDestroy {
     };
 
     instantiateTweet(tweet: Tweet) {
-      return new Tweet(
-        tweet.Id, tweet.TweetId, tweet.Body, tweet.Handle,
-        new Date(tweet.Date as any).toString(), tweet.Name, tweet.ProfileImage,
-        tweet.MediaList, tweet.Sticky
-      );
+        return new Tweet(
+            tweet.Id, tweet.TweetId, tweet.Body, tweet.Handle,
+            new Date(tweet.Date as any).toString(), tweet.Name, tweet.ProfileImage,
+            tweet.MediaList, tweet.Sticky
+        );
     }
 
     addNode(x: number = 0, y: number = 0, tweet: Tweet): void {

@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using TwitterWall.Repository;
-using TwitterWall.Models;
-using Microsoft.AspNetCore.SignalR.Infrastructure;
-using System.IO;
-using Microsoft.EntityFrameworkCore;
-using TwitterWall.Context;
 using Newtonsoft.Json.Serialization;
-using TwitterWall.Utility;
+using System;
+using System.IO;
+using TwitterWall.Context;
+using TwitterWall.Repository;
 using TwitterWall.Twitter;
 
 namespace TwitterWall

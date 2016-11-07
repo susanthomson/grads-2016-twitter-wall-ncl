@@ -13,7 +13,7 @@ describe("Admin panel buffer tweets component", () => {
         TestBed.configureTestingModule({
             declarations: [BufferTweets],
             providers: [
-                {provide: TweetStream, useClass: TweetStreamMock}
+                { provide: TweetStream, useClass: TweetStreamMock }
             ]
         });
 
@@ -48,5 +48,4 @@ describe("Admin panel buffer tweets component", () => {
         fixture.detectChanges();
         expect(component.bufferTweets.length).toEqual(0);
     });
-
 });

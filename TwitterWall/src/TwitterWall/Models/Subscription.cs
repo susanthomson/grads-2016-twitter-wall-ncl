@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TwitterWall.Models
 {
@@ -11,7 +7,6 @@ namespace TwitterWall.Models
     {
         public Subscription()
         {
-
         }
 
         public Subscription(string value, string type, Event ev)
@@ -32,11 +27,15 @@ namespace TwitterWall.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
         [Required]
         public string Value { get; set; }
+
         public long TwitterId { get; set; }
+
         [Required]
         public string Type { get; set; }
+
         public Event Event { get; set; }
     }
 }

@@ -21,10 +21,10 @@ import { LocationStrategy, HashLocationStrategy } from "@angular/common";
 
 @NgModule({
     imports: [BrowserModule, FormsModule, HttpModule, RouterModule.forRoot([
-            { path: "", component: MainAdminComponent },
-            { path: "admin/:id", component: AdminPanelComponent },
-            { path: "events/:id", component: BubbleComponent }
-        ])
+        { path: "", component: MainAdminComponent },
+        { path: "admin/:id", component: AdminPanelComponent },
+        { path: "events/:id", component: BubbleComponent }
+    ])
     ],
     declarations: [AppComponent, BubbleComponent, AdminPanelComponent, BufferTweets, ActiveTweets, Subscriptions, MainAdminComponent, BannedUsers],
     providers: [TweetStream, TweetStreamMock, TwitterLogin, EventService, { provide: LocationStrategy, useClass: HashLocationStrategy }],

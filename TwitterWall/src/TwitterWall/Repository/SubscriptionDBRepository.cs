@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TwitterWall.Context;
 using TwitterWall.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace TwitterWall.Repository
 {
@@ -12,12 +11,10 @@ namespace TwitterWall.Repository
     {
         public SubscriptionDBRepository()
         {
-
         }
 
         public SubscriptionDBRepository(TweetContext ctx) : base(ctx)
         {
-
         }
 
         public override Subscription Get(long id)
@@ -40,7 +37,7 @@ namespace TwitterWall.Repository
         {
             using (TweetContext context = GetContext())
             {
-                return context.Subscriptions.Include(s=>s.Event).Where<Subscription>(exp).ToList();
+                return context.Subscriptions.Include(s => s.Event).Where<Subscription>(exp).ToList();
             }
         }
 

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using TwitterWall.Twitter;
 using Xunit;
 using static TwitterWall.Twitter.TwitterAuth;
@@ -52,6 +48,5 @@ namespace TwitterWall.Test
 
             Assert.NotEqual(auth.Signature, auth2.Signature);
         }
-
     }
 }

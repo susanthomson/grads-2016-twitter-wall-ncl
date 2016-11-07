@@ -121,7 +121,7 @@ export class MainAdminComponent {
     removeEvent(index: number): void {
         const result = confirm("Are you sure you want to remove this event?");
         if (result) {
-          this.eventService.removeEvent(this.events[index].Id);
+            this.eventService.removeEvent(this.events[index].Id);
         }
     }
 

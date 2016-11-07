@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TwitterWall.Twitter
 {
@@ -13,7 +12,9 @@ namespace TwitterWall.Twitter
         public string Nonce = "";
         public string Signature = "";
 
-        private TwitterAuth() { }
+        private TwitterAuth()
+        {
+        }
 
         public class TwitterAuthBuilder
         {
@@ -92,7 +93,7 @@ namespace TwitterWall.Twitter
                 return sb.ToString();
             }
 
-            // Signature needs to be generated with all parameters in 
+            // Signature needs to be generated with all parameters in
             private string GenerateBase()
             {
                 SortedDictionary<string, string> parameters = new SortedDictionary<string, string>

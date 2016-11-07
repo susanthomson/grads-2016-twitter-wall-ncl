@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TwitterWall.Context;
 using TwitterWall.Models;
 using TwitterWall.Repository;
@@ -128,7 +126,6 @@ namespace TwitterWall.Test
             SubscriptionDBRepository repo = new SubscriptionDBRepository(mockContext.Object);
             // Act
             var result = repo.GetAll();
-
 
             // Assert
             Assert.Equal(result.ToList().First(), newTrack);

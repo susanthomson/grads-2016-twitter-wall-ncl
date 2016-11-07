@@ -9,6 +9,7 @@ namespace TwitterWall.Context
     public class TweetContext : DbContext
     {
         private string connectionString;
+
         public TweetContext() : base()
         {
             connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");

@@ -1,17 +1,16 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
-using System.Diagnostics;
-using System.Net;
-using System.Text;
-using static TwitterWall.Twitter.TwitterAuth;
-using TwitterWall.Twitter;
-using TwitterWall.Repository;
-using TwitterWall.Models;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using TwitterWall.Models;
+using TwitterWall.Repository;
+using TwitterWall.Twitter;
 using TwitterWall.Utility;
+using static TwitterWall.Twitter.TwitterAuth;
 
 namespace TwitterWall.Controllers
 {
@@ -38,7 +37,7 @@ namespace TwitterWall.Controllers
 
         [HttpGet]
         public async Task<ActionResult> Get()
-        {            
+        {
             string responseString = await Login();
 
             if (String.IsNullOrEmpty(responseString))
@@ -54,8 +53,8 @@ namespace TwitterWall.Controllers
         }
 
         async private Task<String> Login()
-        {            
-            using (HttpClient client = _handler == null ?  new HttpClient() : new HttpClient(_handler))
+        {
+            using (HttpClient client = _handler == null ? new HttpClient() : new HttpClient(_handler))
             {
                 Random rand = new Random();
                 TwitterAuth auth = new TwitterAuthBuilder(rand)
@@ -64,7 +63,6 @@ namespace TwitterWall.Controllers
                             .SetVersion("1.0")
                             .SetUrl(API_REQUEST_TOKEN)
                             .BuildAndSign();
-
 
                 string callback = Uri.EscapeUriString("/api/login/callback");
                 StringContent content = new StringContent("{ \"oauth_callback\", \"" + callback + "\"}", Encoding.UTF8, "application/json");
@@ -96,7 +94,6 @@ namespace TwitterWall.Controllers
             {
                 return Content("<script language='javascript' type='text/javascript'>window.location.href = '/#';</script>", "text/html");
             }
-
         }
 
         async private Task<UserCredential> GetUserTokens(string oauth_token, string oauth_verifier)

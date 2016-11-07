@@ -1,11 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Tweetinvi;
-using TwitterWall.Controllers;
 using TwitterWall.Hubs;
 using TwitterWall.Models;
 using TwitterWall.Repository;
@@ -25,7 +22,7 @@ namespace TwitterWall.Twitter
         public string AccessToken { get; set; }
         public string AccessTokenSecret { get; set; }
 
-        Event streamEvent;
+        private Event streamEvent;
 
         private List<Models.Tweet> displayedTweets = new List<Models.Tweet>();
         private int tweetsLimit = 15;
@@ -33,7 +30,7 @@ namespace TwitterWall.Twitter
         private Timer updateTimer;
         private const int UPDATE_INTERVAL = 15000;
 
-        Tweetinvi.Streaming.IFilteredStream stream;
+        private Tweetinvi.Streaming.IFilteredStream stream;
 
         public TwitterStream(Event ev, string ConsumerKey, string ConsumerSecret, string AccessToken, string AccessTokenSecret)
         {
@@ -45,7 +42,7 @@ namespace TwitterWall.Twitter
             UpdateCredentials();
             stream = Stream.CreateFilteredStream();
 
-            this.displayedTweets =_tweetRepo.GetLatest(tweetsLimit, streamEvent.Name).ToList();
+            this.displayedTweets = _tweetRepo.GetLatest(tweetsLimit, streamEvent.Name).ToList();
 
             updateTimer = new Timer(new TimerCallback(MaintainTweets), null, 0, UPDATE_INTERVAL);
         }
@@ -57,12 +54,12 @@ namespace TwitterWall.Twitter
             if (newTweet == null)
             {
                 return;
-            }       
+            }
             if (displayedTweets.Exists(t => t.Id == newTweet.Id))
             {
                 return;
             }
-            
+
             if (this.displayedTweets.Count < this.tweetsLimit)
             {
                 displayedTweets.Add(newTweet);
@@ -102,9 +99,9 @@ namespace TwitterWall.Twitter
                 {
                     stream.AddTrack(s.Value);
                 }
-                else if(s.Type == Common.SubType.PERSON.ToString())
+                else if (s.Type == Common.SubType.PERSON.ToString())
                 {
-                     stream.AddFollow(s.TwitterId);
+                    stream.AddFollow(s.TwitterId);
                 }
             }
 
@@ -204,7 +201,7 @@ namespace TwitterWall.Twitter
                 var userExist = _subRepo.Find(t => (t.Value == handle) && (t.Type == Common.SubType.PERSON.ToString()) && (t.Event.Id == streamEvent.Id)).SingleOrDefault();
                 if (userExist == null)
                 {
-                    _subRepo.Add(new Subscription(handle, user.Id, Common.SubType.PERSON.ToString(), this.streamEvent));  
+                    _subRepo.Add(new Subscription(handle, user.Id, Common.SubType.PERSON.ToString(), this.streamEvent));
                 }
                 return true;
             }

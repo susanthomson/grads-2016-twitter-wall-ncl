@@ -40,14 +40,13 @@ export class TweetStream {
     private initialised: boolean = false;
 
     private streamEvent: { Id: number, Name: string };
-    private eventChange = new Subject<{Id: number, Name: string}>();
+    private eventChange = new Subject<{ Id: number, Name: string }>();
     public eventChanged$ = this.eventChange.asObservable();
 
     private streamStatus = new Subject<string>();
     public streamStatusChanged$ = this.streamStatus.asObservable();
 
     constructor(private http: Http) {
-
     }
 
     private initialise(): void {
@@ -156,9 +155,9 @@ export class TweetStream {
                         });
                     }
                     this.getLatestTweets().then((tweets) => {
-                       this.activeTweets = tweets;
-                       this.activeQueueChanged.next(this.activeTweets);
-                   });
+                        this.activeTweets = tweets;
+                        this.activeQueueChanged.next(this.activeTweets);
+                    });
                 }
             }
         });
@@ -212,8 +211,8 @@ export class TweetStream {
 
     addTweet(tweet: Tweet): void {
         let priority = this.priorityUsers.some((el, index) => {
-                return el.Value === tweet.Handle;
-            }
+            return el.Value === tweet.Handle;
+        }
         );
         priority ? this.tweetsQueue.unshift(tweet) : this.tweetsQueue.push(tweet);
         this.queueChanged.next(this.tweetsQueue);
@@ -245,7 +244,7 @@ export class TweetStream {
 
     getPriorityUsers(): void {
         this.conn.server.getPriorityUsers(this.streamEvent.Name);
-   }
+    }
 
     getBannedUsers(): void {
         this.conn.server.getBannedUsers(this.streamEvent.Name);

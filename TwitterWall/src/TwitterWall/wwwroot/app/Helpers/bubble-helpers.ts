@@ -92,7 +92,7 @@ export function growBubble(
 };
 
 export function collide(nodes): void {
-    for ( let i = 0; i < nodes.length; i++) {
+    for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
             let node = nodes[i];
             let node2 = nodes[j];

@@ -31,5 +31,4 @@ describe("Subscription component", () => {
         component.removeTrack(0);
         expect(component.tracks.length).toEqual(0);
     });
-
 });

@@ -1,7 +1,6 @@
 import { Tweet } from "./tweet";
 
 export class Queue {
-
     private queueSize: number;
     private tweets: Tweet[];
 

@@ -10,7 +10,7 @@ export class TwitterLogin {
     private loginError = new Subject<boolean>();
     public loginErrorEvent$ = this.loginError.asObservable();
 
-    constructor(private http: Http) {}
+    constructor(private http: Http) { }
 
     login() {
         this.http.get("api/login").toPromise().then((res) => {
@@ -29,20 +29,20 @@ export class TwitterLogin {
             (handle = window.sessionStorage.getItem("handle")) !== null
         ) {
             this.http
-            .post("api/login/change", {
-                Handle: handle,
-                Token: token,
-                Stream: streamName
-            }, new RequestOptions({
-                headers: new Headers({ "Content-Type": "application/json" })
-            }))
-            .toPromise()
-            .then(res => {
-                if ((res as any)._body === "false") {
-                    window.sessionStorage.removeItem("token");
-                    window.location.reload();
-                }
-            });
+                .post("api/login/change", {
+                    Handle: handle,
+                    Token: token,
+                    Stream: streamName
+                }, new RequestOptions({
+                    headers: new Headers({ "Content-Type": "application/json" })
+                }))
+                .toPromise()
+                .then(res => {
+                    if ((res as any)._body === "false") {
+                        window.sessionStorage.removeItem("token");
+                        window.location.reload();
+                    }
+                });
         }
     }
 }

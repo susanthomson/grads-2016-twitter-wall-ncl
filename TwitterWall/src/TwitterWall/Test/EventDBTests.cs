@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TwitterWall.Context;
 using TwitterWall.Models;
 using TwitterWall.Repository;
@@ -30,7 +28,7 @@ namespace TwitterWall.Test
         [Fact]
         public void TestAdd()
         {
-            //Setup            
+            //Setup
             var events = new List<Event>()
             {
             };
@@ -52,7 +50,7 @@ namespace TwitterWall.Test
             // Assert
             Assert.NotNull(eventResult);
         }
-        
+
         [Fact]
         public void TestGet()
         {

@@ -1,7 +1,6 @@
 ﻿import { MediaUrl } from "./MediaUrl";
 
 export class Tweet {
-
     public Id: number;
     public TweetId: number;
     public Body: string;

@@ -11,7 +11,7 @@ namespace TwitterWall.Twitter
 {
     public class StreamManager
     {
-        private EventDBRepository _eventRepo = new EventDBRepository();
+        private EventDBRepository _eventRepo;
         private Dictionary<string, TwitterStream> streams = new Dictionary<string, TwitterStream>();
         public List<UserCredential> Users = new List<UserCredential>();
         public static IConnectionManager ConnectionManager;
@@ -27,9 +27,10 @@ namespace TwitterWall.Twitter
         public virtual string AccessToken { get; set; }
         public virtual string AccessTokenSecret { get; set; }
 
-        public StreamManager(IConnectionManager connManager)
+        public StreamManager(IConnectionManager connManager, EventDBRepository repo)
         {
             ConnectionManager = connManager;
+            _eventRepo = repo;
             SetupManager();
             RetrieveCredentials();
         }

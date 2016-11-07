@@ -29,9 +29,9 @@ namespace TwitterWall.Twitter
 
         public StreamManager(IConnectionManager connManager)
         {
+            ConnectionManager = connManager;
             SetupManager();
             RetrieveCredentials();
-            ConnectionManager = connManager;
         }
 
         public virtual void SetupManager()

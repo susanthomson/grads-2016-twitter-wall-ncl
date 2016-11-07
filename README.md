@@ -27,11 +27,17 @@ Node.js
 	
 4) To setup the database.
 * Enter the connection string for the database in Config.json.  
-* Run "dotnet ef database update"
+* Run "dotnet ef database update" after the database has been created (see below).
 
-5) Run "dotnet run".
+5) Run "dotnet restore & dotnet run".
 
 6) Add a user as an admin to the Users table. Fields required are the users handle and the type of "ADMIN" as well as the UserId, which can be found at http://mytwitterid.com/.
+
+## Database:
+The database used is PostgreSQL. The simplest way to set up the database is to download the pgAdmin program and create a new server. The parameters
+for the connection string can all be seen during/after the database has been created.  
+  
+LocalDB can also be used, but requires a new set of migrations to be generated.
 
 ## Continuous Intergration:
 * CircleCI is used for continuous intergration/deployment.
@@ -41,7 +47,7 @@ Node.js
 ## Production:
 * Environment variables are used in the production environment instead of the config file.
 * These environment variables are the same as the variables in the config file, and can be added through the web interface of both CircleCI and Heroku.
-* Heroku provides a Postgre database that can be used. You will need to update this database in the same way as before, 
+* Heroku provides a PostgreSQL database that can be used. You will need to update this database in the same way as before, 
 but use the connection string for the remote database instead of a local database.
 
 ## Tests:

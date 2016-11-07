@@ -4,15 +4,15 @@ machine:
 dependencies:
     override:
         - docker info
-        - docker build --rm=false -t ci-test .
+        - docker build --rm=false -t app .
 test:
     override:
-        - docker run -w /tmp/app -e CONNECTION_STRING=${CONNECTION_STRING} -e CONSUMER_KEY=${CONSUMER_KEY} -e CONSUMER_SECRET=${CONSUMER_SECRET} -e ACCESS_TOKEN=${ACCESS_TOKEN} -e ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET} ci-test:latest dotnet test
+        - docker run -w /tmp/app -e CONNECTION_STRING=${CONNECTION_STRING} -e CONSUMER_KEY=${CONSUMER_KEY} -e CONSUMER_SECRET=${CONSUMER_SECRET} -e ACCESS_TOKEN=${ACCESS_TOKEN} -e ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET} app:latest dotnet test
         - (cd TwitterWall/src/TwitterWall; npm install; npm test)
 deployment:
     production:
         branch: master
         commands:
             - docker login --email=${DOCKER_EMAIL} --username=${DOCKER_EMAIL} --password=${HEROKU_API_KEY} registry.heroku.com
-            - docker tag ci-test registry.heroku.com/twitter-wall-ncl/web
-            - docker push registry.heroku.com/twitter-wall-ncl/web
+            - docker tag app registry.heroku.com/${HEROKU_APP_NAME}/web
+            - docker push registry.heroku.com/${HEROKU_APP_NAME}/web

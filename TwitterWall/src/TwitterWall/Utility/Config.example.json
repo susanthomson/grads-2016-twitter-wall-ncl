@@ -1,0 +1,9 @@
+{
+  "ConnectionString": "Host=HOSTNAME;Username=USERNAME;Password=PASSWORD;Database=DATABASE;Port=PORT;sslmode=Prefer;Trust Server Certificate=true",
+  "TwitterCredentials": {
+    "CONSUMER_KEY": "KEY",
+    "CONSUMER_SECRET": "KEY",
+    "ACCESS_TOKEN": "KEY",
+    "ACCESS_TOKEN_SECRET": "KEY"
+  }
+}

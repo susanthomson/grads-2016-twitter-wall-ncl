@@ -13,20 +13,36 @@ Node.js
 .NET Core 1.0.1
 
 ## Installation:
-1) First, clone the repo.  
+1) First, clone the repo and cd into Twitterwall/src/Twitterwall.  
 
-2) Next, run "npm install". This should install any dependencies and also run the neccesary gulp tasks.
+2) Run "npm install".
 
-3) Now, you need to edit the configuration file for your twitter account.  
-* First, go to https://apps.twitter.com and login with your twitter credentials.
+3) Edit the configuration file for your twitter account.  
+* Go to https://apps.twitter.com and login with your twitter credentials.
 * Create a new application.
-* Within your new application, click on the 'Keys and Access Tokens' tab.
-* Copy the relevant keys into /Utility/Config.example.json (you may need to generate your access tokens beforehand)
-* Finally, rename the Config.example.json file to Config.json
+* Set the callback to http://address:port/api/login/callback, a separate app will be needed for production (only 1 callback allowed per app)
+* Click on the 'Keys and Access Tokens' tab.
+* Copy the relevant keys into /Utility/Config.example.json (you may need to generate your access tokens beforehand).
+* Rename the Config.example.json file to Config.json.
 	
-4) You need to also setup the database. Simply run "dotnet ef database update" in a terminal under TwitterWall/src/TwitterWall
+4) To setup the database.
+* Enter the connection string for the database in Config.json.  
+* Run "dotnet ef database update"
 
-5) Finally, run "dotnet restore" and then "dotnet run" to run the server.
+5) Run "dotnet run".
+
+6) Add a user as an admin to the Users table. Fields required are the users handle and the type of "ADMIN" as well as the UserId, which can be found at http://mytwitterid.com/.
+
+## Continuous Intergration:
+* CircleCI is used for continuous intergration/deployment.
+* Add a HEROKU\_APP\_NAME environment variable, with the value of the heroku app name.
+* CircleCI also requires the other environment variables (see below).
+
+## Production:
+* Environment variables are used in the production environment instead of the config file.
+* These environment variables are the same as the variables in the config file, and can be added through the web interface of both CircleCI and Heroku.
+* Heroku provides a Postgre database that can be used. You will need to update this database in the same way as before, 
+but use the connection string for the remote database instead of a local database.
 
 ## Tests:
 The project currently uses xUnit for backend testing. To run these tests, use "dotnet test".

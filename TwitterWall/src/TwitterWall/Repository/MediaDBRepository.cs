@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TwitterWall.Context;
 using TwitterWall.Models;
 
@@ -23,7 +22,7 @@ namespace TwitterWall.Repository
             using (TweetContext context = GetContext())
             {
                 return context.MediaUrls.Where(m => m.Id == id).SingleOrDefault();
-            }                
+            }
         }
 
         public override IEnumerable<MediaUrl> GetAll()
@@ -38,7 +37,7 @@ namespace TwitterWall.Repository
         {
             using (TweetContext context = GetContext())
             {
-                return context.MediaUrls.Include(m=>m.Tweet).Where<MediaUrl>(exp).ToList();
+                return context.MediaUrls.Include(m => m.Tweet).Where<MediaUrl>(exp).ToList();
             }
         }
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using TwitterWall.Utility;
+﻿using TwitterWall.Utility;
 using Xunit;
 
 namespace TwitterWall.Test

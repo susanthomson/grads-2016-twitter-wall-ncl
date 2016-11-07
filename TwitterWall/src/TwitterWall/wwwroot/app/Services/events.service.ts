@@ -20,7 +20,6 @@ export class EventService {
     events: any[] = [];
 
     constructor(private http: Http) {
-
     }
 
     initialise(): void {

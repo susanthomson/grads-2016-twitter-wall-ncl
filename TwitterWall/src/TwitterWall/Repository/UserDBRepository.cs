@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TwitterWall.Context;
 using TwitterWall.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace TwitterWall.Repository
 {
@@ -12,12 +11,10 @@ namespace TwitterWall.Repository
     {
         public UserDBRepository()
         {
-
         }
 
         public UserDBRepository(TweetContext ctx) : base(ctx)
         {
-
         }
 
         public override User Get(long id)
@@ -71,4 +68,3 @@ namespace TwitterWall.Repository
         }
     }
 }
-

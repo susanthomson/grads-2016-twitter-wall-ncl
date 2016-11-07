@@ -11,7 +11,7 @@ describe("Admin panel active tweets component", () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [ActiveTweets],
-            providers: [{provide: TweetStream, useClass: TweetStreamMock}]
+            providers: [{ provide: TweetStream, useClass: TweetStreamMock }]
         });
 
         fixture = TestBed.createComponent(ActiveTweets);

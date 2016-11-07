@@ -1,13 +1,7 @@
-﻿using Autofac;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
+﻿using Microsoft.EntityFrameworkCore;
 using Moq;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using TwitterWall.Context;
 using TwitterWall.Models;
 using TwitterWall.Repository;
@@ -20,6 +14,7 @@ namespace TwitterWall.Test
         public TweetDBTests()
         {
         }
+
         private Mock<DbSet<Tweet>> setUpAsQueriable(IQueryable<Tweet> data)
         {
             var queriable = new Mock<DbSet<Tweet>>();

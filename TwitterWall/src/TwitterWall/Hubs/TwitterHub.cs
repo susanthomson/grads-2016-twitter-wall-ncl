@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,8 +11,8 @@ namespace TwitterWall.Hubs
 {
     public class TwitterHub : Hub
     {
-        EventDBRepository _eventRepo = new EventDBRepository();
-        StreamManager streamManager;
+        private EventDBRepository _eventRepo = new EventDBRepository();
+        private StreamManager streamManager;
 
         public TwitterHub(StreamManager manager)
         {
@@ -201,7 +200,7 @@ namespace TwitterWall.Hubs
                     newUser.Event = ts.GetStreamEvent();
                     ts._userRepo.Add(newUser);
                     List<Tweet> tweetsToDelete = ts._tweetRepo.Find(t => (t.UserId == serverTweet.UserId) && (t.Event.Name == streamName)).ToList();
-                    foreach(Tweet aTweet in tweetsToDelete)
+                    foreach (Tweet aTweet in tweetsToDelete)
                     {
                         RemoveTweet(aTweet.Id, streamName);
                     }

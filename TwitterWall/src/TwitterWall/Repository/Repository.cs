@@ -1,15 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TwitterWall.Context;
 
 namespace TwitterWall.Repository
 {
     public abstract class Repository<T> : IRepository<T>
     {
-        TweetContext context;
+        private TweetContext context;
 
         public Repository()
         {
@@ -33,9 +30,13 @@ namespace TwitterWall.Repository
         }
 
         public abstract T Get(long id);
+
         public abstract IEnumerable<T> GetAll();
+
         public abstract IEnumerable<T> Find(Func<T, bool> exp);
+
         public abstract void Add(T entity);
+
         public abstract void Remove(long id);
     }
 }

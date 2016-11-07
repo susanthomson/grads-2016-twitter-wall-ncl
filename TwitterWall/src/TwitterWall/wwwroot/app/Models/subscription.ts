@@ -1,5 +1,4 @@
 ﻿export class Subscription {
-
     Id: number;
     Value: string;
     Type: string;

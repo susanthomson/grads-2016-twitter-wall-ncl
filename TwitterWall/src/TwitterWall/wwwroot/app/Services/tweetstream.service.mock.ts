@@ -132,13 +132,10 @@ export class TweetStreamMock {
     }
 
     setEvent(ev: string) {
-
     }
 
     initialise(): void {
-
     }
-
 
     getBannedUsers(): void {
         this.bannedUsers.next([]);

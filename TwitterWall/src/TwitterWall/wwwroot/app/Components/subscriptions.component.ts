@@ -79,8 +79,8 @@ export class Subscriptions {
         });
 
         if (checkIfExists) {
-          this.errorMessage = "You are already following that keyword";
-          return;
+            this.errorMessage = "You are already following that keyword";
+            return;
         };
 
         this.tweetStream.addTrack(this.inputTrack);
@@ -99,8 +99,8 @@ export class Subscriptions {
         });
 
         if (checkIfExists) {
-          this.errorMessage = "You are already following that user";
-          return;
+            this.errorMessage = "You are already following that user";
+            return;
         };
 
         this.tweetStream.followUser(this.inputUserId);

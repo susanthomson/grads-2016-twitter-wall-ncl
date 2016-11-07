@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Newtonsoft.Json;
 
 namespace TwitterWall.Models
 {
@@ -12,7 +9,6 @@ namespace TwitterWall.Models
     {
         public Tweet()
         {
-        
         }
 
         public Tweet(long tweetId, string body, string handle, DateTimeOffset date, string name, string profileImage, Event ev, long userId)
@@ -30,6 +26,7 @@ namespace TwitterWall.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
         public long TweetId { get; set; }
         public string Body { get; set; }
         public string Handle { get; set; }

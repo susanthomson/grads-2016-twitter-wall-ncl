@@ -18,8 +18,8 @@ describe("Admin Panel Banned Users Component", () => {
             ]
         });
 
-       fixture = TestBed.createComponent(BannedUsers);
-       component = fixture.componentInstance;
+        fixture = TestBed.createComponent(BannedUsers);
+        component = fixture.componentInstance;
     });
 
     it("Ban user", () => {
@@ -35,5 +35,4 @@ describe("Admin Panel Banned Users Component", () => {
             component.unbanUser(0);
             expect(component.bannedUsers.length).toBe(0);
         });
-
 });

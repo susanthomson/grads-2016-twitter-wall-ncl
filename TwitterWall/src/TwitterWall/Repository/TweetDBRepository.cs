@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using TwitterWall.Models;
-using Microsoft.EntityFrameworkCore;
 using TwitterWall.Context;
+using TwitterWall.Models;
 
 namespace TwitterWall.Repository
 {
@@ -62,7 +61,7 @@ namespace TwitterWall.Repository
         {
             using (TweetContext context = GetContext())
             {
-                return context.Tweets.Include(t => t.MediaList).Include(t=>t.Event).Where<Tweet>(exp).ToList();
+                return context.Tweets.Include(t => t.MediaList).Include(t => t.Event).Where<Tweet>(exp).ToList();
             }
         }
 
@@ -95,8 +94,8 @@ namespace TwitterWall.Repository
             using (TweetContext context = GetContext())
             {
                 return context.Tweets
-                    .Include(t=>t.MediaList)
-                    .Include(t=>t.Event)
+                    .Include(t => t.MediaList)
+                    .Include(t => t.Event)
                     .FirstOrDefault(t => t.Date == context.Tweets.Max(x => x.Date));
             }
         }

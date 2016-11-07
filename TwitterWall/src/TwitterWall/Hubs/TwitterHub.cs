@@ -11,11 +11,12 @@ namespace TwitterWall.Hubs
 {
     public class TwitterHub : Hub
     {
-        private EventDBRepository _eventRepo = new EventDBRepository();
+        private EventDBRepository _eventRepo;
         private StreamManager streamManager;
 
-        public TwitterHub(StreamManager manager)
+        public TwitterHub(StreamManager manager, EventDBRepository repo)
         {
+            _eventRepo = repo;
             streamManager = manager;
         }
 

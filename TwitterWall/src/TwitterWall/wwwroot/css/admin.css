@@ -91,7 +91,8 @@
   margin-top: 50px;
 }
 .admin-panel .user-follow,
-.admin-panel .keyword-follow {
+.admin-panel .keyword-follow,
+.admin-panel .banned-user {
   display: flex;
   justify-content: space-between;
   align-items: center;

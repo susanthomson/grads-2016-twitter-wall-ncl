@@ -11,9 +11,9 @@ import { Tweet } from "../Models/tweet";
             </div>
             <ul class="list-group">
                 <li class="list-group-item" *ngIf="bannedUsers.length === 0">No users have yet been banned.</li>
-                <li class="list-group-item" *ngFor="let user of bannedUsers; let i=index">
+                <li class="list-group-item banned-user" *ngFor="let user of bannedUsers; let i=index">
                     {{user.Handle}}
-                    <span class="glyphicon glyphicon-minus" aria-hidden="true" (click)="unbanUser(user.Id)"></span>
+                    <span class="glyphicon glyphicon-remove text-danger delete" aria-hidden="true" (click)="unbanUser(user.Id)"></span>
                 </li>
             </ul>
         </div>

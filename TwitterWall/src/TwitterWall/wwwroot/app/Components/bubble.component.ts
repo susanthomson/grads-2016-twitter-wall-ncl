@@ -201,10 +201,10 @@ export class BubbleComponent implements OnInit, OnDestroy {
         const tweetTime = vagueTime.get({
             to: new Date(tweet.Date).getTime() + (new Date()).getTimezoneOffset() * 60 * 1000,
         });
-        const tweetBody = tweet.Body
+        const tweetBody = twemoji.parse(tweet.Body
             .replace(/[A-Za-z]+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~\?\/.=]+/g, "<span class='url'>$&</span>")
             .replace(/(@\S+)/g, "<span class='mention'>$&</span>")
-            .replace(/(#\S+)/g, "<span class='hashtag'>$&</span>");
+            .replace(/(#\S+)/g, "<span class='hashtag'>$&</span>"));
 
         return `
           <div class='tweet-header'>

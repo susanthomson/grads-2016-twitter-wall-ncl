@@ -18,8 +18,7 @@ import * as moment from "moment";
                       <th>Sticky</th>
                     </tr>
                     <tr *ngFor="let tweet of activeTweets; let i=index">
-                        <td>
-                            {{tweet.Body}}
+                        <td [innerHTML]="tweet.Body">
                         </td>
                         <td>
                             <div>{{tweet.Name}}</div>
@@ -61,7 +60,8 @@ export class ActiveTweets {
     mapTweet(tweet: Tweet): Tweet {
         return Object.assign(tweet,
             {
-                FormattedDate: moment(tweet.Date).format("Do MMM, h:mm a")
+                FormattedDate: moment(tweet.Date).format("Do MMM, h:mm a"),
+                Body: twemoji.parse(tweet.Body)
             });
     }
 

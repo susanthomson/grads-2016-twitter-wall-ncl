@@ -8,9 +8,10 @@ using TwitterWall.Context;
 namespace TwitterWall.Migrations
 {
     [DbContext(typeof(TweetContext))]
-    partial class TweetContextModelSnapshot : ModelSnapshot
+    [Migration("20161110135838_visibleFlag")]
+    partial class visibleFlag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1");

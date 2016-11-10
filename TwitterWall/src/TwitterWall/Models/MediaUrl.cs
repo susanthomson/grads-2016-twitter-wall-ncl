@@ -14,6 +14,7 @@ namespace TwitterWall.Models
         {
             this.Url = url;
             this.Tweet = tweet;
+            this.Visible = true;
         }
 
         [Key]
@@ -26,5 +27,8 @@ namespace TwitterWall.Models
         [JsonIgnore]
         [Required]
         public Tweet Tweet { get; set; }
+
+        [Required]
+        public bool Visible { get; set; }
     }
 }

@@ -39,6 +39,8 @@ namespace TwitterWall.Migrations
                     b.Property<string>("Url")
                         .IsRequired();
 
+                    b.Property<bool>("Visible");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TweetId");

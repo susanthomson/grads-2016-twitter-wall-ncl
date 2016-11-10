@@ -31,8 +31,8 @@ namespace TwitterWall.Twitter
         {
             ConnectionManager = connManager;
             _eventRepo = repo;
-            SetupManager();
             RetrieveCredentials();
+            SetupManager();
         }
 
         public virtual void SetupManager()

@@ -3,6 +3,8 @@ import { Tweet } from "../Models/tweet";
 import { TweetStream } from "../Services/tweetstream.service";
 import * as moment from "moment";
 
+declare var twemoji: any;
+
 @Component({
     selector: "active-tweets",
     template: `

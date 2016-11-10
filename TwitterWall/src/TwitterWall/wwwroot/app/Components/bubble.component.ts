@@ -7,6 +7,8 @@ import { Router, ActivatedRoute, Params } from "@angular/router";
 import * as d3 from "d3";
 import * as bubbleHelpers from "../Helpers/bubble-helpers";
 
+declare var twemoji: any;
+
 const MAX_NODES = 20;
 const MAX_RADIUS = 40;
 const MIN_RADIUS = 10;
